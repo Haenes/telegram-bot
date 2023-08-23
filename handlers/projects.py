@@ -15,19 +15,20 @@ async def send_projects(callback: types.CallbackQuery):
     HEADERS = {"Authorization": f"Token {token}"}
 
     results = get_projects(HEADERS)
-    print(results)
+    # print(results)
     
     await callback.message.answer("List of projects:", reply_markup=projects_kb(results))
     await callback.answer()
 
 
-@router.callback_query(F.data.startswith("project_"))
-async def send_project(callback: types.CallbackQuery):
+@router.callback_query(F.data.startswith("project_"), F.data.as_("data"))
+async def send_project(callback: types.CallbackQuery, data):
     token = os.environ.get("API_TOKEN")
     HEADERS = {"Authorization": f"Token {token}"}
 
-    results = get_project(63, HEADERS)
-    print(results)
+    project_id = data.removeprefix("project_")
+    results = get_project(project_id, HEADERS)
+    # print(results)
 
     await callback.message.answer(f"Name: {results['name']} \nKey: {results['key']} \nType: {results['type']} \nFavorite: {results['starred']} \nCreated: {results['created']}")
     await callback.answer()

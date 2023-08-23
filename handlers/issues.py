@@ -15,19 +15,20 @@ async def send_issues(callback: types.CallbackQuery):
     HEADERS = {"Authorization": f"Token {token}"}
 
     results = get_issues(HEADERS)
-    print(results)
+    # print(results)
 
     await callback.message.answer("List of issues:", reply_markup=issues_kb(results))
     await callback.answer()
 
 
-@router.callback_query(F.data.startswith("issue"))
-async def send_issue(callback: types.CallbackQuery):
+@router.callback_query(F.data.startswith("issue"), F.data.as_("data"))
+async def send_issue(callback: types.CallbackQuery, data):
     token = os.environ.get("API_TOKEN")
     HEADERS = {"Authorization": f"Token {token}"}
 
-    results = get_issue(36, HEADERS)
-    print(results)
+    issue_id = data.removeprefix("issue_")
+    results = get_issue(issue_id, HEADERS)
+    # print(results)
 
     await callback.message.answer(f"Title: {results['title']} \nDescription: {results['description']} \nKey: {results['key']} \nType: {results['type']} \nPriority: {results['priority']} \nStatus: {results['status']} \nCreated: {results['created']} \nUpdated: {results['updated']}")
     await callback.answer()
