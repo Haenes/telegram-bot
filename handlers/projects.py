@@ -1,12 +1,9 @@
 import os
 
 from aiogram import Router, types, F
-from aiogram.filters import CommandObject
-from aiogram.filters.command import Command
 
-from handlers.bugtracker_api import get_token, get_projects, get_project
+from handlers.bugtracker_api import get_projects, get_project
 from keyboards.for_projects import projects_kb
-from keyboards.for_menu import menu_kb
 
 
 router = Router()
