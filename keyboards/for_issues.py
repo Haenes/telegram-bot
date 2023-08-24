@@ -10,10 +10,17 @@ def issues_kb(results) -> InlineKeyboardMarkup:
 
     for issue in issues:
         builder.add(types.InlineKeyboardButton(
-            text=issue["title"],
+            text=issue['title'],
             callback_data=f"issue_{issue['id']}"
             )
         )
+    builder.adjust(2)
+
+    builder.row(types.InlineKeyboardButton(
+        text="Create new",
+        callback_data="create_issue"
+        )
+    )
 
     if results["previous"] != None:
         builder.row(types.InlineKeyboardButton(
@@ -28,6 +35,24 @@ def issues_kb(results) -> InlineKeyboardMarkup:
             callback_data="next_issues"
             )
         )
-    builder.adjust(2)
+    # builder.adjust(2)
+
+    return builder.as_markup()
+
+
+def issue_kb(results):
+    builder = InlineKeyboardBuilder()
+
+    builder.add(types.InlineKeyboardButton(
+        text="Change",
+        callback_data=f"iss_change_{results['id']}"
+        )
+    )
+
+    builder.add(types.InlineKeyboardButton(
+        text="Delete",
+        callback_data=f"iss_delete_{results['id']}"
+        )
+    )
 
     return builder.as_markup()

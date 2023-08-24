@@ -5,7 +5,7 @@ import logging
 from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher
 
-from handlers import start, projects, issues
+from handlers import start, projects, issues, creating_project, common
 
 
 async def main():
@@ -16,7 +16,7 @@ async def main():
     bot = Bot(token=BOT_TOKEN)
     dp = Dispatcher()
 
-    dp.include_routers(start.router, projects.router, issues.router)
+    dp.include_routers(start.router, projects.router, issues.router,  common.router, creating_project.router)
 
     # Launch the bot and skip all the accumulated updates
     await bot.delete_webhook(drop_pending_updates=True)

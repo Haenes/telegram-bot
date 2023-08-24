@@ -14,6 +14,13 @@ def projects_kb(results) -> InlineKeyboardMarkup:
             callback_data=f"project_{project['id']}"
             )
         )
+    builder.adjust(2)
+    
+    builder.row(types.InlineKeyboardButton(
+        text="Create new",
+        callback_data="create_project"
+        )
+    )
 
     if results["previous"] != None:
         builder.row(types.InlineKeyboardButton(
@@ -28,6 +35,24 @@ def projects_kb(results) -> InlineKeyboardMarkup:
             callback_data="next_projects"
             )
         )
-    builder.adjust(2)
+    # builder.adjust(2)
+
+    return builder.as_markup()
+
+
+def project_kb(results):
+    builder = InlineKeyboardBuilder()
+
+    builder.add(types.InlineKeyboardButton(
+        text="Change",
+        callback_data=f"prj_change_{results['id']}"
+        )
+    )
+
+    builder.add(types.InlineKeyboardButton(
+        text="Delete",
+        callback_data=f"prj_delete_{results['id']}"
+        )
+    )
 
     return builder.as_markup()
