@@ -35,7 +35,6 @@ def projects_kb(results) -> InlineKeyboardMarkup:
             callback_data="next_projects"
             )
         )
-    # builder.adjust(2)
 
     return builder.as_markup()
 

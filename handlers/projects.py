@@ -11,7 +11,6 @@ router = Router()
 async def send_projects(callback: types.CallbackQuery):
     headers = set_up()
     results = get_projects(headers)
-    # print(results)
     
     await callback.message.answer("List of projects:", reply_markup=projects_kb(results))
     await callback.answer()
@@ -22,7 +21,6 @@ async def send_project(callback: types.CallbackQuery, data: types.CallbackQuery)
     headers = set_up()
     project_id = data.removeprefix("project_")
     results = get_project(project_id, headers)
-    # print(results)
 
     await callback.message.answer(f"Name: {results['name']} \nDescription: {results['description']} \nKey: {results['key']} \nType: {results['type']} \nFavorite: {results['starred']} \nCreated: {results['created']}", reply_markup=project_kb(results))
     await callback.answer()

@@ -11,7 +11,6 @@ router = Router()
 async def send_issues(callback: types.CallbackQuery):
     headers = set_up()
     results = get_issues(headers)
-    # print(results)
 
     await callback.message.answer("List of issues:", reply_markup=issues_kb(results))
     await callback.answer()
@@ -22,7 +21,6 @@ async def send_issue(callback: types.CallbackQuery, data):
     issue_id = data.removeprefix("issue_")
     headers = set_up()
     results = get_issue(issue_id, headers)
-    # print(results)
 
     await callback.message.answer(f"Title: {results['title']} \nDescription: {results['description']} \nKey: {results['key']} \nType: {results['type']} \nPriority: {results['priority']} \nStatus: {results['status']} \nCreated: {results['created']} \nUpdated: {results['updated']}", reply_markup=issue_kb(results))
     await callback.answer()

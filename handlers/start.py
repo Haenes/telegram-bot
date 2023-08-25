@@ -11,7 +11,7 @@ router = Router()
 
 @router.message(Command("start"))
 async def cmd_start(message: types.Message):
-    await message.answer("In development")
+    await message.answer("In development.")
 
 
 @router.message(Command("login"))
@@ -32,4 +32,4 @@ async def cmd_login(message: types.Message, command:CommandObject):
 
 @router.message(Command("menu"))
 async def cmd_menu(message: types.Message):
-	await message.answer("From here, u can see all of yours Projects and Issues", reply_markup=menu_kb())
+	await message.answer("From here, u can see all of yours Projects and Issues.", reply_markup=menu_kb())

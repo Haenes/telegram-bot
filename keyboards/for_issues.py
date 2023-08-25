@@ -35,7 +35,6 @@ def issues_kb(results) -> InlineKeyboardMarkup:
             callback_data="next_issues"
             )
         )
-    # builder.adjust(2)
 
     return builder.as_markup()
 

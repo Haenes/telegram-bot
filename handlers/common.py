@@ -10,4 +10,4 @@ router = Router()
 async def cmd_cancel(message: Message, state: FSMContext):
     """ Cancels the process of creating a Project/Issue """
     await state.clear()
-    await message.answer(text="Action canceled")
+    await message.answer(text="Action canceled.")

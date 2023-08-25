@@ -46,7 +46,12 @@ def get_project(id, header):
 
 def make_project(data, headers):
     r = requests.post(f"{API_BASE_URL}/projects/", headers=headers, data=data)
-    return r
+    return r.status_code
+
+
+def update_project(id, data, headers):
+    r = requests.put(f"{API_BASE_URL}/projects/{id}/", headers=headers, data=data)
+    return r.status_code
 
 
 def delete_project(id, header):
