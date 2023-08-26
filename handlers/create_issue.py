@@ -3,8 +3,8 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, ReplyKeyboardRemove
 
-from handlers.bugtracker_api import set_up, convert_project_to_url, make_issue, _all_projects
-from keyboards.create_project import make_row_keyboard
+from handlers.bugtracker_api import set_up, convert_project_to_url, make_issue
+from keyboards.for_issues import make_row_keyboard, make_priority_keyboard
 
 
 router = Router()
@@ -13,6 +13,7 @@ router = Router()
 ISSUE_TYPE = ["Bug", "Feature"]
 ISSUE_PRIORITY = ["Lowest", "Low", "Medium", "High", "Highest"]
 ISSUE_STATUS = ["To do", "In progress", "Done"]
+
 
 class CreateIssue(StatesGroup):
     project = State()
@@ -23,6 +24,7 @@ class CreateIssue(StatesGroup):
     priority = State()
     status = State()
 
+
 @router.callback_query(F.data == "create_issue")
 async def create_issue(callback: types.CallbackQuery, state: FSMContext):
     await callback.message.answer("Now you will need to enter the data one by one to create a new issue. \n\nNote: you can cancel the creation process by entering the command: /cancel. \n\nEnter related to issue project:")
@@ -30,13 +32,16 @@ async def create_issue(callback: types.CallbackQuery, state: FSMContext):
     await callback.answer()
 
 
-@router.message(CreateIssue.project, F.text.in_(_all_projects))
+@router.message(CreateIssue.project)
 async def project_enter(message: types.Message, state: FSMContext):
     project = convert_project_to_url(message.text)
-    await state.update_data(project=project)
-    
-    await message.answer("Good, now enter the issue title:")
-    await state.set_state(CreateIssue.title)
+
+    if project == "UnboundLocalError":
+        await message.answer("Project not found! Please, try again!")
+    else: 
+        await state.update_data(project=project)  
+        await message.answer("Good, now enter the issue title:")
+        await state.set_state(CreateIssue.title)
 
 
 @router.message(CreateIssue.project)
@@ -68,7 +73,7 @@ async def key_enter(message: types.Message, state: FSMContext):
 @router.message(CreateIssue.type, F.text.in_(ISSUE_TYPE))
 async def type_selected(message: types.Message, state: FSMContext):
     await state.update_data(type=message.text)
-    await message.answer("Good, now select the issue priority:", reply_markup=make_row_keyboard(ISSUE_PRIORITY))
+    await message.answer("Good, now select the issue priority:", reply_markup=make_priority_keyboard(ISSUE_PRIORITY))
     await state.set_state(CreateIssue.priority)
 
 
@@ -84,9 +89,9 @@ async def priority_selected(message: types.Message, state: FSMContext):
     await state.set_state(CreateIssue.status)
 
 
-@router.message(CreateIssue.type)
+@router.message(CreateIssue.priority)
 async def priority_selected_incorrect(message: Message, state: FSMContext):
-    await message.answer("Please select one of the options on the keyboard.", reply_markup=make_row_keyboard(ISSUE_PRIORITY))
+    await message.answer("Please select one of the options on the keyboard.", reply_markup=make_priority_keyboard(ISSUE_PRIORITY))
 
 
 @router.message(CreateIssue.status, F.text.in_(ISSUE_STATUS))
@@ -105,6 +110,6 @@ async def status_selected(message: types.Message, state: FSMContext):
     await state.clear()
 
 
-@router.message(CreateIssue.type)
+@router.message(CreateIssue.status)
 async def status_selected_incorrect(message: Message, state: FSMContext):
     await message.answer("Please select one of the options on the keyboard.", reply_markup=make_row_keyboard(ISSUE_STATUS))

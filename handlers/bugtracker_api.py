@@ -130,6 +130,11 @@ def make_issue(data, headers):
     return r.status_code
 
 
+def update_issue(id, data, headers):
+    r = requests.put(f"{API_BASE_URL}/issues/{id}/", headers=headers, data=data)
+    return r.status_code
+
+
 def delete_issue(id, header):
     r = requests.delete(f"{API_BASE_URL}/issues/{id}", headers=header)
     return "The issue was successfully deleted!"

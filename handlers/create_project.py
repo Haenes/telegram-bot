@@ -4,7 +4,7 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, ReplyKeyboardRemove
 
 from handlers.bugtracker_api import set_up, make_project
-from keyboards.create_project import make_row_keyboard
+from keyboards.for_projects import make_row_keyboard
 
 
 router = Router()

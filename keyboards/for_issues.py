@@ -1,5 +1,5 @@
 from aiogram import types
-from aiogram.types import InlineKeyboardMarkup
+from aiogram.types import InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 
@@ -55,3 +55,24 @@ def issue_kb(results):
     )
 
     return builder.as_markup()
+
+
+def make_row_keyboard(items: list[str]) -> ReplyKeyboardMarkup:
+    """
+    Creates a replay keyboard with buttons in one row
+    items: list of texts for buttons
+    """
+
+    row = [KeyboardButton(text=item) for item in items]
+    return ReplyKeyboardMarkup(keyboard=[row], resize_keyboard=True)
+
+
+def make_priority_keyboard(items: list[str]) -> ReplyKeyboardMarkup:
+    """
+    Creates a replay keyboard with buttons in two rows
+    items: list of texts for buttons
+    """
+
+    row1 = [KeyboardButton(text=item) for item in items[:2]]
+    row2 = [KeyboardButton(text=item) for item in items[2:]]
+    return ReplyKeyboardMarkup(keyboard=[row1, row2], resize_keyboard=True)
