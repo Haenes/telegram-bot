@@ -5,7 +5,9 @@ import logging
 from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher
 
-from handlers import start, projects, pagination_projects, issues, pagination_issues, common, create_project, update_project, create_issue, update_issue
+from handlers import start, common
+from handlers.project import projects, pagination_projects,  create_project, update_project
+from handlers.issue import issues, pagination_issues, create_issue, update_issue
 
 
 async def main():
