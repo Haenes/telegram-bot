@@ -1,5 +1,5 @@
 # telegram-bot
-Telegram bot for a BugTracker that works through the BugTracker API.
+[Telegram bot](https://t.me/bugs_tracker_bot) for a BugTracker that works through the BugTracker API.
 
 Through it you can:
 1) View the list of already created projects and errors, with pagination;
