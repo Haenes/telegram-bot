@@ -11,8 +11,8 @@ router = Router()
 async def send_projects(callback: types.CallbackQuery):
     headers = set_up()
     results = get_projects(headers)
-    
-    await callback.message.answer("List of projects:", reply_markup=projects_kb(results))
+
+    await callback.message.answer("List of projects, page 1:", reply_markup=projects_kb(results))
     await callback.answer()
 
 

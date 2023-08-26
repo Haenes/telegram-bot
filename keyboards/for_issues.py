@@ -4,6 +4,11 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 
 def issues_kb(results) -> InlineKeyboardMarkup:
+    """ 
+    Make every issue - inline button.
+    Plus add navigation buttons and button to create a new one
+    """
+        
     issues = [issue for issue in results["results"]]
 
     builder = InlineKeyboardBuilder()
@@ -23,23 +28,33 @@ def issues_kb(results) -> InlineKeyboardMarkup:
     )
 
     if results["previous"] != None:
+
+        if results["previous"] == "http://127.0.0.1:8000/api/issues/":
+            page = 1
+        else:
+            page = results["previous"].removeprefix("http://127.0.0.1:8000/api/issues/?page=")
+
         builder.row(types.InlineKeyboardButton(
             text="<< Back",
-            callback_data="back_issues"
+            callback_data=f"back_issues_{page}"
             )
         )
 
     if results["next"] != None:
+        page = results["next"].removeprefix("http://127.0.0.1:8000/api/issues/?page=")
+
         builder.row(types.InlineKeyboardButton(
             text="Next >>",
-            callback_data="next_issues"
+            callback_data=f"next_issues_{page}"
             )
         )
 
     return builder.as_markup()
 
 
-def issue_kb(results):
+def issue_kb(results) -> InlineKeyboardMarkup:
+    """ Creates an inline-keyboard with two button in one row. """
+
     builder = InlineKeyboardBuilder()
 
     builder.add(types.InlineKeyboardButton(
@@ -59,7 +74,7 @@ def issue_kb(results):
 
 def make_row_keyboard(items: list[str]) -> ReplyKeyboardMarkup:
     """
-    Creates a replay keyboard with buttons in one row
+    Creates a replay keyboard with buttons in one row.
     items: list of texts for buttons
     """
 
@@ -69,8 +84,8 @@ def make_row_keyboard(items: list[str]) -> ReplyKeyboardMarkup:
 
 def make_priority_keyboard(items: list[str]) -> ReplyKeyboardMarkup:
     """
-    Creates a replay keyboard with buttons in two rows
-    items: list of texts for buttons
+    Creates a special version of the make_row_keyboard(), 
+    because on the phone the priorities in one row look ugly.
     """
 
     row1 = [KeyboardButton(text=item) for item in items[:2]]

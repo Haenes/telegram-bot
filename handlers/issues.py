@@ -12,7 +12,7 @@ async def send_issues(callback: types.CallbackQuery):
     headers = set_up()
     results = get_issues(headers)
 
-    await callback.message.answer("List of issues:", reply_markup=issues_kb(results))
+    await callback.message.answer("List of issues, page 1:", reply_markup=issues_kb(results))
     await callback.answer()
 
 

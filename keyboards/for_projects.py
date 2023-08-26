@@ -4,6 +4,11 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 
 def projects_kb(results) -> InlineKeyboardMarkup:
+    """ 
+    Make every project - inline button.
+    Plus add navigation buttons and button to create a new one.
+    """
+
     projects = [project for project in results["results"]]
 
     builder = InlineKeyboardBuilder()
@@ -23,23 +28,38 @@ def projects_kb(results) -> InlineKeyboardMarkup:
     )
 
     if results["previous"] != None:
+
+        if results["previous"] == "http://127.0.0.1:8000/api/projects/":
+            page = 1
+        else:
+            page = results["previous"].removeprefix("http://127.0.0.1:8000/api/projects/?page=")
+
         builder.row(types.InlineKeyboardButton(
             text="<< Back",
-            callback_data="back_projects"
+            callback_data=f"back_projects_{page}"
             )
         )
 
     if results["next"] != None:
+        page = results["next"].removeprefix("http://127.0.0.1:8000/api/projects/?page=")
+
         builder.row(types.InlineKeyboardButton(
             text="Next >>",
-            callback_data="next_projects"
+            callback_data=f"next_projects_{page}"
             )
         )
 
     return builder.as_markup()
 
 
-def project_kb(results):
+def project_kb(results) -> InlineKeyboardMarkup:
+    """ 
+    Creates an inline-keyboard with two button in one row. 
+
+    Change - for change selected project info.
+    Delete - delete selected project.
+    """
+
     builder = InlineKeyboardBuilder()
 
     builder.add(types.InlineKeyboardButton(
@@ -60,6 +80,7 @@ def project_kb(results):
 def make_row_keyboard(items: list[str]) -> ReplyKeyboardMarkup:
     """
     Creates a replay keyboard with buttons in one row
+
     items: list of texts for buttons
     """
 

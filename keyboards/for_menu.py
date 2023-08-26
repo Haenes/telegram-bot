@@ -4,6 +4,8 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 
 def menu_kb() -> InlineKeyboardMarkup:
+    """ Creates an inline-keyboard with Projects and Issues buttons in one row """
+
     builder = InlineKeyboardBuilder()
     builder.add(types.InlineKeyboardButton(
         text="Projects",
