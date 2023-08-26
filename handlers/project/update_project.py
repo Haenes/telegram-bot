@@ -34,8 +34,15 @@ async def change_project(callback: types.CallbackQuery, state: FSMContext, data:
     headers = set_up()
     project_id = data.removeprefix("prj_change_")
     project_data = get_project(project_id, headers)
+
+    text = f"""
+Now you will need to enter the data one by one to update project. 
+<u>Note</u>: you can cancel the update process by entering: /cancel. \n
+<b>Previous project name: {project_data['name']}</b>
+<b>Enter new project name:</b>
+            """
     
-    await callback.message.answer(f"Now you will need to enter the data one by one to update project. \n\nNote: you can cancel the update process by entering the command: /cancel. \n\nPrevious project name: {project_data['name']} \nEnter new project name:")
+    await callback.message.answer(text, parse_mode="HTML")
     await state.set_state(UpdateProject.name)
     await callback.answer()
 
@@ -43,28 +50,56 @@ async def change_project(callback: types.CallbackQuery, state: FSMContext, data:
 @router.message(UpdateProject.name)
 async def name_enter(message: Message, state: FSMContext):
     await state.update_data(name=message.text.title())
-    await message.answer(f"Good, now enter description of the project. \n\nPrevious description: {project_data['description']} \nEnter new description:")
+
+    text = f"""
+Good, now enter description of the project. \n
+<b>Previous description: {project_data['description']}</b>
+<b>Enter new description:</b>
+            """
+
+    await message.answer(text, parse_mode="HTML")
     await state.set_state(UpdateProject.description)
 
 
 @router.message(UpdateProject.description)
 async def description_enter(message: Message, state: FSMContext):
     await state.update_data(description=message.text.title())
-    await message.answer(f"Good, now enter key of the project. \n\nPrevious key: {project_data['key']} \nEnter new key:")
+
+    text = f"""
+Good, now enter key of the project. \n
+<b>Previous key: {project_data['key']}</b>
+<b>Enter new key:</b>
+            """
+
+    await message.answer(text, parse_mode="HTML")
     await state.set_state(UpdateProject.key)
 
 
 @router.message(UpdateProject.key)
 async def key_enter(message: Message, state: FSMContext):
     await state.update_data(key=message.text)
-    await message.answer(f"Good, now choose type of the project. \n\nPrevious type: {project_data['type']} \nSelect a new type:", reply_markup=make_row_keyboard(PROJECT_TYPES))
+
+    text = f"""
+Good, now choose type of the project. \n
+<b>Previous type: {project_data['type']}</b>
+<b>Select a new type:</b>
+            """
+
+    await message.answer(text, parse_mode="HTML", reply_markup=make_row_keyboard(PROJECT_TYPES))
     await state.set_state(UpdateProject.type)
 
 
 @router.message(UpdateProject.type, F.text.in_(PROJECT_TYPES))
 async def type_selected(message: Message, state: FSMContext):
     await state.update_data(type=message.text)
-    await message.answer(f"Good, now choose whether the project will be a favorite or not. \n\nEarlier: {project_data['starred']} \nSelect new:", reply_markup=make_row_keyboard(PROJECT_FAVORITE))
+
+    text = f"""
+Good, now choose whether the project will be a favorite or not. \n
+<b>Earlier: {project_data['starred']}</b>
+<b>Select new:</b>
+            """
+
+    await message.answer(text, parse_mode="HTML", reply_markup=make_row_keyboard(PROJECT_FAVORITE))
     await state.set_state(UpdateProject.starred)
 
 

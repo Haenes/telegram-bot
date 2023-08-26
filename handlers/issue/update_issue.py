@@ -36,8 +36,15 @@ async def change_update(callback: types.CallbackQuery, state: FSMContext, data: 
     headers = set_up()
     issue_id = data.removeprefix("iss_change_")
     issue_data = get_issue(issue_id, headers)
+
+    text = f"""
+Now you will need to enter the data one by one to update issue. 
+<u>Note</u>: you can cancel the update process by entering: /cancel. \n
+<b>Previous issue title: {issue_data['title']}</b>
+<b>Enter new issue title:</b>
+            """
     
-    await callback.message.answer(f"Now you will need to enter the data one by one to update issue. \n\nNote: you can cancel the update process by entering the command: /cancel. \n\nPrevious issue title: {issue_data['title']} \nEnter new issue title:")
+    await callback.message.answer(text, parse_mode="HTML")
     await state.set_state(UpdateIssue.title)
     await callback.answer()
 
@@ -47,29 +54,56 @@ async def title_enter(message: types.Message, state: FSMContext):
     # Set a project without the user's input
     await state.update_data(project=issue_data["project"])
     await state.update_data(title=message.text)
-    
-    await message.answer(f"Good, now enter the issue description. \n\nPrevious issue description: {issue_data['description']} \nEnter new issue description:")
+
+    text = f"""
+Good, now enter the issue description. \n
+<b>Previous issue description: {issue_data['description']}</b>
+<b>Enter new issue description:</b>
+            """
+
+    await message.answer(text, parse_mode="HTML")
     await state.set_state(UpdateIssue.description)
 
 
 @router.message(UpdateIssue.description)
 async def description_enter(message: types.Message, state: FSMContext):
     await state.update_data(description=message.text)
-    await message.answer(f"Good, now enter the issue key. \n\nPrevious issue key: {issue_data['key']} \nEnter new issue key:")
+
+    text = f"""
+Good, now enter the issue key. \n
+<b>Previous issue key: {issue_data['key']}</b>
+<b>Enter new issue key:</b>
+            """
+
+    await message.answer(text, parse_mode="HTML")
     await state.set_state(UpdateIssue.key)
 
 
 @router.message(UpdateIssue.key)
 async def key_enter(message: types.Message, state: FSMContext):
     await state.update_data(key=message.text)
-    await message.answer(f"Good, now select the issue type. \n\nPrevious issue type: {issue_data['type']} \nSelect new issue type:", reply_markup=make_row_keyboard(ISSUE_TYPE))
+
+    text = f"""
+Good, now select the issue type. \n
+<b>Previous issue type: {issue_data['type']}</b>
+<b>Select new issue type:</b>
+            """
+
+    await message.answer(text, parse_mode="HTML", reply_markup=make_row_keyboard(ISSUE_TYPE))
     await state.set_state(UpdateIssue.type)
 
 
 @router.message(UpdateIssue.type, F.text.in_(ISSUE_TYPE))
 async def type_selected(message: types.Message, state: FSMContext):
     await state.update_data(type=message.text)
-    await message.answer(f"Good, now select the issue priority. \n\nPrevious issue priority: {issue_data['priority']} \nSelect new issue priority:", reply_markup=make_priority_keyboard(ISSUE_PRIORITY))
+
+    text = f"""
+Good, now select the issue priority \n
+<b>Previous issue priority: {issue_data['priority']}</b>
+<b>Select new issue priority:</b>
+            """
+
+    await message.answer(text, parse_mode="HTML", reply_markup=make_priority_keyboard(ISSUE_PRIORITY))
     await state.set_state(UpdateIssue.priority)
 
 
@@ -81,14 +115,19 @@ async def type_selected_incorrect(message: Message, state: FSMContext):
 @router.message(UpdateIssue.priority, F.text.in_(ISSUE_PRIORITY))
 async def priority_selected(message: types.Message, state: FSMContext):
     await state.update_data(priority=message.text)
-    # make_row_keyboard_priority
-    await message.answer(f"Good, now enter the issue status. \n\nPrevious issue status: {issue_data['status']} \nSelect new issue status:", reply_markup=make_row_keyboard(ISSUE_STATUS))
+
+    text = f"""
+Good, now enter the issue status. \n
+<b>Previous issue status: {issue_data['status']}</b>
+<b>Select new issue status:</b>
+            """
+
+    await message.answer(text, parse_mode="HTML", reply_markup=make_row_keyboard(ISSUE_STATUS))
     await state.set_state(UpdateIssue.status)
 
 
 @router.message(UpdateIssue.priority)
 async def priority_selected_incorrect(message: Message, state: FSMContext):
-    # make_priority_keyboard(ISSUE_PRIORITY)
     await message.answer("Please select one of the options on the keyboard.", reply_markup=make_row_keyboard(ISSUE_PRIORITY))
 
 
@@ -103,7 +142,7 @@ async def status_selected(message: types.Message, state: FSMContext):
     if result == 200:
         await message.answer("The issue has been successfully updated!", reply_markup=ReplyKeyboardRemove())
     else:
-        await message.answer("An error occurred, the issue was NOT updated! Try again", reply_markup=ReplyKeyboardRemove())
+        await message.answer("An error occurred, the issue was NOT updated!", reply_markup=ReplyKeyboardRemove())
 
     await state.clear()
 

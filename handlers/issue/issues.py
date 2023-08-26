@@ -22,7 +22,18 @@ async def send_issue(callback: types.CallbackQuery, data):
     headers = set_up()
     results = get_issue(issue_id, headers)
 
-    await callback.message.answer(f"Title: {results['title']} \nDescription: {results['description']} \nKey: {results['key']} \nType: {results['type']} \nPriority: {results['priority']} \nStatus: {results['status']} \nCreated: {results['created']} \nUpdated: {results['updated']}", reply_markup=issue_kb(results))
+    text = f"""
+<b>Title</b>: {results['title']} 
+<b>Description</b>: {results['description']} 
+<b>Key</b>: {results['key']} 
+<b>Type</b>: {results['type']} 
+<b>Priority</b>: {results['priority']} 
+<b>Status</b>: {results['status']} 
+<b>Created</b>: {results['created']} 
+<b>Updated</b>: {results['updated']}
+            """
+
+    await callback.message.answer(text, parse_mode="HTML", reply_markup=issue_kb(results))
     await callback.answer()
 
 

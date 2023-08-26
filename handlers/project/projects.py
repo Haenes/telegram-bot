@@ -12,7 +12,7 @@ async def send_projects(callback: types.CallbackQuery):
     headers = set_up()
     results = get_projects(headers)
 
-    await callback.message.answer("List of projects, page 1:", reply_markup=projects_kb(results))
+    await callback.message.answer("List of projects, <b>page 1</b>:", parse_mode="HTML", reply_markup=projects_kb(results))
     await callback.answer()
 
 
@@ -22,7 +22,16 @@ async def send_project(callback: types.CallbackQuery, data: types.CallbackQuery)
     project_id = data.removeprefix("project_")
     results = get_project(project_id, headers)
 
-    await callback.message.answer(f"Name: {results['name']} \nDescription: {results['description']} \nKey: {results['key']} \nType: {results['type']} \nFavorite: {results['starred']} \nCreated: {results['created']}", reply_markup=project_kb(results))
+    text = f"""
+<b>Name</b>: {results['name']} 
+<b>Description</b>: {results['description']} 
+<b>Key</b>: {results['key']} 
+<b>Type</b>: {results['type']} 
+<b>Favorite</b>: {results['starred']} 
+<b>Created</b>: {results['created']}
+            """
+
+    await callback.message.answer(text, parse_mode="HTML", reply_markup=project_kb(results))
     await callback.answer()
 
 

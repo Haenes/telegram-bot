@@ -11,7 +11,17 @@ router = Router()
 
 @router.message(Command("start"))
 async def cmd_start(message: types.Message):
-    await message.answer("In development.")
+    user = message.from_user.first_name
+
+    text = """
+\nA quick guide to working with me: 
+\n1) Login: first step is log in via /login command. \n    Without it, I won't work!
+\n2) Main menu accessed via /menu command. \n    Here you can choose what to work with: projects or issues.
+\n3) After your choice, you will be able to create a new element \n    (project or issue, depending on what you have chosen) \n    and view information about it.
+\n4) After the next selection, you can change the data of the element \n    or delete it altogether!
+           """
+
+    await message.answer(f"Hello, {user}! {text}")
 
 
 @router.message(Command("login"))
@@ -27,9 +37,9 @@ async def cmd_login(message: types.Message, command:CommandObject):
             await message.reply("Invalid username/password!")
 
     else:
-        await message.answer("Please, enter your username and password after /login command! \nExample: /login *YOUR USERNAME* *YOUR PASSWORD*")
+        await message.answer("Please, enter your <u>username and password</u> after /login command! \nExample: /login USERNAME PASSWORD", parse_mode="HTML")
 
 
 @router.message(Command("menu"))
 async def cmd_menu(message: types.Message):
-	await message.answer("From here, u can see all of yours Projects and Issues.", reply_markup=menu_kb())
+	await message.answer("From here, u can see all of yours <b>Projects</b> and <b>Issues</b>.", parse_mode="HTML", reply_markup=menu_kb())
