@@ -19,9 +19,10 @@ async def cmd_start(message: types.Message):
 \n2) Main menu accessed via /menu command. \n    Here you can choose what to work with: projects or issues.
 \n3) After your choice, you will be able to create a new element \n    (project or issue, depending on what you have chosen) \n    and view information about it.
 \n4) After the next selection, you can change the data of the element \n    or delete it altogether!
+\n<b>Please note that you must already be registered through the website. If you don't have an account yet, then you need to create one and only then use me </b>
            """
 
-    await message.answer(f"Hello, {user}! {text}")
+    await message.answer(f"Hello, {user}! {text}", parse_mode="HTML")
 
 
 @router.message(Command("login"))

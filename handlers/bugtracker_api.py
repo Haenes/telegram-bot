@@ -89,7 +89,7 @@ class Paginator:
 
 
 def get_projects(headers, **kwargs):
-    """ Get first page of issues via GET request """
+    """ Get first page of projects via GET request """
 
     r = requests.get(f"{API_BASE_URL}/projects", headers=headers, **kwargs)
     return r.json()
@@ -167,6 +167,25 @@ def convert_project_to_url(project_name):
         return "UnboundLocalError"
 
 
+def convert_url_to_project(project_url):
+    """
+    Convert project name to project url (necessary for Issue info).
+
+    Works like convert_project_to_url, but reverse
+    """
+
+    projects = _all_projects()
+
+    for project in projects:
+        if project["url"] == project_url:
+            project_name = project["name"]
+
+    try:
+        return project_name
+    except UnboundLocalError:
+        return "UnboundLocalError"
+
+
 def get_issues(header, **kwargs):
     """ Get first page of issues via GET request """
 
@@ -179,6 +198,7 @@ def get_issue(id, header):
 
     r = requests.get(f"{API_BASE_URL}/issues/{id}", headers=header)
     data = r.json()
+    data["project"] = convert_url_to_project(data["project"])
     data["created"] = beatiful_date(data["created"])
     data["updated"] = beatiful_date(data["updated"])
 
