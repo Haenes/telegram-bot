@@ -1,6 +1,7 @@
 from aiogram import types
 from aiogram.types import InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+from aiogram.utils.i18n import gettext as _
 
 
 def issues_kb(results) -> InlineKeyboardMarkup:
@@ -22,7 +23,7 @@ def issues_kb(results) -> InlineKeyboardMarkup:
     builder.adjust(2)
 
     builder.row(types.InlineKeyboardButton(
-        text="Create new",
+        text=_("Create"),
         callback_data="create_issue"
         )
     )
@@ -35,7 +36,7 @@ def issues_kb(results) -> InlineKeyboardMarkup:
             page = results["previous"].removeprefix("http://127.0.0.1:8000/api/issues/?page=")
 
         builder.row(types.InlineKeyboardButton(
-            text="<< Back",
+            text=_("<< Back"),
             callback_data=f"back_issues_{page}"
             )
         )
@@ -44,7 +45,7 @@ def issues_kb(results) -> InlineKeyboardMarkup:
         page = results["next"].removeprefix("http://127.0.0.1:8000/api/issues/?page=")
 
         builder.row(types.InlineKeyboardButton(
-            text="Next >>",
+            text=_("Next >>"),
             callback_data=f"next_issues_{page}"
             )
         )
@@ -58,13 +59,13 @@ def issue_kb(results) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
 
     builder.add(types.InlineKeyboardButton(
-        text="Change",
+        text=_("Change"),
         callback_data=f"iss_change_{results['id']}"
         )
     )
 
     builder.add(types.InlineKeyboardButton(
-        text="Delete",
+        text=_("Delete"),
         callback_data=f"iss_delete_{results['id']}"
         )
     )

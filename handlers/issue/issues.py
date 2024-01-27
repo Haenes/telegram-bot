@@ -1,4 +1,5 @@
 from aiogram import Router, types, F
+from aiogram.utils.i18n import gettext as _
 
 from handlers.bugtracker_api import set_up, get_issues, get_issue, delete_issue, convert_url_to_project
 from keyboards.for_issues import issues_kb, issue_kb
@@ -12,7 +13,7 @@ async def send_issues(callback: types.CallbackQuery):
     headers = set_up()
     results = get_issues(headers)
 
-    await callback.message.answer("List of issues, page 1:", reply_markup=issues_kb(results))
+    await callback.message.answer(_("List of issues, page 1:"), reply_markup=issues_kb(results))
     await callback.answer()
 
 
@@ -22,17 +23,19 @@ async def send_issue(callback: types.CallbackQuery, data):
     headers = set_up()
     results = get_issue(issue_id, headers)
 
-    text = f"""
-<b>Project</b>: {results['project']} 
-<b>Title</b>: {results['title']} 
-<b>Description</b>: {results['description']} 
-<b>Key</b>: {results['key']} 
-<b>Type</b>: {results['type']} 
-<b>Priority</b>: {results['priority']} 
-<b>Status</b>: {results['status']} 
-<b>Created</b>: {results['created']} 
-<b>Updated</b>: {results['updated']}
-            """
+    text = _("""
+<b>Project</b>: {project} 
+<b>Title</b>: {title} 
+<b>Description</b>: {description} 
+<b>Key</b>: {key} 
+<b>Type</b>: {type} 
+<b>Priority</b>: {priority} 
+<b>Status</b>: {status} 
+<b>Created</b>: {created} 
+<b>Updated</b>: {updated}
+            """).format(project=results['project'], title=results['title'], description=results['description'],
+                        key=results['key'], type=results['type'], priority=results['priority'], status=results['status'],
+                        created=results['created'], updated=results['updated'])
 
     await callback.message.answer(text, parse_mode="HTML", reply_markup=issue_kb(results))
     await callback.answer()

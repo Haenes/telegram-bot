@@ -1,4 +1,5 @@
 from aiogram import Router, types, F
+from aiogram.utils.i18n import gettext as _
 
 from handlers.bugtracker_api import set_up, Paginator
 from keyboards.for_projects import projects_kb
@@ -15,7 +16,7 @@ async def next_projects(callback: types.CallbackQuery, data: types.CallbackQuery
     paginator = Paginator(headers, page)
     results = paginator.next_projects()
     
-    await callback.message.answer(f"List of projects, page {page}:", reply_markup=projects_kb(results))
+    await callback.message.answer(_("List of projects, page {page}:").format(page=page), reply_markup=projects_kb(results))
     await callback.answer()
 
 
@@ -27,5 +28,5 @@ async def back_projects(callback: types.CallbackQuery, data: types.CallbackQuery
     paginator = Paginator(headers, page)
     results = paginator.previous_projects()
     
-    await callback.message.answer(f"List of projects, page {page}:", reply_markup=projects_kb(results))
+    await callback.message.answer(_("List of projects, page {page}:").format(page=page), reply_markup=projects_kb(results))
     await callback.answer()

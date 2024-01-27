@@ -2,6 +2,8 @@ from aiogram import Router, types, F
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, ReplyKeyboardRemove
+from aiogram.utils.i18n import gettext as _
+from aiogram.utils.i18n import lazy_gettext as __
 
 from handlers.bugtracker_api import set_up, get_project, update_project
 from keyboards.for_projects import make_row_keyboard
@@ -10,7 +12,7 @@ from keyboards.for_projects import make_row_keyboard
 router = Router()
 
 # Will be used for the keyboard
-PROJECT_TYPES = ["Fullstack software", "Front-end software", "Back-end software"]
+PROJECT_TYPES = ["Fullstack", "Front-end", "Back-end"]
 PROJECT_FAVORITE = [str(True), str(False)]
 
 
@@ -35,12 +37,12 @@ async def change_project(callback: types.CallbackQuery, state: FSMContext, data:
     project_id = data.removeprefix("prj_change_")
     project_data = get_project(project_id, headers)
 
-    text = f"""
+    text = _("""
 Now you will need to enter the data one by one to update project. 
 <u>Note</u>: you can cancel the update process by entering: /cancel. \n
-<b>Previous project name: {project_data['name']}</b>
-<b>Enter new project name:</b>
-            """
+<b>Previous name: {name}</b>
+<b>New name:</b>
+            """).format(name=project_data['name'])
     
     await callback.message.answer(text, parse_mode="HTML")
     await state.set_state(UpdateProject.name)
@@ -51,11 +53,11 @@ Now you will need to enter the data one by one to update project.
 async def name_enter(message: Message, state: FSMContext):
     await state.update_data(name=message.text.title())
 
-    text = f"""
+    text = _("""
 Good, now enter description of the project. \n
-<b>Previous description: {project_data['description']}</b>
-<b>Enter new description:</b>
-            """
+<b>Previous description: {description}</b>
+<b>New description:</b>
+            """).format(description=project_data['description'])
 
     await message.answer(text, parse_mode="HTML")
     await state.set_state(UpdateProject.description)
@@ -65,11 +67,11 @@ Good, now enter description of the project. \n
 async def description_enter(message: Message, state: FSMContext):
     await state.update_data(description=message.text.title())
 
-    text = f"""
+    text = _("""
 Good, now enter key of the project. \n
-<b>Previous key: {project_data['key']}</b>
-<b>Enter new key:</b>
-            """
+<b>Previous key: {key}</b>
+<b>New key:</b>
+            """).format(key=project_data['key'])
 
     await message.answer(text, parse_mode="HTML")
     await state.set_state(UpdateProject.key)
@@ -79,11 +81,11 @@ Good, now enter key of the project. \n
 async def key_enter(message: Message, state: FSMContext):
     await state.update_data(key=message.text)
 
-    text = f"""
+    text = _("""
 Good, now choose type of the project. \n
-<b>Previous type: {project_data['type']}</b>
-<b>Select a new type:</b>
-            """
+<b>Previous type: {type}</b>
+<b>New type:</b>
+            """).format(type=project_data['type'])
 
     await message.answer(text, parse_mode="HTML", reply_markup=make_row_keyboard(PROJECT_TYPES))
     await state.set_state(UpdateProject.type)
@@ -93,11 +95,11 @@ Good, now choose type of the project. \n
 async def type_selected(message: Message, state: FSMContext):
     await state.update_data(type=message.text)
 
-    text = f"""
+    text = _("""
 Good, now choose whether the project will be a favorite or not. \n
-<b>Earlier: {project_data['starred']}</b>
-<b>Select new:</b>
-            """
+<b>Earlier: {starred}</b>
+<b>Now:</b>
+            """).format(starred=project_data['starred'])
 
     await message.answer(text, parse_mode="HTML", reply_markup=make_row_keyboard(PROJECT_FAVORITE))
     await state.set_state(UpdateProject.starred)
@@ -105,7 +107,7 @@ Good, now choose whether the project will be a favorite or not. \n
 
 @router.message(UpdateProject.type)
 async def type_selected_incorrect(message: Message, state: FSMContext):
-    await message.answer("Please select one of the options on the keyboard.", reply_markup=make_row_keyboard(PROJECT_TYPES))
+    await message.answer(_("Please select one of the options on the keyboard."), reply_markup=make_row_keyboard(PROJECT_TYPES))
 
 
 @router.message(UpdateProject.starred, F.text.in_(PROJECT_FAVORITE))
@@ -117,13 +119,13 @@ async def favorite_selected(message: Message, state: FSMContext):
     results = update_project(project_data["id"], user_data, headers)
 
     if results == 200:
-        await message.answer(text="The project has been successfully updated!", reply_markup=ReplyKeyboardRemove())
+        await message.answer(text=_("The project has been successfully updated!"), reply_markup=ReplyKeyboardRemove())
     else:
-        await message.answer(text="An error occurred, the project was NOT updated!", reply_markup=ReplyKeyboardRemove())
+        await message.answer(text=_("An error occurred, the project was NOT updated!"), reply_markup=ReplyKeyboardRemove())
     
     await state.clear()
 
 
 @router.message(UpdateProject.starred)
 async def favorite_selected_incorrect(message: Message, state: FSMContext):
-    await message.answer(text="Please select one of the options on the keyboard.", reply_markup=make_row_keyboard(PROJECT_FAVORITE))
+    await message.answer(text=_("Please select one of the options on the keyboard."), reply_markup=make_row_keyboard(PROJECT_FAVORITE))

@@ -1,6 +1,7 @@
 from aiogram import types
 from aiogram.types import InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+from aiogram.utils.i18n import gettext as _
 
 
 def projects_kb(results) -> InlineKeyboardMarkup:
@@ -22,7 +23,7 @@ def projects_kb(results) -> InlineKeyboardMarkup:
     builder.adjust(2)
     
     builder.row(types.InlineKeyboardButton(
-        text="Create new",
+        text=_("Create"),
         callback_data="create_project"
         )
     )
@@ -35,7 +36,7 @@ def projects_kb(results) -> InlineKeyboardMarkup:
             page = results["previous"].removeprefix("http://127.0.0.1:8000/api/projects/?page=")
 
         builder.row(types.InlineKeyboardButton(
-            text="<< Back",
+            text=_("<< Back"),
             callback_data=f"back_projects_{page}"
             )
         )
@@ -44,7 +45,7 @@ def projects_kb(results) -> InlineKeyboardMarkup:
         page = results["next"].removeprefix("http://127.0.0.1:8000/api/projects/?page=")
 
         builder.row(types.InlineKeyboardButton(
-            text="Next >>",
+            text=_("Next >>"),
             callback_data=f"next_projects_{page}"
             )
         )
@@ -63,13 +64,13 @@ def project_kb(results) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
 
     builder.add(types.InlineKeyboardButton(
-        text="Change",
+        text=_("Change"),
         callback_data=f"prj_change_{results['id']}"
         )
     )
 
     builder.add(types.InlineKeyboardButton(
-        text="Delete",
+        text=_("Delete"),
         callback_data=f"prj_delete_{results['id']}"
         )
     )

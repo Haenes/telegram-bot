@@ -1,4 +1,5 @@
 from aiogram import Router, types, F
+from aiogram.utils.i18n import gettext as _
 
 from handlers.bugtracker_api import set_up, get_projects, get_project, delete_project
 from keyboards.for_projects import projects_kb, project_kb
@@ -12,7 +13,7 @@ async def send_projects(callback: types.CallbackQuery):
     headers = set_up()
     results = get_projects(headers)
 
-    await callback.message.answer("List of projects, <b>page 1</b>:", parse_mode="HTML", reply_markup=projects_kb(results))
+    await callback.message.answer(_("List of projects, <b>page 1</b>:"), parse_mode="HTML", reply_markup=projects_kb(results))
     await callback.answer()
 
 
@@ -22,14 +23,15 @@ async def send_project(callback: types.CallbackQuery, data: types.CallbackQuery)
     project_id = data.removeprefix("project_")
     results = get_project(project_id, headers)
 
-    text = f"""
-<b>Name</b>: {results['name']} 
-<b>Description</b>: {results['description']} 
-<b>Key</b>: {results['key']} 
-<b>Type</b>: {results['type']} 
-<b>Favorite</b>: {results['starred']} 
-<b>Created</b>: {results['created']}
-            """
+    text = _("""
+<b>Name</b>: {name} 
+<b>Description</b>: {description} 
+<b>Key</b>: {key} 
+<b>Type</b>: {type} 
+<b>Favorite</b>: {starred} 
+<b>Created</b>: {created}
+            """).format(name=results['name'], description=results['description'], key=results['key'],
+                        type=results['type'], starred=results['starred'], created=results['created'])
 
     await callback.message.answer(text, parse_mode="HTML", reply_markup=project_kb(results))
     await callback.answer()

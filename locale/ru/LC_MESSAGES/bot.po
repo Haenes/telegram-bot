@@ -1,0 +1,509 @@
+# Russian translations for BugTracker_Telegram_bot.
+# Copyright (C) 2024 Haenes
+# This file is distributed under the same license as the
+# BugTracker_Telegram_bot project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: BugTracker_Telegram_bot VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2024-01-27 14:24+1000\n"
+"PO-Revision-Date: 2024-01-27 10:37+1000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.11.0\n"
+
+#: handlers/bugtracker_api.py:127
+msgid "The project was successfully deleted!"
+msgstr "Проект успешно обновлён!"
+
+#: handlers/bugtracker_api.py:231
+msgid "The issue was successfully deleted!"
+msgstr "Проект успешно удалён!"
+
+#: handlers/common.py:15
+msgid "Action canceled."
+msgstr "Действие отменено."
+
+#: handlers/start.py:18
+msgid ""
+"\n"
+"\n"
+"A quick guide to working with me: \n"
+"\n"
+"1) Login: first step is log in via /login command. \n"
+"    Without it, I won't work!\n"
+"\n"
+"2) Main menu accessed via /menu command. \n"
+"    Here you can choose what to work with: projects or issues.\n"
+"\n"
+"3) After your choice, you will be able to create a new element \n"
+"    (project or issue, depending on what you have chosen) \n"
+"    and view information about it.\n"
+"\n"
+"4) After the next selection, you can change the data of the element \n"
+"    or delete it altogether!\n"
+"\n"
+"<b>Please note that you must already be registered through the website. "
+"If you don't have an account yet, then you need to create one and only "
+"then use me </b>\n"
+"           "
+msgstr ""
+"\n"
+"\n"
+"Быстрая инструкция по работе со мной: \n"
+"\n"
+"1) Вход: сначала нужно войти используя команду /login. \n"
+"    Без этого, я не стану работать!\n"
+"\n"
+"2) Главное менюю доступно по команде /menu. \n"
+"    Здесь вы выбираете с чем работать: проектами или задачами.\n"
+"\n"
+"3) После вашего выбора, вы сможете создать новый элемент \n"
+"    (проект или задачу, в зависимости от того, что вы выбрали) \n"
+"    и просмотреть информацию о нём.\n"
+"\n"
+"4) После следующего выбора, вы сможете изменить данные элемента \n"
+"    или вовсе его удалить!\n"
+"\n"
+"<b>Пожалуйста, обратите внимание, что вы должны быть заранее "
+"зарегестрированы на сайте. Если у вас ещё нет аккаунта, то вам нужно его "
+"создать и только тогда использовать меня </b>\n"
+"           "
+
+#: handlers/start.py:28
+msgid "Hello, {user}! {text}"
+msgstr "Привет, {user}! {text}"
+
+#: handlers/start.py:39
+msgid ""
+"Successful login! \n"
+"To continue, enter /menu command."
+msgstr ""
+"Успешный вход! \n"
+"Чтобы продолжить, введите команду /menu."
+
+#: handlers/start.py:41
+msgid "Invalid username/password!"
+msgstr "Неверный логин/пароль!"
+
+#: handlers/start.py:44
+msgid ""
+"Please, enter your <u>username and password</u> after /login command! \n"
+"Example: /login USERNAME PASSWORD"
+msgstr ""
+"Пожалуйста, введите ваш <u>логин и пароль </u> после команды /login! \n"
+"Например: /login ЛОГИН ПАРОЛЬ"
+
+#: handlers/start.py:49
+msgid "From here, u can see all of yours <b>Projects</b> and <b>Issues</b>."
+msgstr "Отсюда, вы можете просмотреть все ваши <b>Проекты</b> и <b>Задачи</b>"
+
+#: handlers/issue/create_issue.py:32
+msgid ""
+"\n"
+"Now you will need to enter the data one by one to create a new issue. \n"
+"<u>Note</u>: you can cancel the creation process by entering: /cancel. \n"
+"\n"
+"<b>Enter related to issue project:</b>\n"
+"            "
+msgstr ""
+"\n"
+"Для создания новой задачи, сейчас вам нужно будет вводить данные по "
+"порядку. \n"
+"<u>Обратите внимание</u>: вы можете отменить процесс обновления, введя "
+"команду: /cancel \n"
+"\n"
+"<b>Введите название проекта, связанного с задачей:</b>\n"
+"            "
+
+#: handlers/issue/create_issue.py:48
+msgid "Project not found! Please, try again!"
+msgstr "Проект не найден! Пожалуйста, попробуйте снова!"
+
+#: handlers/issue/create_issue.py:51
+msgid "Good, now <b>enter the issue title:</b>"
+msgstr "Отлично, теперь <b>введите название задачи:</b>"
+
+#: handlers/issue/create_issue.py:57
+msgid "Invalid project name, please, try again!"
+msgstr "Неверное название проекта, пожалуйста, попробуйте снова!"
+
+#: handlers/issue/create_issue.py:63
+msgid "Good, now <b>enter description:</b>"
+msgstr "Отлично, теперь <b>введите описание:</b>"
+
+#: handlers/issue/create_issue.py:70
+msgid "Good, now <b>enter key:</b>"
+msgstr "Отлично, теперь <b>введите ключ:</b>"
+
+#: handlers/issue/create_issue.py:77
+msgid "Good, now <b>select type:</b>"
+msgstr "Отлично, теперь <b>выберите тип:</b>"
+
+#: handlers/issue/create_issue.py:84
+msgid "Good, now <b>select priority:</b>"
+msgstr "Отлично, теперь <b>выберите приоритет:</b>"
+
+#: handlers/issue/create_issue.py:90 handlers/issue/create_issue.py:102
+#: handlers/issue/create_issue.py:123 handlers/issue/update_issue.py:113
+#: handlers/issue/update_issue.py:132 handlers/issue/update_issue.py:156
+#: handlers/project/create_project.py:70 handlers/project/create_project.py:91
+#: handlers/project/update_project.py:110
+#: handlers/project/update_project.py:131
+msgid "Please select one of the options on the keyboard."
+msgstr "Пожалуйста, выберите один из вариантов на клавиатуре."
+
+#: handlers/issue/create_issue.py:96
+msgid "Good, now <b>select status:</b>"
+msgstr "Отлично, теперь <b>выберите статус:</b>"
+
+#: handlers/issue/create_issue.py:114
+msgid "The issue has been successfully created!"
+msgstr "Задача успешно создана!"
+
+#: handlers/issue/create_issue.py:116
+msgid "An error occurred, the issue was NOT created! Try again"
+msgstr "Возникла ошибка, задача НЕ была создана! Попробуйте ещё раз"
+
+#: handlers/issue/issues.py:16
+msgid "List of issues, page 1:"
+msgstr "Список задач, страница 1:"
+
+#: handlers/issue/issues.py:26
+msgid ""
+"\n"
+"<b>Project</b>: {project} \n"
+"<b>Title</b>: {title} \n"
+"<b>Description</b>: {description} \n"
+"<b>Key</b>: {key} \n"
+"<b>Type</b>: {type} \n"
+"<b>Priority</b>: {priority} \n"
+"<b>Status</b>: {status} \n"
+"<b>Created</b>: {created} \n"
+"<b>Updated</b>: {updated}\n"
+"            "
+msgstr ""
+"\n"
+"<b>Проект</b>: {project} \n"
+"<b>Название</b>: {title} \n"
+"<b>Описание</b>: {description} \n"
+"<b>Ключ</b>: {key} \n"
+"<b>Тип</b>: {type} \n"
+"<b>Приоритет</b>: {priority} \n"
+"<b>Статус</b>: {status} \n"
+"<b>Создана</b>: {created} \n"
+"<b>Обновлена</b>: {updated}\n"
+"            "
+
+#: handlers/issue/pagination_issues.py:19
+#: handlers/issue/pagination_issues.py:31
+msgid "List of issues, page {page}:"
+msgstr "Cписок задач, страница {page}:"
+
+#: handlers/issue/update_issue.py:41
+msgid ""
+"\n"
+"Now you will need to enter the data one by one to update issue. \n"
+"<u>Note</u>: you can cancel the update process by entering: /cancel. \n"
+"\n"
+"<b>Previous title: {title}</b>\n"
+"<b>New title:</b>\n"
+"            "
+msgstr ""
+"\n"
+"Для обновления задачи, сейчас вам нужно будет вводить данные по порядку."
+" \n"
+"<u>Обратите внимание</u>: вы можете отменить процесс обновления, введя "
+"команду: /cancel. \n"
+"\n"
+"<b>Предыдущее название: {title}</b>\n"
+"<b>Новое название:</b>\n"
+"            "
+
+#: handlers/issue/update_issue.py:59
+msgid ""
+"\n"
+"Good, now enter the issue description. \n"
+"\n"
+"<b>Previous description: {description}</b>\n"
+"<b>New description:</b>\n"
+"            "
+msgstr ""
+"\n"
+"Отлично, теперь введите описание задачи. \n"
+"\n"
+"<b>Предыдущее описание: {description}</b>\n"
+"<b>Новое описание:</b>\n"
+"            "
+
+#: handlers/issue/update_issue.py:73
+msgid ""
+"\n"
+"Good, now enter the issue key. \n"
+"\n"
+"<b>Previous key: {key}</b>\n"
+"<b>New key:</b>\n"
+"            "
+msgstr ""
+"\n"
+"Отлично, теперь введите ключ задачи. \n"
+"\n"
+"<b>Предыдущий ключ: {key}</b>\n"
+"<b>Новый ключ:</b>\n"
+"            "
+
+#: handlers/issue/update_issue.py:87
+msgid ""
+"\n"
+"Good, now select the issue type. \n"
+"\n"
+"<b>Previous type: {type}</b>\n"
+"<b>New type:</b>\n"
+"            "
+msgstr ""
+"\n"
+"Отлично, теперь выберите тип задачи. \n"
+"\n"
+"<b>Предыдущий тип: {type}</b>\n"
+"<b>Новый тип:</b>\n"
+"            "
+
+#: handlers/issue/update_issue.py:101
+msgid ""
+"\n"
+"Good, now select the issue priority \n"
+"\n"
+"<b>Previous priority: {priority}</b>\n"
+"<b>New priority:</b>\n"
+"            "
+msgstr ""
+"\n"
+"Отлично, теперь выберите приоритет задачи. \n"
+"\n"
+"<b>Предыдущий приоритет: {priority}</b>\n"
+"<b>Новый приоритет:</b>\n"
+"            "
+
+#: handlers/issue/update_issue.py:120
+msgid ""
+"\n"
+"Good, now enter the issue status. \n"
+"\n"
+"<b>Previous status: {status}</b>\n"
+"<b>New status:</b>\n"
+"            "
+msgstr ""
+"\n"
+"Отлично, теперь введите статус задачи \n"
+"\n"
+"<b>Предыдущий статус: {status}</b>\n"
+"<b>Новый статус:</b>\n"
+"            "
+
+#: handlers/issue/update_issue.py:147
+msgid "The issue has been successfully updated!"
+msgstr "Задача успешна обновлёна!"
+
+#: handlers/issue/update_issue.py:149
+msgid "An error occurred, the issue was NOT updated!"
+msgstr "Возникла ошибка, задача НЕ была обновлёна!"
+
+#: handlers/project/create_project.py:29
+msgid ""
+"\n"
+"Now you will need to enter the data one by one to create a new project. \n"
+"<u>Note</u>: you can cancel the creation process by entering: /cancel. \n"
+"\n"
+"<b>Enter project name:</b>\n"
+"            "
+msgstr ""
+"\n"
+"Для создания нового проекта, сейчас вам нужно будет вводить данные по "
+"порядку. \n"
+"<u>Обратите внимание</u>: вы можете отменить процесс обновления, введя "
+"команду: /cancel \n"
+"\n"
+"<b>Введите название проекта:</b>\n"
+"            "
+
+#: handlers/project/create_project.py:43
+msgid "Good, now <b>enter description of the project:</b>"
+msgstr "Отлично, теперь <b>введите описание проекта:</b>"
+
+#: handlers/project/create_project.py:50
+msgid "Good, now <b>enter key of the project:</b>"
+msgstr "Отлично, теперь <b>введите ключ проекта:</b>"
+
+#: handlers/project/create_project.py:57
+msgid "Good, now <b>select type of the project:</b>"
+msgstr "Отлично, теперь <b>выберите тип проекта:</b>"
+
+#: handlers/project/create_project.py:64
+msgid "Good, now <b>select whether the project will be a favorite or not:</b>"
+msgstr "Отлично, теперь <b>выберите, будет ли проект избранным или нет:</b>"
+
+#: handlers/project/create_project.py:82
+msgid "The project has been successfully created!"
+msgstr "Проект успешно создан!"
+
+#: handlers/project/create_project.py:84
+msgid "An error occurred, the project was NOT created!"
+msgstr "Возникла ошибка, проект НЕ был создан!"
+
+#: handlers/project/pagination_projects.py:19
+#: handlers/project/pagination_projects.py:31
+msgid "List of projects, page {page}:"
+msgstr "Cписок проектов, страница {page}:"
+
+#: handlers/project/projects.py:16
+msgid "List of projects, <b>page 1</b>:"
+msgstr "Список проектов, <b>страница 1</b>:"
+
+#: handlers/project/projects.py:26
+msgid ""
+"\n"
+"<b>Name</b>: {name} \n"
+"<b>Description</b>: {description} \n"
+"<b>Key</b>: {key} \n"
+"<b>Type</b>: {type} \n"
+"<b>Favorite</b>: {starred} \n"
+"<b>Created</b>: {created}\n"
+"            "
+msgstr ""
+"\n"
+"<b>Название</b>: {name} \n"
+"<b>Описание</b>: {description} \n"
+"<b>Ключ</b>: {key} \n"
+"<b>Тип</b>: {type} \n"
+"<b>Избранный</b>: {starred} \n"
+"<b>Создан</b>: {created}\n"
+"            "
+
+#: handlers/project/update_project.py:40
+msgid ""
+"\n"
+"Now you will need to enter the data one by one to update project. \n"
+"<u>Note</u>: you can cancel the update process by entering: /cancel. \n"
+"\n"
+"<b>Previous name: {name}</b>\n"
+"<b>New name:</b>\n"
+"            "
+msgstr ""
+"\n"
+"Для обновления задачи, сейчас вам нужно будет вводить данные по порядку."
+" \n"
+"<u>Обратите внимание</u>: вы можете отменить процесс обновления, введя "
+"команду: /cancel. \n"
+"\n"
+"<b>Предыдущее название: {name}</b>\n"
+"<b>Новое название:</b>\n"
+"            "
+
+#: handlers/project/update_project.py:56
+msgid ""
+"\n"
+"Good, now enter description of the project. \n"
+"\n"
+"<b>Previous description: {description}</b>\n"
+"<b>New description:</b>\n"
+"            "
+msgstr ""
+"\n"
+"Отлично, теперь введите описание проекта. \n"
+"\n"
+"<b>Предыдущее описание: {description}</b>\n"
+"<b>Новое описание:</b>\n"
+"            "
+
+#: handlers/project/update_project.py:70
+msgid ""
+"\n"
+"Good, now enter key of the project. \n"
+"\n"
+"<b>Previous key: {key}</b>\n"
+"<b>New key:</b>\n"
+"            "
+msgstr ""
+"\n"
+"Отлично, теперь введите ключ проекта. \n"
+"\n"
+"<b>Предыдущий ключ: {key}</b>\n"
+"<b>Новый ключ:</b>\n"
+"            "
+
+#: handlers/project/update_project.py:84
+msgid ""
+"\n"
+"Good, now choose type of the project. \n"
+"\n"
+"<b>Previous type: {type}</b>\n"
+"<b>New type:</b>\n"
+"            "
+msgstr ""
+"\n"
+"Отлично, теперь выберите тип проекта. \n"
+"\n"
+"<b>Предыдущий тип: {type}</b>\n"
+"<b>Новый тип:</b>\n"
+"            "
+
+#: handlers/project/update_project.py:98
+msgid ""
+"\n"
+"Good, now choose whether the project will be a favorite or not. \n"
+"\n"
+"<b>Earlier: {starred}</b>\n"
+"<b>Now:</b>\n"
+"            "
+msgstr ""
+"\n"
+"Отлично, теперь выберите, будет ли проект избранным или нет. \n"
+"\n"
+"<b>Ранее: {starred}</b>\n"
+"<b>Сейчас:</b>\n"
+"            "
+
+#: handlers/project/update_project.py:122
+msgid "The project has been successfully updated!"
+msgstr "Проект успешно обновлён!"
+
+#: handlers/project/update_project.py:124
+msgid "An error occurred, the project was NOT updated!"
+msgstr "Возникла ошибка, проект НЕ был обновлён!"
+
+#: keyboards/for_issues.py:26 keyboards/for_projects.py:26
+msgid "Create"
+msgstr "Создать"
+
+#: keyboards/for_issues.py:39 keyboards/for_projects.py:39
+msgid "<< Back"
+msgstr "<< Назад"
+
+#: keyboards/for_issues.py:48 keyboards/for_projects.py:48
+msgid "Next >>"
+msgstr "Вперёд >>"
+
+#: keyboards/for_issues.py:62 keyboards/for_projects.py:67
+msgid "Change"
+msgstr "Изменить"
+
+#: keyboards/for_issues.py:68 keyboards/for_projects.py:73
+msgid "Delete"
+msgstr "Удалить"
+
+#: keyboards/for_menu.py:12
+msgid "Projects"
+msgstr "Проекты"
+
+#: keyboards/for_menu.py:17
+msgid "Issues"
+msgstr "Задачи"
+

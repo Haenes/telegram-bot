@@ -1,6 +1,7 @@
 from aiogram import types
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+from aiogram.utils.i18n import gettext as _
 
 
 def menu_kb() -> InlineKeyboardMarkup:
@@ -8,12 +9,12 @@ def menu_kb() -> InlineKeyboardMarkup:
 
     builder = InlineKeyboardBuilder()
     builder.add(types.InlineKeyboardButton(
-        text="Projects",
+        text=_("Projects"),
         callback_data="projects"
         )
     )
     builder.add(types.InlineKeyboardButton(
-        text="Issues",
+        text=_("Issues"),
         callback_data="issues"
         )
     )

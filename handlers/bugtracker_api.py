@@ -1,5 +1,6 @@
 import os
 import requests
+from aiogram.utils.i18n import gettext as _
 
 
 API_BASE_URL = "http://127.0.0.1:8000/api"
@@ -123,7 +124,7 @@ def delete_project(id, header):
     """ Delete single project via DELETE request"""
 
     r = requests.delete(f"{API_BASE_URL}/projects/{id}", headers=header)
-    return "The project was successfully deleted!"
+    return _("The project was successfully deleted!")
 
 
 def _all_projects():
@@ -136,12 +137,16 @@ def _all_projects():
     page = 2
     projects = []
 
-    # While there next page with projects -> add projects from current page to projects list
+    # If there NO next page (1 page) -> add first results into projects and return it. 
+    # Otherwise while there next page with projects -> add projects from current page to projects list
     # Then make request with next page and increase page number
-    while results["next"] != None:
+    if results["next"] == None:
         projects += results["results"]
-        results = get_projects(headers=headers, params={"page":page})
-        page += 1
+    else:
+        while results["next"] != None:
+            projects += results["results"]
+            results = get_projects(headers=headers, params={"page":page})
+            page += 1
 
     return projects
 
@@ -223,4 +228,4 @@ def delete_issue(id, header):
     """ Delete single issue via DELETE request"""
 
     r = requests.delete(f"{API_BASE_URL}/issues/{id}", headers=header)
-    return "The issue was successfully deleted!"
+    return _("The issue was successfully deleted!")
