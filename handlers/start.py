@@ -37,6 +37,7 @@ async def cmd_login(message: types.Message, command:CommandObject):
         try:
             get_token(username, password)
             await message.reply(_("Successful login! \nTo continue, enter /menu command."))
+            await message.delete()
         except KeyError:
             await message.reply(_("Invalid username/password!"))
 

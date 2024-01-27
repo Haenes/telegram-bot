@@ -78,6 +78,28 @@ def project_kb(results) -> InlineKeyboardMarkup:
     return builder.as_markup()
 
 
+def project_favorite_kb() -> InlineKeyboardMarkup:
+    """
+    Creates inline keyboard for project favorite select. Same with i18n
+    """
+
+    builder = InlineKeyboardBuilder()
+
+    builder.add(types.InlineKeyboardButton(
+        text=_("True"),
+        callback_data="prj_favorite_True"
+        )
+    )
+
+    builder.add(types.InlineKeyboardButton(
+        text=_("False"),
+        callback_data="prj_favorite_False"
+        )
+    )
+
+    return builder.as_markup()
+
+
 def make_row_keyboard(items: list[str]) -> ReplyKeyboardMarkup:
     """
     Creates a replay keyboard with buttons in one row
@@ -86,4 +108,4 @@ def make_row_keyboard(items: list[str]) -> ReplyKeyboardMarkup:
     """
 
     row = [KeyboardButton(text=item) for item in items]
-    return ReplyKeyboardMarkup(keyboard=[row], resize_keyboard=True)
+    return ReplyKeyboardMarkup(keyboard=[row], resize_keyboard=True, one_time_keyboard=True)

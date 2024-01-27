@@ -1,5 +1,6 @@
 from aiogram import Router, types, F
 from aiogram.utils.i18n import gettext as _
+from aiogram.utils.i18n import lazy_gettext as __
 
 from handlers.bugtracker_api import set_up, get_projects, get_project, delete_project
 from keyboards.for_projects import projects_kb, project_kb
@@ -23,6 +24,11 @@ async def send_project(callback: types.CallbackQuery, data: types.CallbackQuery)
     project_id = data.removeprefix("project_")
     results = get_project(project_id, headers)
 
+    if results["starred"] == True:
+        starred = _("True")
+    elif results["starred"] == False:
+        starred = _("Нет")
+
     text = _("""
 <b>Name</b>: {name} 
 <b>Description</b>: {description} 
@@ -31,7 +37,7 @@ async def send_project(callback: types.CallbackQuery, data: types.CallbackQuery)
 <b>Favorite</b>: {starred} 
 <b>Created</b>: {created}
             """).format(name=results['name'], description=results['description'], key=results['key'],
-                        type=results['type'], starred=results['starred'], created=results['created'])
+                        type=results['type'], starred=starred, created=results['created'])
 
     await callback.message.answer(text, parse_mode="HTML", reply_markup=project_kb(results))
     await callback.answer()
