@@ -6,14 +6,13 @@ from aiogram.utils.i18n import gettext as _
 from aiogram.utils.i18n import lazy_gettext as __
 
 from handlers.bugtracker_api import set_up, get_project, update_project
-from keyboards.for_projects import make_row_keyboard
+from keyboards.for_projects import make_row_keyboard, project_favorite_kb
 
 
 router = Router()
 
 # Will be used for the keyboard
 PROJECT_TYPES = ["Fullstack", "Front-end", "Back-end"]
-PROJECT_FAVORITE = [str(True), str(False)]
 
 
 class UpdateProject(StatesGroup):
@@ -94,14 +93,19 @@ Good, now choose type of the project. \n
 @router.message(UpdateProject.type, F.text.in_(PROJECT_TYPES))
 async def type_selected(message: Message, state: FSMContext):
     await state.update_data(type=message.text)
+    
+    if project_data["starred"] == True:
+        starred = _("True")
+    elif project_data["starred"] == False:
+        starred = _("Нет")
 
     text = _("""
 Good, now choose whether the project will be a favorite or not. \n
 <b>Earlier: {starred}</b>
 <b>Now:</b>
-            """).format(starred=project_data['starred'])
+            """).format(starred=starred)
 
-    await message.answer(text, parse_mode="HTML", reply_markup=make_row_keyboard(PROJECT_FAVORITE))
+    await message.answer(text, parse_mode="HTML", reply_markup=project_favorite_kb())
     await state.set_state(UpdateProject.starred)
 
 
@@ -109,23 +113,24 @@ Good, now choose whether the project will be a favorite or not. \n
 async def type_selected_incorrect(message: Message, state: FSMContext):
     await message.answer(_("Please select one of the options on the keyboard."), reply_markup=make_row_keyboard(PROJECT_TYPES))
 
-
-@router.message(UpdateProject.starred, F.text.in_(PROJECT_FAVORITE))
-async def favorite_selected(message: Message, state: FSMContext):
-    await state.update_data(starred=message.text)
+@router.callback_query(UpdateProject.starred, F.data.startswith("prj_favorite_"), F.data.as_("data"))
+async def favorite_selected(callback: types.CallbackQuery, data: types.CallbackQuery, state: FSMContext):
+    await state.update_data(starred=data.removeprefix("prj_favorite_"))
     user_data = await state.get_data()
 
     headers = set_up()
     results = update_project(project_data["id"], user_data, headers)
 
     if results == 200:
-        await message.answer(text=_("The project has been successfully updated!"), reply_markup=ReplyKeyboardRemove())
+        await callback.message.answer(text=_("The project has been successfully updated!"))
+        await callback.answer()
     else:
-        await message.answer(text=_("An error occurred, the project was NOT updated!"), reply_markup=ReplyKeyboardRemove())
+        await callback.message.answer(text=_("An error occurred, the project was NOT updated!"))
+        await callback.answer()
     
     await state.clear()
 
 
 @router.message(UpdateProject.starred)
 async def favorite_selected_incorrect(message: Message, state: FSMContext):
-    await message.answer(text=_("Please select one of the options on the keyboard."), reply_markup=make_row_keyboard(PROJECT_FAVORITE))
+    await message.answer(text=_("Please select one of the options on the keyboard."), reply_markup=project_favorite_kb())
