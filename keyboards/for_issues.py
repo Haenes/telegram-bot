@@ -73,22 +73,51 @@ def issue_kb(results) -> InlineKeyboardMarkup:
     return builder.as_markup()
 
 
-def make_row_keyboard(items: list[str]) -> ReplyKeyboardMarkup:
-    """
-    Creates a replay keyboard with buttons in one row.
-    items: list of texts for buttons
-    """
+def issue_type_kb() -> InlineKeyboardMarkup:
 
-    row = [KeyboardButton(text=item) for item in items]
-    return ReplyKeyboardMarkup(keyboard=[row], resize_keyboard=True)
+    builder = InlineKeyboardBuilder()
+
+    builder.add(types.InlineKeyboardButton(
+        text=_("Bug"),
+        callback_data="iss_type_Bug"
+        )
+    )
+
+    builder.add(types.InlineKeyboardButton(
+        text=_("Feature"),
+        callback_data="iss_type_Feature"
+        )
+    )
+
+    return builder.as_markup()
 
 
-def make_priority_keyboard(items: list[str]) -> ReplyKeyboardMarkup:
-    """
-    Creates a special version of the make_row_keyboard(), 
-    because on the phone the priorities in one row look ugly.
-    """
+def issue_priority_kb() -> InlineKeyboardMarkup:
 
-    row1 = [KeyboardButton(text=item) for item in items[:2]]
-    row2 = [KeyboardButton(text=item) for item in items[2:]]
-    return ReplyKeyboardMarkup(keyboard=[row1, row2], resize_keyboard=True)
+    builder = InlineKeyboardBuilder()
+    texts = ["Lowest", "Low", "Medium", "High", "Highest"]
+
+    for priority in texts:
+        builder.add(types.InlineKeyboardButton(
+            text=_(priority),
+            callback_data=f"iss_priority_{priority}"
+            )
+        )
+
+    builder.adjust(3)
+    return builder.as_markup()
+
+
+def issue_status_kb() -> InlineKeyboardMarkup:
+
+    builder = InlineKeyboardBuilder()
+    texts = ["To do", "In progress", "Done"]
+
+    for status in texts:
+        builder.add(types.InlineKeyboardButton(
+            text=_(status),
+            callback_data=f"iss_status_{status}"
+            )
+        )
+
+    return builder.as_markup()

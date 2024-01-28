@@ -80,7 +80,7 @@ def project_kb(results) -> InlineKeyboardMarkup:
 
 def project_favorite_kb() -> InlineKeyboardMarkup:
     """
-    Creates inline keyboard for project favorite select. Same with i18n
+    Creates inline keyboard for project favorite select.
     """
 
     builder = InlineKeyboardBuilder()

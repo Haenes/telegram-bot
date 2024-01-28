@@ -1,7 +1,7 @@
 from aiogram import Router, types, F
 from aiogram.utils.i18n import gettext as _
 
-from handlers.bugtracker_api import set_up, get_issues, get_issue, delete_issue, convert_url_to_project
+from handlers.bugtracker_api import set_up, get_issues, get_issue, delete_issue, Translate
 from keyboards.for_issues import issues_kb, issue_kb
 
 
@@ -23,6 +23,8 @@ async def send_issue(callback: types.CallbackQuery, data):
     headers = set_up()
     results = get_issue(issue_id, headers)
 
+    issue_type, priority, status = Translate(results).issue()
+
     text = _("""
 <b>Project</b>: {project} 
 <b>Title</b>: {title} 
@@ -34,7 +36,7 @@ async def send_issue(callback: types.CallbackQuery, data):
 <b>Created</b>: {created} 
 <b>Updated</b>: {updated}
             """).format(project=results['project'], title=results['title'], description=results['description'],
-                        key=results['key'], type=results['type'], priority=results['priority'], status=results['status'],
+                        key=results['key'], type=issue_type, priority=priority, status=status,
                         created=results['created'], updated=results['updated'])
 
     await callback.message.answer(text, parse_mode="HTML", reply_markup=issue_kb(results))

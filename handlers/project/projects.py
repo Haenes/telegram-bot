@@ -1,8 +1,7 @@
 from aiogram import Router, types, F
 from aiogram.utils.i18n import gettext as _
-from aiogram.utils.i18n import lazy_gettext as __
 
-from handlers.bugtracker_api import set_up, get_projects, get_project, delete_project
+from handlers.bugtracker_api import set_up, get_projects, get_project, delete_project, Translate
 from keyboards.for_projects import projects_kb, project_kb
 
 
@@ -24,10 +23,7 @@ async def send_project(callback: types.CallbackQuery, data: types.CallbackQuery)
     project_id = data.removeprefix("project_")
     results = get_project(project_id, headers)
 
-    if results["starred"] == True:
-        starred = _("True")
-    elif results["starred"] == False:
-        starred = _("Нет")
+    starred = Translate(results).project()
 
     text = _("""
 <b>Name</b>: {name} 

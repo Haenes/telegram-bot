@@ -45,6 +45,47 @@ def get_token(username, password):
     os.environ["API_TOKEN"] = token
 
 
+class Translate:
+    """
+    A class for all InlineKeyboards that used to be Replaykeyboards, 
+    but were forced to change their gender in order to be localized correctly
+    """
+
+
+    def __init__(self, data):
+        self.data = data
+
+
+    def project(self):
+        favorite = {True: _("True"),
+                    False: _("False")}
+
+        starred = favorite[self.data["starred"]]
+
+        return starred
+
+
+    def issue(self):
+        types = {"Bug": _("Bug"),
+                 "Feature": _("Feature")}
+
+        prioritys = {"Lowest": _("Lowest"),
+                     "Low": _("Low"),
+                     "Medium": _("Medium"),
+                     "High": _("High"),
+                     "Highest": _("Highest")}
+   
+        statuses = {"To do": _("To do"),
+                    "In progress": _("In progress"),
+                    "Done": _("Done")}
+        
+        type = types[self.data["type"]]
+        priority = prioritys[self.data["priority"]]
+        status = statuses[self.data["status"]]
+
+        return type, priority, status
+
+
 class Paginator:
     """ Class for all paginations """
 

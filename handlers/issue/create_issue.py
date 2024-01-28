@@ -1,19 +1,14 @@
 from aiogram import Router, types, F
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from aiogram.types import Message, ReplyKeyboardRemove
+from aiogram.types import Message
 from aiogram.utils.i18n import gettext as _
 
 from handlers.bugtracker_api import set_up, convert_project_to_url, make_issue
-from keyboards.for_issues import make_row_keyboard, make_priority_keyboard
+from keyboards.for_issues import issue_type_kb, issue_priority_kb, issue_status_kb
 
 
 router = Router()
-
-# Will be used for the keyboard
-ISSUE_TYPE = ["Bug", "Feature"]
-ISSUE_PRIORITY = ["Lowest", "Low", "Medium", "High", "Highest"]
-ISSUE_STATUS = ["To do", "In progress", "Done"]
 
 
 class CreateIssue(StatesGroup):
@@ -74,50 +69,59 @@ async def description_enter(message: types.Message, state: FSMContext):
 @router.message(CreateIssue.key)
 async def key_enter(message: types.Message, state: FSMContext):
     await state.update_data(key=message.text)
-    await message.answer(_("Good, now <b>select type:</b>"), parse_mode="HTML", reply_markup=make_row_keyboard(ISSUE_TYPE))
+    await message.answer(_("Good, now <b>select type:</b>"), parse_mode="HTML", reply_markup=issue_type_kb())
     await state.set_state(CreateIssue.type)
 
 
-@router.message(CreateIssue.type, F.text.in_(ISSUE_TYPE))
-async def type_selected(message: types.Message, state: FSMContext):
-    await state.update_data(type=message.text)
-    await message.answer(_("Good, now <b>select priority:</b>"), parse_mode="HTML", reply_markup=make_priority_keyboard(ISSUE_PRIORITY))
+@router.callback_query(CreateIssue.type, F.data.startswith("iss_type_"), F.data.as_("data"))
+async def type_selected(callback: types.CallbackQuery, data: types.CallbackQuery, state: FSMContext):
+    await state.update_data(type=data.removeprefix("iss_type_"))
+    await callback.message.answer(_("Good, now <b>select priority:</b>"), parse_mode="HTML", reply_markup=issue_priority_kb())
     await state.set_state(CreateIssue.priority)
 
 
 @router.message(CreateIssue.type)
 async def type_selected_incorrect(message: Message, state: FSMContext):
-    await message.answer(_("Please select one of the options on the keyboard."), reply_markup=make_row_keyboard(ISSUE_TYPE))
+    await message.answer(_("Please select one of the options on the keyboard."), reply_markup=issue_type_kb())
 
 
-@router.message(CreateIssue.priority, F.text.in_(ISSUE_PRIORITY))
-async def priority_selected(message: types.Message, state: FSMContext):
-    await state.update_data(priority=message.text)
-    await message.answer(_("Good, now <b>select status:</b>"), parse_mode="HTML", reply_markup=make_row_keyboard(ISSUE_STATUS))
+@router.callback_query(CreateIssue.priority, F.data.startswith("iss_priority_"), F.data.as_("data"))
+async def priority_selected(callback: types.CallbackQuery, data: types.CallbackQuery, state: FSMContext):
+    await state.update_data(priority=data.removeprefix("iss_priority_"))
+    await callback.message.answer(_("Good, now <b>select status:</b>"), parse_mode="HTML", reply_markup=issue_status_kb())
     await state.set_state(CreateIssue.status)
 
 
 @router.message(CreateIssue.priority)
 async def priority_selected_incorrect(message: Message, state: FSMContext):
-    await message.answer(_("Please select one of the options on the keyboard."), reply_markup=make_priority_keyboard(ISSUE_PRIORITY))
+    await message.answer(_("Please select one of the options on the keyboard."), reply_markup=issue_priority_kb())
 
 
-@router.message(CreateIssue.status, F.text.in_(ISSUE_STATUS))
-async def status_selected(message: types.Message, state: FSMContext):
-    await state.update_data(status=message.text)
+@router.callback_query(CreateIssue.status, F.data.startswith("iss_status_"), F.data.as_("data"))
+async def status_selected(callback: types.CallbackQuery, data: types.CallbackQuery, state: FSMContext):
+    data = data.removeprefix("iss_status_")
+
+    if data != "Done":
+        status = data[:2] + "" + data[2:]
+    else:
+        status = data
+
+    await state.update_data(status=status)
     user_data = await state.get_data()
     
     headers = set_up()
     result = make_issue(user_data, headers)
 
     if result == 201:
-        await message.answer(_("The issue has been successfully created!"), reply_markup=ReplyKeyboardRemove())
+        await callback.message.answer(_("The issue has been successfully created!"))
+        callback.answer()
     else:
-        await message.answer(_("An error occurred, the issue was NOT created! Try again"), reply_markup=ReplyKeyboardRemove())
+        await callback.message.answer(_("An error occurred, the issue was NOT created! Try again"))
+        callback.answer()
 
     await state.clear()
 
 
 @router.message(CreateIssue.status)
 async def status_selected_incorrect(message: Message, state: FSMContext):
-    await message.answer(_("Please select one of the options on the keyboard."), reply_markup=make_row_keyboard(ISSUE_STATUS))
+    await message.answer(_("Please select one of the options on the keyboard."), reply_markup=issue_status_kb())
