@@ -2,6 +2,7 @@ from aiogram import Router, types, F
 from aiogram.filters import CommandObject
 from aiogram.filters.command import Command
 from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import StatesGroup, State
 from aiogram.utils.i18n import gettext as _
 
 from db.user import User
@@ -13,9 +14,18 @@ from keyboards.for_settings import settings_kb, language_kb, timezone_kb
 router = Router()
 
 
-@router.message(Command("start"), flags={"action":"get_user"})
-async def cmd_start(message: types.Message):
+class Language(StatesGroup):
+    lang = State()
+
+
+@router.message(Command("start"),flags={"action":"get_user"})
+async def cmd_start(message: types.Message, state: FSMContext, language, i18n_middleware):
     user = message.from_user.first_name
+    print(message.from_user.language_code)
+
+    if language:
+        await state.update_data(lang = language)
+        await i18n_middleware.set_locale(state, language)
 
     text = _("""
 \nA quick guide to working with me: 
@@ -74,10 +84,16 @@ async def language(callback: types.CallbackQuery):
 
 
 @router.callback_query(F.data.startswith("lang_"), F.data.as_("language"))
-async def set_language(callback: types.CallbackQuery, state: FSMContext, language: types.CallbackQuery, i18n_middleware):
+async def set_language(callback: types.CallbackQuery, state: FSMContext, language: types.CallbackQuery, i18n_middleware, sessionmaker):
     lang = language.removeprefix("lang_")
 
     await i18n_middleware.set_locale(state, lang)
+
+    async with sessionmaker() as session:
+        async with session.begin():
+            user = User(user_id = callback.from_user.id, language = lang)
+            await session.merge(user)
+
     await state.update_data(lang=lang)
     await callback.message.answer(text=_("You have changed the language!"))
     await callback.answer()

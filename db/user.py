@@ -25,11 +25,16 @@ class User(BaseModel):
 
 
     def __str__(self) -> str:
-        return f"User: {self.user_id}"
+        return f"User: ID={self.user_id}"
     
 
 async def get_user(user_id: int, session) -> User:
     stmt = select(User).where(User.user_id == user_id)
+    return await session.execute(stmt)
+
+
+async def get_user_language(user_id: int, session) -> User:
+    stmt = select(User.language).where(User.user_id == user_id)
     return await session.execute(stmt)
 
 
