@@ -1,5 +1,7 @@
 from aiogram import Router, types, F
-from aiogram.utils.i18n import gettext as _
+from aiogram.utils.i18n import gettext as _, get_i18n
+from babel.dates import format_datetime, get_timezone
+from datetime import datetime
 
 from handlers.bugtracker_api import get_projects, get_project, delete_project, Translate
 from keyboards.for_projects import projects_kb, project_kb
@@ -22,6 +24,14 @@ async def send_project(callback: types.CallbackQuery, data: types.CallbackQuery,
     results = get_project(project_id, user_headers, language, timezone)
 
     starred = Translate(results).project()
+    locale =  get_i18n().current_locale
+    
+    #TODO: USE TIMEZONE SET TO USER FROM DB/ REDIS
+    # print(locale)
+    # time = datetime.strptime(results['created'])
+    # format = "%Y-%m-%dT%H:%M:%S.%fZ"
+    # created = format_datetime(datetime.strptime(results['created'], format), "short", get_timezone("Asia/Vladivostok"), locale)
+    # print(created)
 
     text = _("""
 <b>Name</b>: {name} 
