@@ -4,14 +4,16 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message
 from aiogram.utils.i18n import gettext as _
 
-from handlers.bugtracker_api import set_up, make_project
+from handlers.bugtracker_api import make_project
 from keyboards.for_projects import make_row_keyboard, project_favorite_kb
 
 
 router = Router()
 
+
 # Will be used for the keyboard
 PROJECT_TYPES = ["Fullstack", "Front-end", "Back-end"]
+
 
 class CreateProject(StatesGroup):
     name = State()
@@ -67,15 +69,15 @@ async def type_selected(message: Message, state: FSMContext):
 async def type_selected_incorrect(message: Message, state: FSMContext):
     await message.answer(_("Please select one of the options on the keyboard."), reply_markup=make_row_keyboard(PROJECT_TYPES))
 
-@router.callback_query(CreateProject.starred, F.data.startswith("prj_favorite_"), F.data.as_("data"))
-async def favorite_selected(callback: types.CallbackQuery, data: types.CallbackQuery, state: FSMContext):
+
+@router.callback_query(CreateProject.starred, F.data.startswith("prj_favorite_"), F.data.as_("data"), flags={"set_headers":"set_headers"})
+async def favorite_selected(callback: types.CallbackQuery, data: types.CallbackQuery, state: FSMContext, user_headers):
     favorite = data.removeprefix("prj_favorite_")
 
     await state.update_data(starred=favorite)
     user_data = await state.get_data()
 
-    headers = set_up()
-    results = make_project(user_data, headers)
+    results = make_project(user_data, user_headers)
 
     if results == 201:
         await callback.message.answer(_("The project has been successfully created!"))

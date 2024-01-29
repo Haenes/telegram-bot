@@ -4,7 +4,7 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message
 from aiogram.utils.i18n import gettext as _
 
-from handlers.bugtracker_api import set_up, get_issue, update_issue, convert_project_to_url, Translate
+from handlers.bugtracker_api import get_issue, update_issue, convert_project_to_url, Translate
 from keyboards.for_issues import issue_type_kb, issue_priority_kb, issue_status_kb
 
 
@@ -23,15 +23,14 @@ class UpdateIssue(StatesGroup):
 issue_data = {}
 
 
-@router.callback_query(F.data.startswith("iss_change_"), F.data.as_("data"))
-async def change_update(callback: types.CallbackQuery, state: FSMContext, data: types.CallbackQuery):
+@router.callback_query(F.data.startswith("iss_change_"), F.data.as_("data"), flags={"set_headers":"set_headers"})
+async def change_update(callback: types.CallbackQuery, state: FSMContext, data: types.CallbackQuery, user_headers):
     # It is necessary to fill in issue data once and take them from it, 
 	# instead of calling a "get_issue" function in each handler to get data
     global issue_data
-    
-    headers = set_up()
+
     issue_id = data.removeprefix("iss_change_")
-    issue_data = get_issue(issue_id, headers)
+    issue_data = get_issue(issue_id, user_headers)
 
     text = _("""
 Now you will need to enter the data one by one to update issue. 
@@ -44,11 +43,11 @@ Now you will need to enter the data one by one to update issue.
     await state.set_state(UpdateIssue.title)
     await callback.answer()
 
-
-@router.message(UpdateIssue.title)
-async def title_enter(message: types.Message, state: FSMContext):
+#TODO
+@router.message(UpdateIssue.title, flags={"set_headers":"set_headers"})
+async def title_enter(message: types.Message, state: FSMContext, user_headers):
     # Set a project without the user's input
-    await state.update_data(project=convert_project_to_url(issue_data["project"]))
+    await state.update_data(project=convert_project_to_url(user_headers, issue_data["project"]))
     await state.update_data(title=message.text)
 
     text = _("""
@@ -133,8 +132,8 @@ async def priority_selected_incorrect(message: Message, state: FSMContext):
     await message.answer(_("Please select one of the options on the keyboard."), reply_markup=issue_priority_kb())
 
 
-@router.callback_query(UpdateIssue.status, F.data.startswith("iss_status_"), F.data.as_("data"))
-async def status_selected(callback: types.CallbackQuery, data: types.CallbackQuery, state: FSMContext):
+@router.callback_query(UpdateIssue.status, F.data.startswith("iss_status_"), F.data.as_("data"), flags={"set_headers":"set_headers"})
+async def status_selected(callback: types.CallbackQuery, data: types.CallbackQuery, state: FSMContext, user_headers):
     data = data.removeprefix("iss_status_")
 
     if data != "Done":
@@ -145,8 +144,7 @@ async def status_selected(callback: types.CallbackQuery, data: types.CallbackQue
     await state.update_data(status=status)
     user_data = await state.get_data()
 
-    headers = set_up()
-    result = update_issue(issue_data["id"], user_data, headers)
+    result = update_issue(issue_data["id"], user_data, user_headers)
 
     if result == 200:
         await callback.message.answer(_("The issue has been successfully updated!"))
