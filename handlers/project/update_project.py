@@ -4,7 +4,7 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message
 from aiogram.utils.i18n import gettext as _
 
-from handlers.bugtracker_api import set_up, get_project, update_project, Translate
+from handlers.bugtracker_api import get_project, update_project, Translate
 from keyboards.for_projects import make_row_keyboard, project_favorite_kb
 
 
@@ -25,15 +25,14 @@ class UpdateProject(StatesGroup):
 project_data = {}
 
 
-@router.callback_query(F.data.startswith("prj_change_"), F.data.as_("data"))
-async def change_project(callback: types.CallbackQuery, state: FSMContext, data: types.CallbackQuery):
+@router.callback_query(F.data.startswith("prj_change_"), F.data.as_("data"), flags={"set_headers":"set_headers"})
+async def change_project(callback: types.CallbackQuery, state: FSMContext, data: types.CallbackQuery, user_headers):
     # It is necessary to fill in project data once and take them from it, 
 	# instead of calling a "get_project" function in each handler to get data
     global project_data
-    
-    headers = set_up()
+
     project_id = data.removeprefix("prj_change_")
-    project_data = get_project(project_id, headers)
+    project_data = get_project(project_id, user_headers)
 
     text = _("""
 Now you will need to enter the data one by one to update project. 
@@ -110,13 +109,12 @@ async def type_selected_incorrect(message: Message, state: FSMContext):
     await message.answer(_("Please select one of the options on the keyboard."), reply_markup=make_row_keyboard(PROJECT_TYPES))
 
 
-@router.callback_query(UpdateProject.starred, F.data.startswith("prj_favorite_"), F.data.as_("data"))
-async def favorite_selected(callback: types.CallbackQuery, data: types.CallbackQuery, state: FSMContext):
+@router.callback_query(UpdateProject.starred, F.data.startswith("prj_favorite_"), F.data.as_("data"), flags={"set_headers":"set_headers"})
+async def favorite_selected(callback: types.CallbackQuery, data: types.CallbackQuery, state: FSMContext, user_headers):
     await state.update_data(starred=data.removeprefix("prj_favorite_"))
     user_data = await state.get_data()
 
-    headers = set_up()
-    results = update_project(project_data["id"], user_data, headers)
+    results = update_project(project_data["id"], user_data, user_headers)
 
     if results == 200:
         await callback.message.answer(text=_("The project has been successfully updated!"))

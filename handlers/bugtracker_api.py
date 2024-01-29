@@ -1,32 +1,31 @@
 import os
 import requests
+
+from datetime import datetime
+from dotenv import load_dotenv
+
 from aiogram.utils.i18n import gettext as _
 
+from babel.dates import format_datetime, get_timezone
 
-API_BASE_URL = "http://127.0.0.1:8000/api"
+
+load_dotenv()
+API_BASE_URL = os.environ.get("API_BASE_URL")
 
 
-def beatiful_date(datetime):
+def beautiful_date(datetime_to_format, language, timezone):
     """ 
-    Remove unnecessary part from the received datetime
+    Remove unnecessary part from the received datetime.
+    And convert it by language and timezone 
 
     Example: 2023-07-18T18:19:10.327000-05:00 --> 2023-07-18 18:19:10 
     """
 
-    datetime = datetime.split("T")
-    date = datetime[0]
-    time = datetime[1].split(".")[0]
+    format = "%Y-%m-%dT%H:%M:%S.%fZ"
+    dt = datetime.strptime(datetime_to_format, format)
+    dt = format_datetime(dt, "short",  get_timezone(timezone), language)
 
-    return f"{date} {time}"
-
-
-def set_up():
-    """ Make headers with received token (for all further requests) """
-
-    token = os.environ.get("API_TOKEN")
-    headers = {"Authorization": f"Token {token}"}
-
-    return headers
+    return dt
 
 
 def get_token(username, password):
@@ -42,7 +41,7 @@ def get_token(username, password):
     r = requests.post(f"{API_BASE_URL}-token-auth/", json=data)
     token = r.json()["token"]
 
-    os.environ["API_TOKEN"] = token
+    return token
 
 
 class Translate:
@@ -137,12 +136,12 @@ def get_projects(headers, **kwargs):
     return r.json()
 
 
-def get_project(id, header):
+def get_project(id, headers, language, timezone):
     """ Take info about single project via GET request """
 
-    r = requests.get(f"{API_BASE_URL}/projects/{id}", headers=header)
+    r = requests.get(f"{API_BASE_URL}/projects/{id}", headers=headers)
     data = r.json()
-    data["created"] = beatiful_date(data["created"])
+    data["created"] = beautiful_date(data["created"], language, timezone)
 
     return data
 
@@ -161,18 +160,17 @@ def update_project(id, data, headers):
     return r.status_code
 
 
-def delete_project(id, header):
+def delete_project(id, headers):
     """ Delete single project via DELETE request"""
 
-    r = requests.delete(f"{API_BASE_URL}/projects/{id}", headers=header)
+    r = requests.delete(f"{API_BASE_URL}/projects/{id}", headers=headers)
     return _("The project was successfully deleted!")
 
 
-def _all_projects():
+def _all_projects(headers):
     """ Get all projects from all pages """
 
     # Set headers and make first request to get first page of projects
-    headers = set_up()
     results = get_projects(headers=headers)
 
     page = 2
@@ -192,7 +190,7 @@ def _all_projects():
     return projects
 
 
-def convert_project_to_url(project_name):
+def convert_project_to_url(headers, project_name):
     """
     Convert project name to project url (necessary for issue creation process).
 
@@ -201,7 +199,7 @@ def convert_project_to_url(project_name):
     If project is found -> get url of project and return it.
     """
 
-    projects = _all_projects()
+    projects = _all_projects(headers)
 
     for project in projects:
         if project["name"] == project_name:
@@ -213,14 +211,14 @@ def convert_project_to_url(project_name):
         return "UnboundLocalError"
 
 
-def convert_url_to_project(project_url):
+def convert_url_to_project(headers, project_url):
     """
     Convert project name to project url (necessary for Issue info).
 
     Works like convert_project_to_url, but reverse
     """
 
-    projects = _all_projects()
+    projects = _all_projects(headers)
 
     for project in projects:
         if project["url"] == project_url:
@@ -232,21 +230,21 @@ def convert_url_to_project(project_url):
         return "UnboundLocalError"
 
 
-def get_issues(header, **kwargs):
+def get_issues(headers, **kwargs):
     """ Get first page of issues via GET request """
 
-    r = requests.get(f"{API_BASE_URL}/issues", headers=header, **kwargs)
+    r = requests.get(f"{API_BASE_URL}/issues", headers=headers, **kwargs)
     return r.json()
 
 
-def get_issue(id, header):
+def get_issue(id, headers, language, timezone):
     """ Take info about single issue via GET request """
 
-    r = requests.get(f"{API_BASE_URL}/issues/{id}", headers=header)
+    r = requests.get(f"{API_BASE_URL}/issues/{id}", headers=headers)
     data = r.json()
-    data["project"] = convert_url_to_project(data["project"])
-    data["created"] = beatiful_date(data["created"])
-    data["updated"] = beatiful_date(data["updated"])
+    data["project"] = convert_url_to_project(headers, data["project"])
+    data["created"] = beautiful_date(data["created"], language, timezone)
+    data["updated"] = beautiful_date(data["updated"], language, timezone)
 
     return data
 
@@ -265,8 +263,8 @@ def update_issue(id, data, headers):
     return r.status_code
 
 
-def delete_issue(id, header):
+def delete_issue(id, headers):
     """ Delete single issue via DELETE request"""
 
-    r = requests.delete(f"{API_BASE_URL}/issues/{id}", headers=header)
+    r = requests.delete(f"{API_BASE_URL}/issues/{id}", headers=headers)
     return _("The issue was successfully deleted!")

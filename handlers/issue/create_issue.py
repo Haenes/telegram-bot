@@ -4,7 +4,7 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message
 from aiogram.utils.i18n import gettext as _
 
-from handlers.bugtracker_api import set_up, convert_project_to_url, make_issue
+from handlers.bugtracker_api import convert_project_to_url, make_issue
 from keyboards.for_issues import issue_type_kb, issue_priority_kb, issue_status_kb
 
 
@@ -35,9 +35,10 @@ Now you will need to enter the data one by one to create a new issue.
     await callback.answer()
 
 
-@router.message(CreateIssue.project)
-async def project_enter(message: types.Message, state: FSMContext):
-    project = convert_project_to_url(message.text)
+#TODO ИЗМЕНИТЬ all_projects(), ДОБАВИВ В КАЧЕСТВЕ АРГУМЕНТА HEADERS И ПЕРЕДОВАТЬ ИХ
+@router.message(CreateIssue.project, flags={"set_headers":"set_headers"})
+async def project_enter(message: types.Message, state: FSMContext, user_headers):
+    project = convert_project_to_url(user_headers, message.text)
 
     if project == "UnboundLocalError":
         await message.answer(_("Project not found! Please, try again!"))
@@ -97,8 +98,8 @@ async def priority_selected_incorrect(message: Message, state: FSMContext):
     await message.answer(_("Please select one of the options on the keyboard."), reply_markup=issue_priority_kb())
 
 
-@router.callback_query(CreateIssue.status, F.data.startswith("iss_status_"), F.data.as_("data"))
-async def status_selected(callback: types.CallbackQuery, data: types.CallbackQuery, state: FSMContext):
+@router.callback_query(CreateIssue.status, F.data.startswith("iss_status_"), F.data.as_("data"), flags={"set_headers":"set_headers"})
+async def status_selected(callback: types.CallbackQuery, data: types.CallbackQuery, state: FSMContext, user_headers):
     data = data.removeprefix("iss_status_")
 
     if data != "Done":
@@ -108,9 +109,8 @@ async def status_selected(callback: types.CallbackQuery, data: types.CallbackQue
 
     await state.update_data(status=status)
     user_data = await state.get_data()
-    
-    headers = set_up()
-    result = make_issue(user_data, headers)
+
+    result = make_issue(user_data, user_headers)
 
     if result == 201:
         await callback.message.answer(_("The issue has been successfully created!"))

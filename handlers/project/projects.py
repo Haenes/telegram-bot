@@ -1,27 +1,25 @@
 from aiogram import Router, types, F
 from aiogram.utils.i18n import gettext as _
 
-from handlers.bugtracker_api import set_up, get_projects, get_project, delete_project, Translate
+from handlers.bugtracker_api import get_projects, get_project, delete_project, Translate
 from keyboards.for_projects import projects_kb, project_kb
 
 
 router = Router()
 
 
-@router.callback_query(F.data == "projects")
-async def send_projects(callback: types.CallbackQuery):
-    headers = set_up()
-    results = get_projects(headers)
+@router.callback_query(F.data == "projects", flags={"set_headers":"set_headers"})
+async def send_projects(callback: types.CallbackQuery, user_headers):
+    results = get_projects(user_headers)
 
     await callback.message.answer(_("List of projects, <b>page 1</b>:"), parse_mode="HTML", reply_markup=projects_kb(results))
     await callback.answer()
 
 
-@router.callback_query(F.data.startswith("project_"), F.data.as_("data"))
-async def send_project(callback: types.CallbackQuery, data: types.CallbackQuery):
-    headers = set_up()
+@router.callback_query(F.data.startswith("project_"), F.data.as_("data"), flags={"set_headers":"set_headers", "lang_tz":"lang_tz"})
+async def send_project(callback: types.CallbackQuery, data: types.CallbackQuery, user_headers, language, timezone):
     project_id = data.removeprefix("project_")
-    results = get_project(project_id, headers)
+    results = get_project(project_id, user_headers, language, timezone)
 
     starred = Translate(results).project()
 
@@ -39,11 +37,10 @@ async def send_project(callback: types.CallbackQuery, data: types.CallbackQuery)
     await callback.answer()
 
 
-@router.callback_query(F.data.startswith("prj_delete_"), F.data.as_("data"))
-async def del_project(callback: types.CallbackQuery, data):
-    headers = set_up()
+@router.callback_query(F.data.startswith("prj_delete_"), F.data.as_("data"), flags={"set_headers":"set_headers"})
+async def del_project(callback: types.CallbackQuery, data, user_headers):
     project_id = data.removeprefix("prj_delete_")
-    results = delete_project(project_id, headers)
+    results = delete_project(project_id, user_headers)
 
     await callback.message.answer(results)
     await callback.answer()
