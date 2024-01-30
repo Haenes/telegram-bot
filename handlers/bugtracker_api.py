@@ -1,15 +1,12 @@
 import os
 import requests
 from typing import Dict
-
 from datetime import datetime
 from dotenv import load_dotenv
 
 from aiogram.utils.i18n import gettext as _
 
 from babel.dates import format_datetime, get_timezone
-
-API_BASE_URL = os.environ.get("API_BASE_URL")
 
 
 load_dotenv()
