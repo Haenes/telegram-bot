@@ -3,7 +3,7 @@ from aiogram.filters import CommandObject
 from aiogram.filters.command import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from aiogram.utils.i18n import gettext as _
+from aiogram.utils.i18n import gettext as _, get_i18n
 
 from db.user import User, get_user
 from handlers.bugtracker_api import get_token
@@ -74,25 +74,32 @@ async def cmd_settings(message: types.Message):
 
 
 @router.callback_query(F.data == "language")
-async def language(callback: types.CallbackQuery):
+async def language(callback: types.CallbackQuery, state: FSMContext):
     await callback.message.answer(_("Select a language:"), parse_mode="HTML", reply_markup=language_kb())
+    await state.set_state("lang")
     await callback.answer()
 
 
 @router.callback_query(F.data.startswith("lang_"), F.data.as_("language"))
-async def set_language(callback: types.CallbackQuery, state: FSMContext, language: types.CallbackQuery, i18n_middleware, sessionmaker):
+async def set_language(callback: types.CallbackQuery, state: FSMContext, language: types.CallbackQuery, i18n_middleware, sessionmaker, redis):
     lang = language.removeprefix("lang_")
+    cur_lang = get_i18n().current_locale
 
-    await i18n_middleware.set_locale(state, lang)
+    if cur_lang == lang:
+        await callback.message.answer(_("This language is already set."))
+        await callback.answer()
+    else:
+        await i18n_middleware.set_locale(state, lang)
+        await redis.hset(name=callback.from_user.id, key="tz", value=lang)
 
-    async with sessionmaker() as session:
-        async with session.begin():
-            user = User(user_id = callback.from_user.id, language = lang)
-            await session.merge(user)
+        async with sessionmaker() as session:
+            async with session.begin():
+                user = User(user_id = callback.from_user.id, language = lang)
+                await session.merge(user)
 
-    await state.update_data(lang=lang)
-    await callback.message.answer(text=_("You have changed the language!"))
-    await callback.answer()
+        await state.update_data(lang=lang)
+        await callback.message.answer(text=_("You have changed the language!"))
+        await callback.answer()
 
 
 @router.callback_query(F.data == "timezone")
@@ -102,14 +109,20 @@ async def timezone(callback: types.CallbackQuery):
 
 
 @router.callback_query(F.data.startswith("time_"), F.data.as_("timezone"))
-async def set_timezone(callback: types.CallbackQuery, timezone: types.CallbackQuery, sessionmaker):
+async def set_timezone(callback: types.CallbackQuery, timezone: types.CallbackQuery, sessionmaker, redis):
     tz = timezone.removeprefix("time_")
+    cur_tz = await redis.hget(name=callback.from_user.id, key="tz")
 
-    async with sessionmaker() as session:
-        async with session.begin():
-            user = await get_user(callback.from_user.id, session)
-            user = User(user_id = callback.from_user.id, timezone = tz)
-            await session.merge(user)
+    if cur_tz == "Europe/Moscow" or cur_tz == "Asia/Vladivostok":
+        cur_tz = cur_tz.split("/")[1]
 
-    await callback.message.answer(text=_("You have changed the timezone!"))
-    await callback.answer()
+    if cur_tz == tz:
+        await callback.message.answer(_("This time zone is already set."))
+        await callback.answer()
+    else:
+        redis.hset(name=callback.from_user.id, key="tz", value=tz)
+        async with sessionmaker() as session:
+            async with session.begin():
+                user = await get_user(callback.from_user.id, session)
+                user = User(user_id = callback.from_user.id, timezone = tz)
+                await session.merge(user)

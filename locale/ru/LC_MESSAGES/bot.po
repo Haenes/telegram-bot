@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BugTracker_Telegram_bot VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-01-30 13:05+1000\n"
+"POT-Creation-Date: 2024-01-30 21:07+1000\n"
 "PO-Revision-Date: 2024-01-27 10:37+1000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -78,7 +78,7 @@ msgstr "Сделано"
 
 #: handlers/bugtracker_api.py:188
 msgid "The project was successfully deleted!"
-msgstr "Проект успешно удалена!"
+msgstr "Проект успешно удалён!"
 
 #: handlers/bugtracker_api.py:299
 msgid "The issue was successfully deleted!"
@@ -88,7 +88,7 @@ msgstr "Задача успешно удалёна!"
 msgid "Action canceled."
 msgstr "Действие отменено."
 
-#: handlers/start.py:33
+#: handlers/start.py:25
 msgid ""
 "\n"
 "\n"
@@ -118,30 +118,47 @@ msgstr ""
 "\n"
 "Быстрая инструкция по работе со мной: \n"
 "\n"
-"1) Вход: сначала нужно войти используя команду /login. Без этого, я не стану работать!\n"
+"1) Вход: сначала нужно войти используя команду /login. Без этого, я не "
+"стану работать!\n"
 "\n"
-"2) Главное меню доступно по команде /menu. Здесь вы выбираете с чем работать: проектами или задачами.\n"
+"2) Главное меню доступно по команде /menu. Здесь вы выбираете с чем "
+"работать: проектами или задачами.\n"
 "\n"
-"3) Затем вы сможете создать новый элемент (проект или задачу), просмотреть информацию о нём или других элементах.\n"
+"3) Затем вы сможете создать новый элемент (проект или задачу), "
+"просмотреть информацию о нём или других элементах.\n"
 "\n"
-"4) После вы сможете изменять данные выбранного элемента или вовсе его удалить!\n"
+"4) После вы сможете изменять данные выбранного элемента или вовсе его "
+"удалить!\n"
 "\n"
-"5) Также вы можете изменить мои настройки: язык и часовой пояс через команду /settings.\n"
+"5) Также вы можете изменить мои настройки: язык и часовой пояс через "
+"команду /settings.\n"
 "\n"
-"<b>Пожалуйста, обратите внимание, что вы должны быть уже "
-"зарегестрированы на сайте. Если у вас ещё нет аккаунта, то вам нужно его "
-"создать и только тогда использовать меня </b>\n"
+"<b>Пожалуйста, обратите внимание, что вы должны быть уже зарегистрированы"
+" на сайте. Если у вас ещё нет аккаунта, то вам нужно его создать и только"
+" тогда использовать меня </b>\n"
 "           "
 
-#: handlers/start.py:43
+#: handlers/start.py:35
 msgid "Hello, {user}! {text}"
 msgstr "Привет, {user}! {text}"
 
-#: handlers/start.py:53
+#: handlers/start.py:47
+msgid "Invalid username/password!"
+msgstr "Неверный логин/пароль!"
+
+#: handlers/start.py:56
+msgid ""
+"Successful login! \n"
+"To continue, enter /menu command."
+msgstr ""
+"Успешный вход! \n"
+"Чтобы продолжить, введите команду /menu."
+
+#: handlers/start.py:60
 msgid "You're already logged in, use the /menu command."
 msgstr "Вы уже вошли, используйте команду /menu."
 
-#: handlers/start.py:56
+#: handlers/start.py:63
 msgid ""
 "Please, enter your <u>username and password</u> after /login command! \n"
 "Example: /login USERNAME PASSWORD"
@@ -150,39 +167,35 @@ msgstr ""
 "Например: /login ЛОГИН ПАРОЛЬ"
 
 #: handlers/start.py:68
-msgid ""
-"Successful login! \n"
-"To continue, enter /menu command."
-msgstr ""
-"Успешный вход! \n"
-"Чтобы продолжить, введите команду /menu."
-
-#: handlers/start.py:71
-msgid "Invalid username/password!"
-msgstr "Неверный логин/пароль!"
-
-#: handlers/start.py:76
 msgid "From here, u can see all of yours <b>Projects</b> and <b>Issues</b>."
 msgstr "Отсюда, вы можете просмотреть все ваши <b>Проекты</b> и <b>Задачи</b>"
 
-#: handlers/start.py:81
+#: handlers/start.py:73
 msgid "Choose what you want to change:"
 msgstr "Выберите, что хотите изменить:"
 
-#: handlers/start.py:86
+#: handlers/start.py:78
 msgid "Select a language:"
 msgstr "Выберите язык:"
 
-#: handlers/start.py:102
+#: handlers/start.py:89
+msgid "This language is already set."
+msgstr "Этот язык уже установлен."
+
+#: handlers/start.py:101
 msgid "You have changed the language!"
 msgstr "Вы изменили язык!"
 
-#: handlers/start.py:108
+#: handlers/start.py:107
 msgid "Select the time zone:"
 msgstr "Выберите часовой пояс:"
 
-#: handlers/start.py:122
-msgid "You have changed the timezone!"
+#: handlers/start.py:120
+msgid "This time zone is already set."
+msgstr "Этот часовой пояс уже установлен."
+
+#: handlers/start.py:130
+msgid "You have changed the time zone!"
 msgstr "Вы изменили часовой пояс!"
 
 #: handlers/issue/create_issue.py:27

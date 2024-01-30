@@ -15,23 +15,31 @@ class TokenSet(BaseMiddleware):
         event: Message | CallbackQuery | BotCommand,
         data: Dict[str, Any]
     ) -> Any:
-        token = get_flag(data, "token")
-        if not token:
+        get_token_handler = get_flag(data, "token")
+        if not get_token_handler:
             return await handler(event, data)
         
         sessionmaker = data["sessionmaker"]
-        
-        async with sessionmaker() as session:
-            async with session.begin():
-                user = await get_user(event.from_user.id, session)
+        redis = data["redis"]
 
-                if user.fetchone() is not None:
-                    results = await get_token(event.from_user.id, session)
-                    token = results.fetchone()[0]
-                    data["user_token"] = token
-                else:
-                    data["user_token"] = None
+        result = await redis.hget(name=event.from_user.id, key="token")
 
-                    return await handler(event, data)
+        if result:
+            data["user_token"] = result
+        else:
+            async with sessionmaker() as session:
+                async with session.begin():
+                    user = await get_user(event.from_user.id, session)
+
+                    if user.fetchone() is not None:
+                        results = await get_token(event.from_user.id, session)
+                        token = results.fetchone()[0]
+
+                        data["user_token"] = token
+                        await redis.hset(name=event.from_user.id, key="token", value=token)
+                    else:
+                        data["user_token"] = None
+
+                        return await handler(event, data)
 
         return await handler(event, data)
