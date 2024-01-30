@@ -18,7 +18,7 @@ class UserSettings(StatesGroup):
     lang = State()
 
 
-@router.message(Command("start"),flags={"action":"get_user"})
+@router.message(Command("start"), flags={"action":"get_user"})
 async def cmd_start(message: types.Message, state: FSMContext, language, i18n_middleware):
     user = message.from_user.first_name
 
@@ -32,11 +32,12 @@ async def cmd_start(message: types.Message, state: FSMContext, language, i18n_mi
 
     text = _("""
 \nA quick guide to working with me: 
-\n1) Login: first step is log in via /login command. \n    Without it, I won't work!
-\n2) Main menu accessed via /menu command. \n    Here you can choose what to work with: projects or issues.
-\n3) After your choice, you will be able to create a new element \n    (project or issue, depending on what you have chosen) \n    and view information about it.
-\n4) After the next selection, you can change the data of the element \n    or delete it altogether!
-\n<b>Please note that you must already be registered through the website. If you don't have an account yet, then you need to create one and only then use me </b>
+\n1) Login: first step is log in via /login command. Without it, I won't work!
+\n2) Main menu accessed via /menu command. Here you can choose what to work with: projects or issues.
+\n3) Then you can create a new item (project or issue), view information about it or other items.
+\n4) After that, you can change the data of the selected item or delete it altogether!
+\n5) You can also change my settings: language and time zone via /settings command.
+\n<b>Please note that you must already be registered through the website. If you don't have an account yet, then you need to create one and only then use me. </b>
            """)
 
     await message.answer(_("Hello, {user}! {text}").format(user=user, text=text), parse_mode="HTML")

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BugTracker_Telegram_bot VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-01-30 10:07+1000\n"
+"POT-Creation-Date: 2024-01-30 13:05+1000\n"
 "PO-Revision-Date: 2024-01-27 10:37+1000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -76,11 +76,11 @@ msgstr "В процессе"
 msgid "Done"
 msgstr "Сделано"
 
-#: handlers/bugtracker_api.py:180
+#: handlers/bugtracker_api.py:188
 msgid "The project was successfully deleted!"
 msgstr "Проект успешно удалена!"
 
-#: handlers/bugtracker_api.py:283
+#: handlers/bugtracker_api.py:299
 msgid "The issue was successfully deleted!"
 msgstr "Задача успешно удалёна!"
 
@@ -88,48 +88,47 @@ msgstr "Задача успешно удалёна!"
 msgid "Action canceled."
 msgstr "Действие отменено."
 
-#: handlers/start.py:34
+#: handlers/start.py:33
 msgid ""
 "\n"
 "\n"
 "A quick guide to working with me: \n"
 "\n"
-"1) Login: first step is log in via /login command. \n"
-"    Without it, I won't work!\n"
+"1) Login: first step is log in via /login command. Without it, I won't "
+"work!\n"
 "\n"
-"2) Main menu accessed via /menu command. \n"
-"    Here you can choose what to work with: projects or issues.\n"
+"2) Main menu accessed via /menu command. Here you can choose what to work"
+" with: projects or issues.\n"
 "\n"
-"3) After your choice, you will be able to create a new element \n"
-"    (project or issue, depending on what you have chosen) \n"
-"    and view information about it.\n"
+"3) Then you can create a new item (project or issue), view information "
+"about it or other items.\n"
 "\n"
-"4) After the next selection, you can change the data of the element \n"
-"    or delete it altogether!\n"
+"4) After that, you can change the data of the selected item or delete it "
+"altogether!\n"
+"\n"
+"5) You can also change my settings: language and time zone via /settings "
+"command.\n"
 "\n"
 "<b>Please note that you must already be registered through the website. "
 "If you don't have an account yet, then you need to create one and only "
-"then use me </b>\n"
+"then use me. </b>\n"
 "           "
 msgstr ""
 "\n"
 "\n"
 "Быстрая инструкция по работе со мной: \n"
 "\n"
-"1) Вход: сначала нужно войти используя команду /login. \n"
-"    Без этого, я не стану работать!\n"
+"1) Вход: сначала нужно войти используя команду /login. Без этого, я не стану работать!\n"
 "\n"
-"2) Главное менюю доступно по команде /menu. \n"
-"    Здесь вы выбираете с чем работать: проектами или задачами.\n"
+"2) Главное меню доступно по команде /menu. Здесь вы выбираете с чем работать: проектами или задачами.\n"
 "\n"
-"3) После вашего выбора, вы сможете создать новый элемент \n"
-"    (проект или задачу, в зависимости от того, что вы выбрали) \n"
-"    и просмотреть информацию о нём.\n"
+"3) Затем вы сможете создать новый элемент (проект или задачу), просмотреть информацию о нём или других элементах.\n"
 "\n"
-"4) После следующего выбора, вы сможете изменить данные элемента \n"
-"    или вовсе его удалить!\n"
+"4) После вы сможете изменять данные выбранного элемента или вовсе его удалить!\n"
 "\n"
-"<b>Пожалуйста, обратите внимание, что вы должны быть заранее "
+"5) Также вы можете изменить мои настройки: язык и часовой пояс через команду /settings.\n"
+"\n"
+"<b>Пожалуйста, обратите внимание, что вы должны быть уже "
 "зарегестрированы на сайте. Если у вас ещё нет аккаунта, то вам нужно его "
 "создать и только тогда использовать меня </b>\n"
 "           "
@@ -204,36 +203,36 @@ msgstr ""
 "<b>Введите название проекта, связанного с задачей:</b>\n"
 "            "
 
-#: handlers/issue/create_issue.py:44
+#: handlers/issue/create_issue.py:43
 msgid "Project not found! Please, try again!"
 msgstr "Проект не найден! Пожалуйста, попробуйте снова!"
 
-#: handlers/issue/create_issue.py:47
+#: handlers/issue/create_issue.py:46
 msgid "Good, now <b>enter the issue title:</b>"
 msgstr "Отлично, теперь <b>введите название задачи:</b>"
 
-#: handlers/issue/create_issue.py:53
+#: handlers/issue/create_issue.py:52
 msgid "Invalid project name, please, try again!"
 msgstr "Неверное название проекта, пожалуйста, попробуйте снова!"
 
-#: handlers/issue/create_issue.py:59
+#: handlers/issue/create_issue.py:58
 msgid "Good, now <b>enter description:</b>"
 msgstr "Отлично, теперь <b>введите описание:</b>"
 
-#: handlers/issue/create_issue.py:66
+#: handlers/issue/create_issue.py:65
 msgid "Good, now <b>enter key:</b>"
 msgstr "Отлично, теперь <b>введите ключ:</b>"
 
-#: handlers/issue/create_issue.py:73
+#: handlers/issue/create_issue.py:72
 msgid "Good, now <b>select type:</b>"
 msgstr "Отлично, теперь <b>выберите тип:</b>"
 
-#: handlers/issue/create_issue.py:80
+#: handlers/issue/create_issue.py:79
 msgid "Good, now <b>select priority:</b>"
 msgstr "Отлично, теперь <b>выберите приоритет:</b>"
 
-#: handlers/issue/create_issue.py:86 handlers/issue/create_issue.py:98
-#: handlers/issue/create_issue.py:127 handlers/issue/update_issue.py:111
+#: handlers/issue/create_issue.py:85 handlers/issue/create_issue.py:97
+#: handlers/issue/create_issue.py:126 handlers/issue/update_issue.py:111
 #: handlers/issue/update_issue.py:132 handlers/issue/update_issue.py:161
 #: handlers/project/create_project.py:70 handlers/project/create_project.py:94
 #: handlers/project/update_project.py:109
@@ -241,15 +240,15 @@ msgstr "Отлично, теперь <b>выберите приоритет:</b>
 msgid "Please select one of the options on the keyboard."
 msgstr "Пожалуйста, выберите один из вариантов на клавиатуре."
 
-#: handlers/issue/create_issue.py:92
+#: handlers/issue/create_issue.py:91
 msgid "Good, now <b>select status:</b>"
 msgstr "Отлично, теперь <b>выберите статус:</b>"
 
-#: handlers/issue/create_issue.py:116
+#: handlers/issue/create_issue.py:115
 msgid "The issue has been successfully created!"
 msgstr "Задача успешно создана!"
 
-#: handlers/issue/create_issue.py:119
+#: handlers/issue/create_issue.py:118
 msgid "An error occurred, the issue was NOT created! Try again"
 msgstr "Возникла ошибка, задача НЕ была создана! Попробуйте ещё раз"
 
@@ -443,11 +442,11 @@ msgstr "Возникла ошибка, проект НЕ был создан!"
 msgid "List of projects, page {page}:"
 msgstr "Cписок проектов, страница {page}:"
 
-#: handlers/project/projects.py:17
+#: handlers/project/projects.py:15
 msgid "List of projects, <b>page 1</b>:"
 msgstr "Список проектов, <b>страница 1</b>:"
 
-#: handlers/project/projects.py:36
+#: handlers/project/projects.py:26
 msgid ""
 "\n"
 "<b>Name</b>: {name} \n"
