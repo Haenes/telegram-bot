@@ -26,10 +26,6 @@ async def cmd_start(message: types.Message, state: FSMContext, language, i18n_mi
         await state.update_data(lang = language)
         await i18n_middleware.set_locale(state, language)
 
-    if language:
-        await state.update_data(lang = language)
-        await i18n_middleware.set_locale(state, language)
-
     text = _("""
 \nA quick guide to working with me: 
 \n1) Login: first step is log in via /login command. Without it, I won't work!
