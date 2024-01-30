@@ -18,13 +18,9 @@ class UserSettings(StatesGroup):
     lang = State()
 
 
-@router.message(Command("start"), flags={"action":"get_user"})
-async def cmd_start(message: types.Message, state: FSMContext, language, i18n_middleware):
+@router.message(Command("start"))
+async def cmd_start(message: types.Message):
     user = message.from_user.first_name
-
-    if language:
-        await state.update_data(lang = language)
-        await i18n_middleware.set_locale(state, language)
 
     text = _("""
 \nA quick guide to working with me: 
@@ -41,19 +37,15 @@ async def cmd_start(message: types.Message, state: FSMContext, language, i18n_mi
 
 @router.message(Command("login"), flags={"token":"get_token"})
 async def cmd_login(message: types.Message, command:CommandObject, sessionmaker, user_token):
-    if command.args:
+    if command.args and user_token == None:
         data = command.args.split(" ")
         username, password = data[0], data[1]
-    else:
-        if user_token and user_token != None:
-            await message.reply(_("You're already logged in, use the /menu command."))
-            await message.delete()
-        else:
-            await message.answer(_("Please, enter your <u>username and password</u> after /login command! \nExample: /login USERNAME PASSWORD"), parse_mode="HTML")
 
-    if user_token == None:
         try:
             token = get_token(username, password)
+        except KeyError:
+            await message.reply(_("Invalid username/password!"))
+        else:
             headers = {"Authorization": f"Token {token}"}
 
             async with sessionmaker() as session:
@@ -63,8 +55,12 @@ async def cmd_login(message: types.Message, command:CommandObject, sessionmaker,
 
             await message.reply(_("Successful login! \nTo continue, enter /menu command."))
             await message.delete()
-        except KeyError:
-            await message.reply(_("Invalid username/password!"))
+
+    elif user_token != None:
+        await message.reply(_("You're already logged in, use the /menu command."))
+        await message.delete()
+    else:
+        await message.answer(_("Please, enter your <u>username and password</u> after /login command! \nExample: /login USERNAME PASSWORD"), parse_mode="HTML")
 
 
 @router.message(Command("menu"))

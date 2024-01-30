@@ -4,7 +4,7 @@ from aiogram import BaseMiddleware
 from aiogram.dispatcher.flags import get_flag
 from aiogram.types import Message, CallbackQuery, BotCommand
 
-from db.user import get_token
+from db.user import get_user, get_token
 
 
 class TokenSet(BaseMiddleware):
@@ -23,13 +23,15 @@ class TokenSet(BaseMiddleware):
         
         async with sessionmaker() as session:
             async with session.begin():
-                results = await get_token(event.from_user.id, session)
-                token = results.fetchone()[0]
+                user = await get_user(event.from_user.id, session)
 
-                if token:
-                     data["user_token"] = token
+                if user.fetchone() is not None:
+                    results = await get_token(event.from_user.id, session)
+                    token = results.fetchone()[0]
+                    data["user_token"] = token
                 else:
                     data["user_token"] = None
+
                     return await handler(event, data)
 
         return await handler(event, data)

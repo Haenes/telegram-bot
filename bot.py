@@ -11,7 +11,6 @@ from sqlalchemy.engine import URL
 from db.base import BaseModel
 from db.engine import make_async_engine, get_sessionmaker, proceed_schemas
 
-from middlewares.user_check import UserCheck
 from middlewares.user_token import TokenSet
 from middlewares.user_headers import Headers
 
@@ -34,7 +33,6 @@ async def main():
 
     # register all midllewares
     dp.update.middleware.register(i18n_middleware)
-    dp.message.middleware.register(UserCheck())
     dp.message.middleware.register(TokenSet())
     dp.message.middleware.register(Headers())
     dp.callback_query.middleware.register(Headers())
