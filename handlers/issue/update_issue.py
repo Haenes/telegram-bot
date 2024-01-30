@@ -4,7 +4,7 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message
 from aiogram.utils.i18n import gettext as _
 
-from handlers.bugtracker_api import get_issue, update_issue, convert_project_to_url, Translate
+from handlers.bugtracker_api import get_issue, update_issue, Translate
 from keyboards.for_issues import issue_type_kb, issue_priority_kb, issue_status_kb
 
 
@@ -43,11 +43,11 @@ Now you will need to enter the data one by one to update issue.
     await state.set_state(UpdateIssue.title)
     await callback.answer()
 
-#TODO
-@router.message(UpdateIssue.title, flags={"set_headers":"set_headers"})
-async def title_enter(message: types.Message, state: FSMContext, user_headers):
+
+@router.message(UpdateIssue.title)
+async def title_enter(message: types.Message, state: FSMContext):
     # Set a project without the user's input
-    await state.update_data(project=convert_project_to_url(user_headers, issue_data["project"]))
+    await state.update_data(project=issue_data["project"])
     await state.update_data(title=message.text)
 
     text = _("""

@@ -149,14 +149,22 @@ def get_projects(headers, **kwargs):
     return r.json()
 
 
-def get_project(id, headers, language, timezone):
+def get_project(id, headers, **kwargs):
     """ Take info about single project via GET request """
 
-    r = requests.get(f"{API_BASE_URL}/projects/{id}", headers=headers)
-    data = r.json()
-    data["created"] = beautiful_date(data["created"], language, timezone)
+    if kwargs:
+        language, timezone = kwargs["language"], kwargs["timezone"]
 
-    return data
+        r = requests.get(f"{API_BASE_URL}/projects/{id}", headers=headers)
+        data = r.json()
+        data["created"] = beautiful_date(data["created"], language, timezone)
+
+        return data
+    else:
+        r = requests.get(f"{API_BASE_URL}/projects/{id}", headers=headers)
+        data = r.json()
+
+        return data
 
 
 def make_project(data, headers):
@@ -250,16 +258,24 @@ def get_issues(headers, **kwargs):
     return r.json()
 
 
-def get_issue(id, headers, language, timezone):
+def get_issue(id, headers, **kwargs):
     """ Take info about single issue via GET request """
 
-    r = requests.get(f"{API_BASE_URL}/issues/{id}", headers=headers)
-    data = r.json()
-    data["project"] = convert_url_to_project(headers, data["project"])
-    data["created"] = beautiful_date(data["created"], language, timezone)
-    data["updated"] = beautiful_date(data["updated"], language, timezone)
+    if kwargs:
+        language, timezone = kwargs["language"], kwargs["timezone"]
 
-    return data
+        r = requests.get(f"{API_BASE_URL}/issues/{id}", headers=headers)
+        data = r.json()
+        data["project"] = convert_url_to_project(headers, data["project"])
+        data["created"] = beautiful_date(data["created"], language, timezone)
+        data["updated"] = beautiful_date(data["updated"], language, timezone)
+
+        return data
+    else:
+        r = requests.get(f"{API_BASE_URL}/issues/{id}", headers=headers)
+        data = r.json()
+
+        return data
 
 
 def make_issue(data, headers):

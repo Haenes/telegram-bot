@@ -35,7 +35,6 @@ Now you will need to enter the data one by one to create a new issue.
     await callback.answer()
 
 
-#TODO ИЗМЕНИТЬ all_projects(), ДОБАВИВ В КАЧЕСТВЕ АРГУМЕНТА HEADERS И ПЕРЕДОВАТЬ ИХ
 @router.message(CreateIssue.project, flags={"set_headers":"set_headers"})
 async def project_enter(message: types.Message, state: FSMContext, user_headers):
     project = convert_project_to_url(user_headers, message.text)

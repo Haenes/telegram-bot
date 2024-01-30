@@ -11,7 +11,6 @@ from sqlalchemy.engine import URL
 from db.base import BaseModel
 from db.engine import make_async_engine, get_sessionmaker, proceed_schemas
 
-from middlewares.lang_tz import SetLangAndTz
 from middlewares.user_check import UserCheck
 from middlewares.user_token import TokenSet
 from middlewares.user_headers import Headers
@@ -39,7 +38,6 @@ async def main():
     dp.message.middleware.register(TokenSet())
     dp.message.middleware.register(Headers())
     dp.callback_query.middleware.register(Headers())
-    dp.callback_query.middleware.register(SetLangAndTz())
     
 
     dp.include_routers(start.router, projects.router, pagination_projects.router, issues.router, pagination_issues.router)

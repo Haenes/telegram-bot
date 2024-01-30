@@ -19,7 +19,7 @@ async def send_issues(callback: types.CallbackQuery, user_headers):
 @router.callback_query(F.data.startswith("issue_"), F.data.as_("data"), flags={"set_headers":"set_headers", "lang_tz":"lang_tz"})
 async def send_issue(callback: types.CallbackQuery, data, user_headers, language, timezone):
     issue_id = data.removeprefix("issue_")
-    results = get_issue(issue_id, user_headers, language, timezone)
+    results = get_issue(issue_id, user_headers, language=language, timezone=timezone)
 
     issue_type, priority, status = Translate(results).issue()
 
