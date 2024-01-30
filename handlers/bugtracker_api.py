@@ -1,5 +1,6 @@
 import os
 import requests
+from typing import Dict
 
 from datetime import datetime
 from dotenv import load_dotenv
@@ -53,7 +54,7 @@ class Translate:
     """
 
 
-    def __init__(self, data):
+    def __init__(self, data: Dict | str):
         self.data = data
 
 
@@ -64,6 +65,16 @@ class Translate:
         starred = favorite[self.data["starred"]]
 
         return starred
+
+
+    def timezones(self):
+        timezone = {
+            "UTC": "UTC",
+            "Moscow": _("Moscow"),
+            "Vladivostok": _("Vladivostok")
+        }
+
+        return timezone[self.data]
 
 
     def issue(self):

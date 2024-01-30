@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BugTracker_Telegram_bot VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-01-29 22:40+1000\n"
+"POT-Creation-Date: 2024-01-30 10:07+1000\n"
 "PO-Revision-Date: 2024-01-27 10:37+1000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -20,59 +20,67 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.11.0\n"
 
-#: handlers/bugtracker_api.py:54 keyboards/for_projects.py:89
+#: handlers/bugtracker_api.py:62 keyboards/for_projects.py:89
 msgid "True"
 msgstr "Да"
 
-#: handlers/bugtracker_api.py:55 keyboards/for_projects.py:95
+#: handlers/bugtracker_api.py:63 keyboards/for_projects.py:95
 msgid "False"
 msgstr "Нет"
 
-#: handlers/bugtracker_api.py:63 keyboards/for_issues.py:81
+#: handlers/bugtracker_api.py:73
+msgid "Moscow"
+msgstr "Москва"
+
+#: handlers/bugtracker_api.py:74
+msgid "Vladivostok"
+msgstr "Владивосток"
+
+#: handlers/bugtracker_api.py:81 keyboards/for_issues.py:81
 msgid "Bug"
 msgstr "Баг"
 
-#: handlers/bugtracker_api.py:64 keyboards/for_issues.py:87
+#: handlers/bugtracker_api.py:82 keyboards/for_issues.py:87
 msgid "Feature"
 msgstr "Фича"
 
-#: handlers/bugtracker_api.py:66
+#: handlers/bugtracker_api.py:84
 msgid "Lowest"
 msgstr "Низший"
 
-#: handlers/bugtracker_api.py:67
+#: handlers/bugtracker_api.py:85
 msgid "Low"
 msgstr "Низкий"
 
-#: handlers/bugtracker_api.py:68
+#: handlers/bugtracker_api.py:86
 msgid "Medium"
 msgstr "Средний"
 
-#: handlers/bugtracker_api.py:69
+#: handlers/bugtracker_api.py:87
 msgid "High"
 msgstr "Высокий"
 
-#: handlers/bugtracker_api.py:70
+#: handlers/bugtracker_api.py:88
 msgid "Highest"
 msgstr "Высочайший"
 
-#: handlers/bugtracker_api.py:72
+#: handlers/bugtracker_api.py:90
 msgid "To do"
 msgstr "Сделать"
 
-#: handlers/bugtracker_api.py:73
+#: handlers/bugtracker_api.py:91
 msgid "In progress"
 msgstr "В процессе"
 
-#: handlers/bugtracker_api.py:74
+#: handlers/bugtracker_api.py:92
 msgid "Done"
 msgstr "Сделано"
 
-#: handlers/bugtracker_api.py:162
+#: handlers/bugtracker_api.py:180
 msgid "The project was successfully deleted!"
 msgstr "Проект успешно удалена!"
 
-#: handlers/bugtracker_api.py:265
+#: handlers/bugtracker_api.py:283
 msgid "The issue was successfully deleted!"
 msgstr "Задача успешно удалёна!"
 
@@ -80,7 +88,7 @@ msgstr "Задача успешно удалёна!"
 msgid "Action canceled."
 msgstr "Действие отменено."
 
-#: handlers/start.py:29
+#: handlers/start.py:34
 msgid ""
 "\n"
 "\n"
@@ -126,15 +134,15 @@ msgstr ""
 "создать и только тогда использовать меня </b>\n"
 "           "
 
-#: handlers/start.py:38
+#: handlers/start.py:43
 msgid "Hello, {user}! {text}"
 msgstr "Привет, {user}! {text}"
 
-#: handlers/start.py:48
+#: handlers/start.py:53
 msgid "You're already logged in, use the /menu command."
 msgstr "Вы уже вошли, используйте команду /menu."
 
-#: handlers/start.py:51
+#: handlers/start.py:56
 msgid ""
 "Please, enter your <u>username and password</u> after /login command! \n"
 "Example: /login USERNAME PASSWORD"
@@ -142,7 +150,7 @@ msgstr ""
 "Пожалуйста, введите ваш <u>логин и пароль </u> после команды /login! \n"
 "Например: /login ЛОГИН ПАРОЛЬ"
 
-#: handlers/start.py:63
+#: handlers/start.py:68
 msgid ""
 "Successful login! \n"
 "To continue, enter /menu command."
@@ -150,31 +158,31 @@ msgstr ""
 "Успешный вход! \n"
 "Чтобы продолжить, введите команду /menu."
 
-#: handlers/start.py:66
+#: handlers/start.py:71
 msgid "Invalid username/password!"
 msgstr "Неверный логин/пароль!"
 
-#: handlers/start.py:71
+#: handlers/start.py:76
 msgid "From here, u can see all of yours <b>Projects</b> and <b>Issues</b>."
 msgstr "Отсюда, вы можете просмотреть все ваши <b>Проекты</b> и <b>Задачи</b>"
 
-#: handlers/start.py:76
+#: handlers/start.py:81
 msgid "Choose what you want to change:"
 msgstr "Выберите, что хотите изменить:"
 
-#: handlers/start.py:81
+#: handlers/start.py:86
 msgid "Select a language:"
 msgstr "Выберите язык:"
 
-#: handlers/start.py:97
+#: handlers/start.py:102
 msgid "You have changed the language!"
 msgstr "Вы изменили язык!"
 
-#: handlers/start.py:103
+#: handlers/start.py:108
 msgid "Select the time zone:"
 msgstr "Выберите часовой пояс:"
 
-#: handlers/start.py:117
+#: handlers/start.py:122
 msgid "You have changed the timezone!"
 msgstr "Вы изменили часовой пояс!"
 
@@ -439,7 +447,7 @@ msgstr "Cписок проектов, страница {page}:"
 msgid "List of projects, <b>page 1</b>:"
 msgstr "Список проектов, <b>страница 1</b>:"
 
-#: handlers/project/projects.py:32
+#: handlers/project/projects.py:36
 msgid ""
 "\n"
 "<b>Name</b>: {name} \n"
@@ -579,11 +587,11 @@ msgstr "Проекты"
 msgid "Issues"
 msgstr "Задачи"
 
-#: keyboards/for_settings.py:12
+#: keyboards/for_settings.py:13
 msgid "Language"
 msgstr "Язык"
 
-#: keyboards/for_settings.py:17
+#: keyboards/for_settings.py:18
 msgid "Timezone"
 msgstr "Часовой пояс"
 

@@ -21,7 +21,6 @@ class UserSettings(StatesGroup):
 @router.message(Command("start"),flags={"action":"get_user"})
 async def cmd_start(message: types.Message, state: FSMContext, language, i18n_middleware):
     user = message.from_user.first_name
-    print(message.from_user.language_code)
 
     if language:
         await state.update_data(lang = language)
