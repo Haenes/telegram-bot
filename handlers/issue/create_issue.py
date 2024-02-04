@@ -77,6 +77,7 @@ async def key_enter(message: types.Message, state: FSMContext):
 async def type_selected(callback: types.CallbackQuery, data: types.CallbackQuery, state: FSMContext):
     await state.update_data(type=data.removeprefix("iss_type_"))
     await callback.message.answer(_("Good, now <b>select priority:</b>"), parse_mode="HTML", reply_markup=issue_priority_kb())
+    await callback.answer()
     await state.set_state(CreateIssue.priority)
 
 
@@ -89,6 +90,7 @@ async def type_selected_incorrect(message: Message, state: FSMContext):
 async def priority_selected(callback: types.CallbackQuery, data: types.CallbackQuery, state: FSMContext):
     await state.update_data(priority=data.removeprefix("iss_priority_"))
     await callback.message.answer(_("Good, now <b>select status:</b>"), parse_mode="HTML", reply_markup=issue_status_kb())
+    await callback.answer()
     await state.set_state(CreateIssue.status)
 
 
@@ -113,10 +115,10 @@ async def status_selected(callback: types.CallbackQuery, data: types.CallbackQue
 
     if result == 201:
         await callback.message.answer(_("The issue has been successfully created!"))
-        callback.answer()
+        await callback.answer()
     else:
         await callback.message.answer(_("An error occurred, the issue was NOT created! Try again"))
-        callback.answer()
+        await callback.answer()
 
     await state.clear()
 
