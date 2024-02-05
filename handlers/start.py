@@ -119,9 +119,12 @@ async def set_timezone(callback: types.CallbackQuery, timezone: types.CallbackQu
         await callback.message.answer(_("This time zone is already set."))
         await callback.answer()
     else:
-        redis.hset(name=callback.from_user.id, key="tz", value=tz)
+        await redis.hset(name=callback.from_user.id, key="tz", value=tz)
         async with sessionmaker() as session:
             async with session.begin():
                 user = await get_user(callback.from_user.id, session)
                 user = User(user_id = callback.from_user.id, timezone = tz)
                 await session.merge(user)
+        
+        await callback.message.answer(text=_("You have changed the time zone!"))
+        await callback.answer()

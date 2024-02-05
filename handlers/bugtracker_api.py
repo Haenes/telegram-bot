@@ -13,7 +13,7 @@ load_dotenv()
 API_BASE_URL = os.environ.get("API_BASE_URL")
 
 
-def beautiful_date(datetime_to_format, language, timezone):
+def beautiful_date(datetime_to_format: str, language: str, timezone: str):
     """ 
     Remove unnecessary part from the received datetime.
     And convert it by language and timezone 
@@ -28,7 +28,7 @@ def beautiful_date(datetime_to_format, language, timezone):
     return dt
 
 
-def get_token(username, password):
+def get_token(username: str, password: str):
     """ 
     Gets the user token for all further requests,
     by making a POST request with the given username and password
