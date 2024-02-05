@@ -13,9 +13,8 @@ from keyboards.for_settings import settings_kb, language_kb, timezone_kb
 
 router = Router()
 
-
 class UserSettings(StatesGroup):
-    lang = State()
+    language = State()
 
 
 @router.message(Command("start"))
@@ -76,7 +75,7 @@ async def cmd_settings(message: types.Message):
 @router.callback_query(F.data == "language")
 async def language(callback: types.CallbackQuery, state: FSMContext):
     await callback.message.answer(_("Select a language:"), parse_mode="HTML", reply_markup=language_kb())
-    await state.set_state("lang")
+    await state.set_state(UserSettings.lang)
     await callback.answer()
 
 

@@ -29,7 +29,7 @@ async def main():
     logging.basicConfig(level=logging.INFO)
 
     i18n = I18n(path="locale", default_locale="en", domain="bot")
-    i18n_middleware = FSMI18nMiddleware(i18n, "en")
+    i18n_middleware = FSMI18nMiddleware(i18n, "lang")
 
     # Redis setup
     redis = Redis(decode_responses=True)
