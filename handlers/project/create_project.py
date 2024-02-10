@@ -72,7 +72,7 @@ async def key_enter(message: Message, state: FSMContext):
 async def type_selected(message: Message, state: FSMContext):
     await state.update_data(type=message.text)
     await message.answer(
-        _("Good, now <b>select whether the project"
+        _("Good, now <b>select whether the project "
             "will be a favorite or not:</b>"),
         parse_mode="HTML",
         reply_markup=project_favorite_kb()

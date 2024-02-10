@@ -14,10 +14,9 @@ API_BASE_URL = os.environ.get("API_BASE_URL")
 
 
 def beautiful_date(datetime_to_format: str, language: str, timezone: str):
-    """
-    Remove unnecessary part from the received datetime.
-    And convert it by language and timezone
+    """Remove unnecessary part from the received datetime.
 
+    And convert it by language and timezone
     Example: 2023-07-18T18:19:10.327000-05:00 --> 2023-07-18 18:19:10
     """
 
@@ -29,8 +28,8 @@ def beautiful_date(datetime_to_format: str, language: str, timezone: str):
 
 
 def get_token(username: str, password: str):
-    """
-    Gets the user token for all further requests,
+    """Gets the user token for all further requests,
+
     by making a POST request with the given username and password
     """
 
@@ -42,8 +41,8 @@ def get_token(username: str, password: str):
 
 
 class Translate:
-    """
-    A class for all InlineKeyboards that used to be Replaykeyboards,
+    """A class for all InlineKeyboards that used to be Replaykeyboards,
+
     but were forced to change their gender in order to be localized correctly
     """
 
@@ -205,8 +204,7 @@ def _all_projects(headers):
 
 
 def convert_project_to_url(headers, project_name):
-    """
-    Convert project name to project url (necessary for issue creation process).
+    """Convert project name to project url (necessary for issue creation).
 
     Take project name -> get list of projects (list of dict's).
     Iterate over a list trying to find project with given name.
@@ -226,8 +224,7 @@ def convert_project_to_url(headers, project_name):
 
 
 def convert_url_to_project(headers, project_url):
-    """
-    Convert project name to project url (necessary for Issue info).
+    """Convert project name to project url (necessary for Issue info).
 
     Works like convert_project_to_url, but reverse
     """

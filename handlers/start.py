@@ -114,7 +114,7 @@ async def language(callback: types.CallbackQuery, state: FSMContext):
         parse_mode="HTML",
         reply_markup=language_kb()
         )
-    await state.set_state(UserSettings.lang)
+    await state.set_state(UserSettings.language)
     await callback.answer()
 
 

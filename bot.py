@@ -18,12 +18,14 @@ from middlewares.user_token import TokenSet
 from middlewares.user_headers import Headers
 
 from handlers import start, common
-from handlers.project import (projects, pagination_projects,
-                              create_project, update_project
-                              )
-from handlers.issue import (issues, pagination_issues,
-                            create_issue, update_issue
-                            )
+from handlers.project import (
+    projects, pagination_projects,
+    create_project, update_project
+    )
+from handlers.issue import (
+    issues, pagination_issues,
+    create_issue, update_issue
+    )
 
 
 async def main():
