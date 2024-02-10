@@ -5,8 +5,11 @@ from aiogram.utils.i18n import gettext as _
 
 from handlers.bugtracker_api import Translate
 
+
 def settings_kb() -> InlineKeyboardMarkup:
-    """ Creates an inline-keyboard with language and timezone settings buttons in one row """
+    """Creates an inline-keyboard with language and timezone settings buttons
+    in one row
+    """
 
     builder = InlineKeyboardBuilder()
     builder.add(types.InlineKeyboardButton(
@@ -19,7 +22,7 @@ def settings_kb() -> InlineKeyboardMarkup:
         callback_data="timezone"
         )
     )
-    
+
     return builder.as_markup()
 
 
@@ -53,8 +56,7 @@ def timezone_kb() -> InlineKeyboardMarkup:
         builder.add(types.InlineKeyboardButton(
             text=Translate(timezone).timezones(),
             callback_data=f"time_{timezone}"
-        )
-    )
+            ))
 
     builder.adjust(2)
     return builder.as_markup()

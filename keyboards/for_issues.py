@@ -5,11 +5,11 @@ from aiogram.utils.i18n import gettext as _
 
 
 def issues_kb(results) -> InlineKeyboardMarkup:
-    """ 
+    """
     Make every issue - inline button.
     Plus add navigation buttons and button to create a new one
     """
-        
+
     issues = [issue for issue in results["results"]]
 
     builder = InlineKeyboardBuilder()
@@ -28,12 +28,14 @@ def issues_kb(results) -> InlineKeyboardMarkup:
         )
     )
 
-    if results["previous"] != None:
+    if results["previous"] is not None:
 
         if results["previous"] == "http://127.0.0.1:8000/api/issues/":
             page = 1
         else:
-            page = results["previous"].removeprefix("http://127.0.0.1:8000/api/issues/?page=")
+            page = (results["previous"].
+                    removeprefix("http://127.0.0.1:8000/api/issues/?page=")
+                    )
 
         builder.row(types.InlineKeyboardButton(
             text=_("<< Back"),
@@ -41,8 +43,10 @@ def issues_kb(results) -> InlineKeyboardMarkup:
             )
         )
 
-    if results["next"] != None:
-        page = results["next"].removeprefix("http://127.0.0.1:8000/api/issues/?page=")
+    if results["next"] is not None:
+        page = (results["next"].
+                removeprefix("http://127.0.0.1:8000/api/issues/?page=")
+                )
 
         builder.row(types.InlineKeyboardButton(
             text=_("Next >>"),

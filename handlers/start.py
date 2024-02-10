@@ -13,6 +13,7 @@ from keyboards.for_settings import settings_kb, language_kb, timezone_kb
 
 router = Router()
 
+
 class UserSettings(StatesGroup):
     language = State()
 
@@ -22,21 +23,33 @@ async def cmd_start(message: types.Message):
     user = message.from_user.first_name
 
     text = _("""
-\nA quick guide to working with me: 
+\nA quick guide to working with me:
 \n1) Login: first step is log in via /login command. Without it, I won't work!
-\n2) Main menu accessed via /menu command. Here you can choose what to work with: projects or issues.
-\n3) Then you can create a new item (project or issue), view information about it or other items.
-\n4) After that, you can change the data of the selected item or delete it altogether!
-\n5) You can also change my settings: language and time zone via /settings command.
-\n<b>Please note that you must already be registered through the website. If you don't have an account yet, then you need to create one and only then use me. </b>
-           """)
+\n2) Main menu accessed via /menu command. \
+Here you can choose what to work with: projects or issues.
+\n3) Then you can create a new item (project or issue), \
+view information about it or other items.
+\n4) After that, you can change the data of the selected item \
+or delete it altogether!
+\n5) You can also change my settings: language and time zone \
+via /settings command.
+\n<b>Please note that you must already be registered through the website. \
+If you don't have an account yet, \
+then you need to create one and only then use me. </b>
+             """)
 
-    await message.answer(_("Hello, {user}! {text}").format(user=user, text=text), parse_mode="HTML")
+    await message.answer(
+        _("Hello, {user}! {text}").format(user=user, text=text),
+        parse_mode="HTML"
+        )
 
 
-@router.message(Command("login"), flags={"token":"get_token"})
-async def cmd_login(message: types.Message, command:CommandObject, sessionmaker, user_token):
-    if command.args and user_token == None:
+@router.message(Command("login"), flags={"token": "get_token"})
+async def cmd_login(
+        message: types.Message,
+        command: CommandObject,
+        sessionmaker, user_token):
+    if command.args and user_token is None:
         data = command.args.split(" ")
         username, password = data[0], data[1]
 
@@ -49,38 +62,68 @@ async def cmd_login(message: types.Message, command:CommandObject, sessionmaker,
 
             async with sessionmaker() as session:
                 async with session.begin():
-                    user = User(user_id = message.from_user.id, user_token = token, user_headers = headers)
+                    user = User(
+                        user_id=message.from_user.id,
+                        user_token=token,
+                        user_headers=headers
+                        )
                     await session.merge(user)
 
-            await message.reply(_("Successful login! \nTo continue, enter /menu command."))
+            await message.reply(
+                _("Successful login! \nTo continue, enter /menu command.")
+                )
             await message.delete()
 
-    elif user_token != None:
-        await message.reply(_("You're already logged in, use the /menu command."))
+    elif user_token is not None:
+        await message.reply(
+            _("You're already logged in, use the /menu command.")
+            )
         await message.delete()
     else:
-        await message.answer(_("Please, enter your <u>username and password</u> after /login command! \nExample: /login USERNAME PASSWORD"), parse_mode="HTML")
+        await message.answer(
+            _("Please, enter your <u>username and password</u>"
+              "after /login command! \nExample: /login USERNAME PASSWORD"),
+            parse_mode="HTML"
+            )
 
 
 @router.message(Command("menu"))
 async def cmd_menu(message: types.Message):
-    await message.answer(_("From here, u can see all of yours <b>Projects</b> and <b>Issues</b>."), parse_mode="HTML", reply_markup=menu_kb())
+    await message.answer(
+        _("From here, u can see all of yours "
+          "<b>Projects</b> and <b>Issues</b>."
+          ),
+        parse_mode="HTML",
+        reply_markup=menu_kb()
+        )
 
 
 @router.message(Command("settings"))
 async def cmd_settings(message: types.Message):
-    await message.answer(_("Choose what you want to change:"), parse_mode="HTML", reply_markup=settings_kb())
+    await message.answer(
+        _("Choose what you want to change:"),
+        parse_mode="HTML",
+        reply_markup=settings_kb()
+        )
 
 
 @router.callback_query(F.data == "language")
 async def language(callback: types.CallbackQuery, state: FSMContext):
-    await callback.message.answer(_("Select a language:"), parse_mode="HTML", reply_markup=language_kb())
+    await callback.message.answer(
+        _("Select a language:"),
+        parse_mode="HTML",
+        reply_markup=language_kb()
+        )
     await state.set_state(UserSettings.lang)
     await callback.answer()
 
 
 @router.callback_query(F.data.startswith("lang_"), F.data.as_("language"))
-async def set_language(callback: types.CallbackQuery, state: FSMContext, language: types.CallbackQuery, i18n_middleware, sessionmaker, redis):
+async def set_language(
+        callback: types.CallbackQuery,
+        state: FSMContext,
+        language: types.CallbackQuery,
+        i18n_middleware, sessionmaker, redis):
     lang = language.removeprefix("lang_")
     cur_lang = get_i18n().current_locale
 
@@ -93,7 +136,7 @@ async def set_language(callback: types.CallbackQuery, state: FSMContext, languag
 
         async with sessionmaker() as session:
             async with session.begin():
-                user = User(user_id = callback.from_user.id, language = lang)
+                user = User(user_id=callback.from_user.id, language=lang)
                 await session.merge(user)
 
         await state.update_data(lang=lang)
@@ -103,12 +146,19 @@ async def set_language(callback: types.CallbackQuery, state: FSMContext, languag
 
 @router.callback_query(F.data == "timezone")
 async def timezone(callback: types.CallbackQuery):
-    await callback.message.answer(_("Select the time zone:"), parse_mode="HTML", reply_markup=timezone_kb())
+    await callback.message.answer(
+        _("Select the time zone:"),
+        parse_mode="HTML",
+        reply_markup=timezone_kb()
+        )
     await callback.answer()
 
 
 @router.callback_query(F.data.startswith("time_"), F.data.as_("timezone"))
-async def set_timezone(callback: types.CallbackQuery, timezone: types.CallbackQuery, sessionmaker, redis):
+async def set_timezone(
+        callback: types.CallbackQuery,
+        timezone: types.CallbackQuery,
+        sessionmaker, redis):
     tz = timezone.removeprefix("time_")
     cur_tz = await redis.hget(name=callback.from_user.id, key="tz")
 
@@ -119,12 +169,19 @@ async def set_timezone(callback: types.CallbackQuery, timezone: types.CallbackQu
         await callback.message.answer(_("This time zone is already set."))
         await callback.answer()
     else:
+        if tz == "Moscow":
+            tz = "Europe/Moscow"
+        elif tz == "Vladivostok":
+            tz = "Asia/Vladivostok"
+
         await redis.hset(name=callback.from_user.id, key="tz", value=tz)
         async with sessionmaker() as session:
             async with session.begin():
                 user = await get_user(callback.from_user.id, session)
-                user = User(user_id = callback.from_user.id, timezone = tz)
+                user = User(user_id=callback.from_user.id, timezone=tz)
                 await session.merge(user)
-        
-        await callback.message.answer(text=_("You have changed the time zone!"))
+
+        await callback.message.answer(text=_(
+            "You have changed the time zone!"
+            ))
         await callback.answer()

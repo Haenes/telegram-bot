@@ -14,11 +14,11 @@ API_BASE_URL = os.environ.get("API_BASE_URL")
 
 
 def beautiful_date(datetime_to_format: str, language: str, timezone: str):
-    """ 
+    """
     Remove unnecessary part from the received datetime.
-    And convert it by language and timezone 
+    And convert it by language and timezone
 
-    Example: 2023-07-18T18:19:10.327000-05:00 --> 2023-07-18 18:19:10 
+    Example: 2023-07-18T18:19:10.327000-05:00 --> 2023-07-18 18:19:10
     """
 
     format = "%Y-%m-%dT%H:%M:%S.%fZ"
@@ -29,15 +29,12 @@ def beautiful_date(datetime_to_format: str, language: str, timezone: str):
 
 
 def get_token(username: str, password: str):
-    """ 
+    """
     Gets the user token for all further requests,
     by making a POST request with the given username and password
     """
 
-    data = {
-        "username": username,
-        "password": password
-	}
+    data = {"username": username, "password": password}
     r = requests.post(f"{API_BASE_URL}-token-auth/", json=data)
     token = r.json()["token"]
 
@@ -46,48 +43,46 @@ def get_token(username: str, password: str):
 
 class Translate:
     """
-    A class for all InlineKeyboards that used to be Replaykeyboards, 
+    A class for all InlineKeyboards that used to be Replaykeyboards,
     but were forced to change their gender in order to be localized correctly
     """
-
 
     def __init__(self, data: Dict | str):
         self.data = data
 
-
     def project(self):
-        favorite = {True: _("True"),
-                    False: _("False")}
+        favorite = {True: _("True"), False: _("False")}
 
         starred = favorite[self.data["starred"]]
 
         return starred
-
 
     def timezones(self):
         timezone = {
             "UTC": "UTC",
             "Moscow": _("Moscow"),
             "Vladivostok": _("Vladivostok")
-        }
+            }
 
         return timezone[self.data]
 
-
     def issue(self):
-        types = {"Bug": _("Bug"),
-                 "Feature": _("Feature")}
+        types = {"Bug": _("Bug"), "Feature": _("Feature")}
 
-        prioritys = {"Lowest": _("Lowest"),
-                     "Low": _("Low"),
-                     "Medium": _("Medium"),
-                     "High": _("High"),
-                     "Highest": _("Highest")}
-   
-        statuses = {"To do": _("To do"),
-                    "In progress": _("In progress"),
-                    "Done": _("Done")}
-        
+        prioritys = {
+            "Lowest": _("Lowest"),
+            "Low": _("Low"),
+            "Medium": _("Medium"),
+            "High": _("High"),
+            "Highest": _("Highest")
+            }
+
+        statuses = {
+            "To do": _("To do"),
+            "In progress": _("In progress"),
+            "Done": _("Done")
+            }
+
         type = types[self.data["type"]]
         priority = prioritys[self.data["priority"]]
         status = statuses[self.data["status"]]
@@ -102,13 +97,11 @@ class Paginator:
         self.headers = headers
         self.page = page
 
-
     def next_projects(self):
         """ Next page with projects """
 
-        results = get_projects(self.headers, params={"page":self.page})
+        results = get_projects(self.headers, params={"page": self.page})
         return results
-
 
     def previous_projects(self):
         """ Previous page with projects """
@@ -116,17 +109,15 @@ class Paginator:
         if self.page == 1:
             results = get_projects(self.headers)
         else:
-            results = get_projects(self.headers, params={"page":self.page})
+            results = get_projects(self.headers, params={"page": self.page})
 
         return results
-
 
     def next_issues(self):
         """ Next page with issues """
 
-        results = get_issues(self.headers, params={"page":self.page})
+        results = get_issues(self.headers, params={"page": self.page})
         return results
-
 
     def previous_issues(self):
         """ Previous page with issues """
@@ -134,7 +125,7 @@ class Paginator:
         if self.page == 1:
             results = get_issues(self.headers)
         else:
-            results = get_issues(self.headers, params={"page":self.page})
+            results = get_issues(self.headers, params={"page": self.page})
 
         return results
 
@@ -174,14 +165,17 @@ def make_project(data, headers):
 def update_project(id, data, headers):
     """ Update single project via PUT request"""
 
-    r = requests.put(f"{API_BASE_URL}/projects/{id}/", headers=headers, data=data)
+    r = requests.put(
+        f"{API_BASE_URL}/projects/{id}/",
+        headers=headers, data=data
+        )
     return r.status_code
 
 
 def delete_project(id, headers):
     """ Delete single project via DELETE request"""
 
-    r = requests.delete(f"{API_BASE_URL}/projects/{id}", headers=headers)
+    requests.delete(f"{API_BASE_URL}/projects/{id}", headers=headers)
     return _("The project was successfully deleted!")
 
 
@@ -194,15 +188,17 @@ def _all_projects(headers):
     page = 2
     projects = []
 
-    # If there NO next page (1 page) -> add first results into projects and return it. 
-    # Otherwise while there next page with projects -> add projects from current page to projects list
+    # If there NO next page (1 page) ->
+    # add first results into projects and return it.
+    # Otherwise while there next page with projects ->
+    # add projects from current page to projects list.
     # Then make request with next page and increase page number
-    if results["next"] == None:
+    if results["next"] is None:
         projects += results["results"]
     else:
-        while results["next"] != None:
+        while results["next"] is not None:
             projects += results["results"]
-            results = get_projects(headers=headers, params={"page":page})
+            results = get_projects(headers=headers, params={"page": page})
             page += 1
 
     return projects
@@ -285,12 +281,15 @@ def make_issue(data, headers):
 def update_issue(id, data, headers):
     """ Update single issue via PUT request"""
 
-    r = requests.put(f"{API_BASE_URL}/issues/{id}/", headers=headers, data=data)
+    r = requests.put(
+        f"{API_BASE_URL}/issues/{id}/",
+        headers=headers, data=data
+        )
     return r.status_code
 
 
 def delete_issue(id, headers):
     """ Delete single issue via DELETE request"""
 
-    r = requests.delete(f"{API_BASE_URL}/issues/{id}", headers=headers)
+    requests.delete(f"{API_BASE_URL}/issues/{id}", headers=headers)
     return _("The issue was successfully deleted!")

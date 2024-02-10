@@ -5,7 +5,9 @@ from aiogram.utils.i18n import gettext as _
 
 
 def menu_kb() -> InlineKeyboardMarkup:
-    """ Creates an inline-keyboard with Projects and Issues buttons in one row """
+    """ Creates an inline-keyboard with Projects and Issues buttons
+    in one row
+    """
 
     builder = InlineKeyboardBuilder()
     builder.add(types.InlineKeyboardButton(
@@ -18,5 +20,5 @@ def menu_kb() -> InlineKeyboardMarkup:
         callback_data="issues"
         )
     )
-    
+
     return builder.as_markup()

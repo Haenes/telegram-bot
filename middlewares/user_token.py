@@ -18,7 +18,7 @@ class TokenSet(BaseMiddleware):
         get_token_handler = get_flag(data, "token")
         if not get_token_handler:
             return await handler(event, data)
-        
+
         sessionmaker = data["sessionmaker"]
         redis = data["redis"]
 
@@ -36,7 +36,11 @@ class TokenSet(BaseMiddleware):
                         token = results.fetchone()[0]
 
                         data["user_token"] = token
-                        await redis.hset(name=event.from_user.id, key="token", value=token)
+                        await redis.hset(
+                            name=event.from_user.id,
+                            key="token",
+                            value=token
+                            )
                     else:
                         data["user_token"] = None
 

@@ -1,12 +1,15 @@
 from aiogram import types
-from aiogram.types import InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import (
+    InlineKeyboardMarkup, ReplyKeyboardMarkup,
+    KeyboardButton
+    )
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.utils.i18n import gettext as _
 
 
 def projects_kb(results) -> InlineKeyboardMarkup:
-    """ 
-    Make every project - inline button.
+    """Make every project - inline button.
+
     Plus add navigation buttons and button to create a new one.
     """
 
@@ -21,19 +24,21 @@ def projects_kb(results) -> InlineKeyboardMarkup:
             )
         )
     builder.adjust(2)
-    
+
     builder.row(types.InlineKeyboardButton(
         text=_("Create"),
         callback_data="create_project"
         )
     )
 
-    if results["previous"] != None:
+    if results["previous"] is not None:
 
         if results["previous"] == "http://127.0.0.1:8000/api/projects/":
             page = 1
         else:
-            page = results["previous"].removeprefix("http://127.0.0.1:8000/api/projects/?page=")
+            page = (results["previous"].
+                    removeprefix("http://127.0.0.1:8000/api/projects/?page=")
+                    )
 
         builder.row(types.InlineKeyboardButton(
             text=_("<< Back"),
@@ -41,8 +46,10 @@ def projects_kb(results) -> InlineKeyboardMarkup:
             )
         )
 
-    if results["next"] != None:
-        page = results["next"].removeprefix("http://127.0.0.1:8000/api/projects/?page=")
+    if results["next"] is not None:
+        page = (results["next"].
+                removeprefix("http://127.0.0.1:8000/api/projects/?page=")
+                )
 
         builder.row(types.InlineKeyboardButton(
             text=_("Next >>"),
@@ -54,8 +61,7 @@ def projects_kb(results) -> InlineKeyboardMarkup:
 
 
 def project_kb(results) -> InlineKeyboardMarkup:
-    """ 
-    Creates an inline-keyboard with two button in one row. 
+    """Creates an inline-keyboard with two button in one row.
 
     Change - for change selected project info.
     Delete - delete selected project.
@@ -79,9 +85,7 @@ def project_kb(results) -> InlineKeyboardMarkup:
 
 
 def project_favorite_kb() -> InlineKeyboardMarkup:
-    """
-    Creates inline keyboard for project favorite select.
-    """
+    """ Creates inline keyboard for project favorite select. """
 
     builder = InlineKeyboardBuilder()
 
@@ -101,11 +105,13 @@ def project_favorite_kb() -> InlineKeyboardMarkup:
 
 
 def make_row_keyboard(items: list[str]) -> ReplyKeyboardMarkup:
-    """
-    Creates a replay keyboard with buttons in one row
+    """Creates a replay keyboard with buttons in one row
 
     items: list of texts for buttons
     """
 
     row = [KeyboardButton(text=item) for item in items]
-    return ReplyKeyboardMarkup(keyboard=[row], resize_keyboard=True, one_time_keyboard=True)
+    return ReplyKeyboardMarkup(
+        keyboard=[row], resize_keyboard=True,
+        one_time_keyboard=True
+        )

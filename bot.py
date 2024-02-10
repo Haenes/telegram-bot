@@ -18,8 +18,12 @@ from middlewares.user_token import TokenSet
 from middlewares.user_headers import Headers
 
 from handlers import start, common
-from handlers.project import projects, pagination_projects,  create_project, update_project
-from handlers.issue import issues, pagination_issues, create_issue, update_issue
+from handlers.project import (projects, pagination_projects,
+                              create_project, update_project
+                              )
+from handlers.issue import (issues, pagination_issues,
+                            create_issue, update_issue
+                            )
 
 
 async def main():
@@ -42,11 +46,15 @@ async def main():
     dp.message.middleware.register(TokenSet())
     dp.message.middleware.register(Headers())
     dp.callback_query.middleware.register(Headers())
-    
 
-    dp.include_routers(start.router, projects.router, pagination_projects.router, issues.router, pagination_issues.router)
-    dp.include_routers(common.router, create_project.router, update_project.router, create_issue.router, update_issue.router)
-
+    dp.include_routers(
+        start.router, projects.router, pagination_projects.router,
+        issues.router, pagination_issues.router
+        )
+    dp.include_routers(
+        common.router, create_project.router, update_project.router,
+        create_issue.router, update_issue.router
+        )
 
     # SQLAlchemy setup
     psql_url = URL.create(
@@ -60,7 +68,6 @@ async def main():
     async_engine = make_async_engine(psql_url)
     sessionmaker = get_sessionmaker(async_engine)
     await proceed_schemas(async_engine, BaseModel.metadata)
-
 
     # Launch the bot and skip all the accumulated updates
     await bot.delete_webhook(drop_pending_updates=True)
