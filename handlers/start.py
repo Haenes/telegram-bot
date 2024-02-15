@@ -114,7 +114,7 @@ async def language(callback: types.CallbackQuery, state: FSMContext):
         parse_mode="HTML",
         reply_markup=language_kb()
         )
-    await state.set_state(UserSettings.language)
+    # await state.set_state(UserSettings.language)
     await callback.answer()
 
 
@@ -132,7 +132,7 @@ async def set_language(
         await callback.answer()
     else:
         await i18n_middleware.set_locale(state, lang)
-        await redis.hset(name=callback.from_user.id, key="tz", value=lang)
+        await redis.hset(name=callback.from_user.id, key="lang", value=lang)
 
         async with sessionmaker() as session:
             async with session.begin():

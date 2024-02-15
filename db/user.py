@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, VARCHAR, JSON
+from sqlalchemy import Column, Integer, VARCHAR
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy import select
 
 from .base import BaseModel
@@ -14,7 +15,7 @@ class User(BaseModel):
     user_token = Column(VARCHAR(40), unique=True, nullable=True)
 
     # Headers for further requests to API
-    user_headers = Column(JSON, unique=True, nullable=True)
+    user_headers = Column(JSONB, unique=True, nullable=True)
 
     # User prefered language in bot
     language = Column(VARCHAR(2), default="en")

@@ -38,7 +38,12 @@ async def main():
     i18n_middleware = FSMI18nMiddleware(i18n, "lang")
 
     # Redis setup
-    redis = Redis(decode_responses=True)
+    redis = Redis(
+        host=os.environ.get("REDIS_HOST"),
+        password=os.environ.get("REDIS_PASSWORD"),
+        username=os.environ.get("REDIS_USER"),
+        decode_responses=True
+        )
 
     bot = Bot(token=BOT_TOKEN)
     dp = Dispatcher(storage=RedisStorage(redis))
@@ -61,11 +66,11 @@ async def main():
     # SQLAlchemy setup
     psql_url = URL.create(
         "postgresql+asyncpg",
-        os.environ.get("PSQL_USERNAME"),
-        os.environ.get("PSQL_PASSWORD"),
-        os.environ.get("PSQL_HOST"),
-        os.environ.get("PSQL_PORT"),
-        os.environ.get("PSQL_DATABASE"))
+        os.environ.get("POSTGRES_USER"),
+        os.environ.get("POSTGRES_PASSWORD"),
+        os.environ.get("POSTGRES_HOST"),
+        os.environ.get("POSTGRES_PORT"),
+        os.environ.get("POSTGRES_DB"))
 
     async_engine = make_async_engine(psql_url)
     sessionmaker = get_sessionmaker(async_engine)

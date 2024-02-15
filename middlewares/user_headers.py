@@ -32,7 +32,7 @@ class Headers(BaseMiddleware):
                 keys=["headers", "lang", "tz"]
                 )
 
-            if result:
+            if result and result.count(None) == 0:
                 data["user_headers"], data["language"], data["timezone"] = (
                     ast.literal_eval(result[0]), result[1], result[2]
                     )
@@ -42,8 +42,8 @@ class Headers(BaseMiddleware):
 
                         timezones = {
                             "UTC": "UTC",
-                            "Moscow": "Europe/Moscow",
-                            "Vladivostok": "Asia/Vladivostok"
+                            "Europe/Moscow": "Europe/Moscow",
+                            "Asia/Vladivostok": "Asia/Vladivostok"
                         }
 
                         results_headers = await get_headers(
@@ -69,7 +69,7 @@ class Headers(BaseMiddleware):
                         await redis.hset(
                             name=event.from_user.id,
                             mapping={
-                                "headers": headers,
+                                "headers": str(headers),
                                 "lang": lang,
                                 "tz": timezones[tz]
                                 }
@@ -93,7 +93,7 @@ class Headers(BaseMiddleware):
                         await redis.hset(
                             name=event.from_user.id,
                             key="headers",
-                            value=headers
+                            value=str(headers)
                             )
 
         return await handler(event, data)
