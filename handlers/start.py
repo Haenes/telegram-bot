@@ -59,13 +59,15 @@ async def cmd_login(
             await message.reply(_("Invalid username/password!"))
         else:
             headers = {"Authorization": f"Token {token}"}
+            lang = get_i18n().current_locale
 
             async with sessionmaker() as session:
                 async with session.begin():
                     user = User(
                         user_id=message.from_user.id,
                         user_token=token,
-                        user_headers=headers
+                        user_headers=headers,
+                        language=lang
                         )
                     await session.merge(user)
 
