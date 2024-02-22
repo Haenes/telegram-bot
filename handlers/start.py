@@ -84,7 +84,7 @@ async def cmd_login(
     else:
         await message.answer(
             _("Please, enter your <u>username and password</u>"
-              "after /login command! \nExample: /login USERNAME PASSWORD"),
+              " after /login command! \nExample: /login USERNAME PASSWORD"),
             parse_mode="HTML"
             )
 

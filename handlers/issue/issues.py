@@ -15,11 +15,16 @@ router = Router()
         F.data == "issues",
         flags={"set_headers": "set_headers"})
 async def send_issues(callback: types.CallbackQuery, user_headers):
-    results = get_issues(user_headers)
+    if user_headers is not None:
+        results = get_issues(user_headers)
 
-    await callback.message.answer(
-        _("List of issues, page 1:"),
-        reply_markup=issues_kb(results)
+        await callback.message.answer(
+            _("List of issues, page 1:"),
+            reply_markup=issues_kb(results)
+            )
+    else:
+        await callback.message.answer(
+            _("You aren't logged in, use /login command.")
         )
     await callback.answer()
 

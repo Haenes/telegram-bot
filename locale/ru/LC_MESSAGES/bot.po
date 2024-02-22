@@ -158,12 +158,13 @@ msgstr ""
 msgid "You're already logged in, use the /menu command."
 msgstr "Вы уже вошли, используйте команду /menu."
 
-#: handlers/start.py:63
+#: handlers/start.py:86
 msgid ""
-"Please, enter your <u>username and password</u> after /login command! \n"
+"Please, enter your <u>username and password</u>"
+" after /login command! \n"
 "Example: /login USERNAME PASSWORD"
 msgstr ""
-"Пожалуйста, введите ваш <u>логин и пароль </u> после команды /login! \n"
+"Пожалуйста, введите ваш <u>логин и пароль</u> после команды /login! \n"
 "Например: /login ЛОГИН ПАРОЛЬ"
 
 #: handlers/start.py:68
@@ -252,6 +253,11 @@ msgstr "Отлично, теперь <b>выберите приоритет:</b>
 #: handlers/project/update_project.py:131
 msgid "Please select one of the options on the keyboard."
 msgstr "Пожалуйста, выберите один из вариантов на клавиатуре."
+
+#: handlers/issue/issues.py:27
+#: handlers/project/projects.py:28
+msgid "You aren't logged in, use /login command."
+msgstr "Вы не вошли, используйте команду /login."
 
 #: handlers/issue/create_issue.py:91
 msgid "Good, now <b>select status:</b>"

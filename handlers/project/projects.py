@@ -15,13 +15,18 @@ router = Router()
         F.data == "projects",
         flags={"set_headers": "set_headers"})
 async def send_projects(callback: types.CallbackQuery, user_headers):
-    results = get_projects(user_headers)
+    if user_headers is not None:
+        results = get_projects(user_headers)
 
-    await callback.message.answer(
-        _("List of projects, <b>page 1</b>:"),
-        parse_mode="HTML",
-        reply_markup=projects_kb(results)
-        )
+        await callback.message.answer(
+            _("List of projects, <b>page 1</b>:"),
+            parse_mode="HTML",
+            reply_markup=projects_kb(results)
+            )
+    else:
+        await callback.message.answer(
+            _("You aren't logged in, use /login command.")
+            )
     await callback.answer()
 
 

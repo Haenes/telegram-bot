@@ -87,7 +87,12 @@ class Headers(BaseMiddleware):
                             event.from_user.id,
                             session
                             )
-                        headers = results.fetchone()[0]
+
+                    # Try to set headers from cache
+                        try:
+                            headers = results.fetchone()[0]
+                        except TypeError:
+                            headers = None
 
                         data["user_headers"] = headers
                         await redis.hset(
