@@ -7,30 +7,11 @@ services:
         command: 'python bot.py'
         env_file:
           - .env
-        depends_on:
-          postgres:
-            condition: service_healthy
         networks:
           - default
           - bugtracker
         restart: always
 
-    postgres:
-        container_name: postgres
-        image: postgres:16-alpine
-        env_file:
-          - .env
-        ports:
-          - '5400:5432'
-        volumes:
-          - ./deploy/db:/var/lib/postgresql/data
-        healthcheck:
-          test: ["CMD-SHELL", "pg_isready -U$$POSTGRES_USER -d$$POSTGRES_DB"]
-          interval: 5s
-          timeout: 5s
-          retries: 100
-        restart: always
-    
     redis:
         build: deploy/redis
         container_name: redis-bot
@@ -42,7 +23,6 @@ services:
         restart: always 
 
 volumes:
-  db:
   redis:
 
 networks:
