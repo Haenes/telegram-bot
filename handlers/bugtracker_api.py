@@ -132,7 +132,7 @@ class Paginator:
 def get_projects(headers, **kwargs):
     """ Get first page of projects via GET request """
 
-    r = requests.get(f"{API_BASE_URL}/projects", headers=headers, **kwargs)
+    r = requests.get(f"{API_BASE_URL}/projects/", headers=headers, **kwargs)
     return r.json()
 
 
@@ -142,13 +142,13 @@ def get_project(id, headers, **kwargs):
     if kwargs:
         language, timezone = kwargs["language"], kwargs["timezone"]
 
-        r = requests.get(f"{API_BASE_URL}/projects/{id}", headers=headers)
+        r = requests.get(f"{API_BASE_URL}/projects/{id}/", headers=headers)
         data = r.json()
         data["created"] = beautiful_date(data["created"], language, timezone)
 
         return data
     else:
-        r = requests.get(f"{API_BASE_URL}/projects/{id}", headers=headers)
+        r = requests.get(f"{API_BASE_URL}/projects/{id}/", headers=headers)
         data = r.json()
 
         return data
@@ -174,7 +174,7 @@ def update_project(id, data, headers):
 def delete_project(id, headers):
     """ Delete single project via DELETE request"""
 
-    requests.delete(f"{API_BASE_URL}/projects/{id}", headers=headers)
+    requests.delete(f"{API_BASE_URL}/projects/{id}/", headers=headers)
     return _("The project was successfully deleted!")
 
 
@@ -244,7 +244,7 @@ def convert_url_to_project(headers, project_url):
 def get_issues(headers, **kwargs):
     """ Get first page of issues via GET request """
 
-    r = requests.get(f"{API_BASE_URL}/issues", headers=headers, **kwargs)
+    r = requests.get(f"{API_BASE_URL}/issues/", headers=headers, **kwargs)
     return r.json()
 
 
@@ -254,7 +254,7 @@ def get_issue(id, headers, **kwargs):
     if kwargs:
         language, timezone = kwargs["language"], kwargs["timezone"]
 
-        r = requests.get(f"{API_BASE_URL}/issues/{id}", headers=headers)
+        r = requests.get(f"{API_BASE_URL}/issues/{id}/", headers=headers)
         data = r.json()
         data["project"] = convert_url_to_project(headers, data["project"])
         data["created"] = beautiful_date(data["created"], language, timezone)
@@ -262,7 +262,7 @@ def get_issue(id, headers, **kwargs):
 
         return data
     else:
-        r = requests.get(f"{API_BASE_URL}/issues/{id}", headers=headers)
+        r = requests.get(f"{API_BASE_URL}/issues/{id}/", headers=headers)
         data = r.json()
 
         return data
@@ -288,5 +288,5 @@ def update_issue(id, data, headers):
 def delete_issue(id, headers):
     """ Delete single issue via DELETE request"""
 
-    requests.delete(f"{API_BASE_URL}/issues/{id}", headers=headers)
+    requests.delete(f"{API_BASE_URL}/issues/{id}/", headers=headers)
     return _("The issue was successfully deleted!")
