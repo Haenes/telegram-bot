@@ -17,7 +17,6 @@ router = Router()
 class UpdateIssue(StatesGroup):
     title = State()
     description = State()
-    key = State()
     type = State()
     priority = State()
     status = State()
@@ -56,8 +55,9 @@ Now you will need to enter the data one by one to update issue.
 
 @router.message(UpdateIssue.title)
 async def title_enter(message: types.Message, state: FSMContext):
-    # Set a project without the user's input
+    # Set a project and key without the user's input
     await state.update_data(project=issue_data["project"])
+    await state.update_data(key=issue_data["key"])
     await state.update_data(title=message.text)
 
     text = _("""
@@ -73,20 +73,6 @@ Good, now enter the issue description. \n
 @router.message(UpdateIssue.description)
 async def description_enter(message: types.Message, state: FSMContext):
     await state.update_data(description=message.text)
-
-    text = _("""
-Good, now enter the issue key. \n
-<b>Previous key: {key}</b>
-<b>New key:</b>
-            """).format(key=issue_data['key'])
-
-    await message.answer(text, parse_mode="HTML")
-    await state.set_state(UpdateIssue.key)
-
-
-@router.message(UpdateIssue.key)
-async def key_enter(message: types.Message, state: FSMContext):
-    await state.update_data(key=message.text)
 
     type = Translate(issue_data).issue()[0]
 

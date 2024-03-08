@@ -337,22 +337,6 @@ msgstr ""
 "<b>Новое описание:</b>\n"
 "            "
 
-#: handlers/issue/update_issue.py:67
-msgid ""
-"\n"
-"Good, now enter the issue key. \n"
-"\n"
-"<b>Previous key: {key}</b>\n"
-"<b>New key:</b>\n"
-"            "
-msgstr ""
-"\n"
-"Отлично, теперь введите ключ задачи. \n"
-"\n"
-"<b>Предыдущий ключ: {key}</b>\n"
-"<b>Новый ключ:</b>\n"
-"            "
-
 #: handlers/issue/update_issue.py:83
 msgid ""
 "\n"
