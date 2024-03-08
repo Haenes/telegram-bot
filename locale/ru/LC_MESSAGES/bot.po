@@ -233,10 +233,6 @@ msgstr "Неверное название проекта, пожалуйста, 
 msgid "Good, now <b>enter description:</b>"
 msgstr "Отлично, теперь <b>введите описание:</b>"
 
-#: handlers/issue/create_issue.py:65
-msgid "Good, now <b>enter key:</b>"
-msgstr "Отлично, теперь <b>введите ключ:</b>"
-
 #: handlers/issue/create_issue.py:72
 msgid "Good, now <b>select type:</b>"
 msgstr "Отлично, теперь <b>выберите тип:</b>"

@@ -13,6 +13,27 @@ load_dotenv()
 API_BASE_URL = os.environ.get("API_BASE_URL")
 
 
+def latest_key(headers: dict, project_id: int):
+    """ Returns a latest key for issue related with project
+
+    Example 1: if the project already has two issues: latest key = 2
+    Example 2: if the project doesn't have issues yet: latest key = 0
+    """
+    projects = []
+    keys = []
+    results = get_issues(headers)["results"]
+    for issue in results:
+        project = issue["project"].removeprefix(f"{API_BASE_URL}/projects/")[0]
+        projects.append(project)
+
+        if int(project) == project_id:
+            keys.append(issue["key"])
+        elif project_id not in projects:
+            keys.append(0)
+
+    return max(keys)
+
+
 def beautiful_date(datetime_to_format: str, language: str, timezone: str):
     """Remove unnecessary part from the received datetime.
 

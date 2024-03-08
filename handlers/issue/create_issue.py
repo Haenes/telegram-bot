@@ -4,7 +4,9 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message
 from aiogram.utils.i18n import gettext as _
 
-from handlers.bugtracker_api import convert_project_to_url, make_issue
+from handlers.bugtracker_api import (
+    convert_project_to_url, make_issue, latest_key
+    )
 from keyboards.for_issues import (
     issue_type_kb, issue_priority_kb,
     issue_status_kb
@@ -39,19 +41,23 @@ Now you will need to enter the data one by one to create a new issue.
 
 
 @router.message(CreateIssue.project, flags={"set_headers": "set_headers"})
-async def project_enter(
+async def key_project_enter(
         message: types.Message, state: FSMContext,
         user_headers):
     project = convert_project_to_url(user_headers, message.text)
+    project_id = int(project.removeprefix("http://web:8000/api/projects/")[0])
 
     if project == "UnboundLocalError":
         await message.answer(_("Project not found! Please, try again!"))
     else:
+        key = latest_key(user_headers, project_id) + 1
         await state.update_data(project=project)
+        await state.update_data(key=key)
         await message.answer(
             _("Good, now <b>enter the issue title:</b>"),
             parse_mode="HTML"
             )
+
         await state.set_state(CreateIssue.title)
 
 
@@ -73,13 +79,6 @@ async def title_enter(message: types.Message, state: FSMContext):
 @router.message(CreateIssue.description)
 async def description_enter(message: types.Message, state: FSMContext):
     await state.update_data(description=message.text)
-    await message.answer(_("Good, now <b>enter key:</b>"), parse_mode="HTML")
-    await state.set_state(CreateIssue.key)
-
-
-@router.message(CreateIssue.key)
-async def key_enter(message: types.Message, state: FSMContext):
-    await state.update_data(key=message.text)
     await message.answer(
         _("Good, now <b>select type:</b>"),
         parse_mode="HTML", reply_markup=issue_type_kb()
