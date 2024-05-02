@@ -33,11 +33,11 @@ def projects_kb(results) -> InlineKeyboardMarkup:
 
     if results["previous"] is not None:
 
-        if results["previous"] == "http://127.0.0.1:8000/api/projects/":
+        if results["previous"] == "http://web:8000/api/projects/":
             page = 1
         else:
             page = (results["previous"].
-                    removeprefix("http://127.0.0.1:8000/api/projects/?page=")
+                    removeprefix("http://web:8000/api/projects/?page=")
                     )
 
         builder.row(types.InlineKeyboardButton(
@@ -48,7 +48,7 @@ def projects_kb(results) -> InlineKeyboardMarkup:
 
     if results["next"] is not None:
         page = (results["next"].
-                removeprefix("http://127.0.0.1:8000/api/projects/?page=")
+                removeprefix("http://web:8000/api/projects/?page=")
                 )
 
         builder.row(types.InlineKeyboardButton(

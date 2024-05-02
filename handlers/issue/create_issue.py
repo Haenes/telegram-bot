@@ -5,7 +5,7 @@ from aiogram.types import Message
 from aiogram.utils.i18n import gettext as _
 
 from handlers.bugtracker_api import (
-    convert_project_to_url, make_issue, latest_key
+    convert_project_to_url, latest_key, main
     )
 from keyboards.for_issues import (
     issue_type_kb, issue_priority_kb,
@@ -44,13 +44,13 @@ Now you will need to enter the data one by one to create a new issue.
 async def key_project_enter(
         message: types.Message, state: FSMContext,
         user_headers):
-    project = convert_project_to_url(user_headers, message.text)
+    project = await convert_project_to_url(user_headers, message.text)
     project_id = int(project.removeprefix("http://web:8000/api/projects/")[0])
 
     if project == "UnboundLocalError":
         await message.answer(_("Project not found! Please, try again!"))
     else:
-        key = latest_key(user_headers, project_id) + 1
+        key = await latest_key(user_headers, project_id) + 1
         await state.update_data(project=project)
         await state.update_data(key=key)
         await message.answer(
@@ -156,7 +156,11 @@ async def status_selected(
     await state.update_data(status=status)
     user_data = await state.get_data()
 
-    result = make_issue(user_data, user_headers)
+    result = await main(
+        endpoint="make_issue",
+        data=user_data,
+        headers=user_headers
+    )
 
     if result == 201:
         await callback.message.answer(

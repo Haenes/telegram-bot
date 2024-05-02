@@ -1,5 +1,6 @@
 import os
-import requests
+import asyncio
+import aiohttp
 from typing import Dict
 from datetime import datetime
 from dotenv import load_dotenv
@@ -13,7 +14,7 @@ load_dotenv()
 API_BASE_URL = os.environ.get("API_BASE_URL")
 
 
-def latest_key(headers: dict, project_id: int):
+async def latest_key(headers: dict, project_id: int):
     """ Returns a latest key for issue related with project
 
     Example 1: if the project already has two issues: latest key = 2
@@ -21,20 +22,26 @@ def latest_key(headers: dict, project_id: int):
     """
     projects = []
     keys = []
-    results = get_issues(headers)["results"]
-    for issue in results:
-        project = issue["project"].removeprefix(f"{API_BASE_URL}/projects/")[0]
-        projects.append(project)
 
-        if int(project) == project_id:
-            keys.append(issue["key"])
-        elif project_id not in projects:
-            keys.append(0)
+    async with aiohttp.ClientSession() as session:
+        preresults = await get_issues(session, headers=headers)
+        results = preresults["results"]
 
-    return max(keys)
+        for issue in results:
+            project = issue["project"].removeprefix(
+                f"{API_BASE_URL}/projects/"
+                )[0]
+            projects.append(project)
+
+            if int(project) == project_id:
+                keys.append(issue["key"])
+            elif project_id not in projects:
+                keys.append(0)
+
+        return max(keys)
 
 
-def beautiful_date(datetime_to_format: str, language: str, timezone: str):
+def _beautiful_date(datetime_to_format: str, language: str, timezone: str):
     """Remove unnecessary part from the received datetime.
 
     And convert it by language and timezone
@@ -48,17 +55,18 @@ def beautiful_date(datetime_to_format: str, language: str, timezone: str):
     return dt
 
 
-def get_token(username: str, password: str):
+async def get_token(session, username: str, password: str):
     """Gets the user token for all further requests,
 
     by making a POST request with the given username and password
     """
 
     data = {"username": username, "password": password}
-    r = requests.post(f"{API_BASE_URL}-token-auth/", json=data)
-    token = r.json()["token"]
+    url = f"{API_BASE_URL}-token-auth/"
 
-    return token
+    async with session.post(url, json=data) as r:
+        res = await r.json()
+        return res["token"]
 
 
 class Translate:
@@ -117,114 +125,150 @@ class Paginator:
         self.headers = headers
         self.page = page
 
-    def next_projects(self):
+    async def next_projects(self, session, **kwargs):
         """ Next page with projects """
 
-        results = get_projects(self.headers, params={"page": self.page})
+        results = await get_projects(
+            session=session, headers=self.headers,
+            params={"page": self.page}
+            )
         return results
 
-    def previous_projects(self):
+    async def previous_projects(self, session, **kwargs):
         """ Previous page with projects """
 
         if self.page == 1:
-            results = get_projects(self.headers)
+            results = await get_projects(session, self.headers)
         else:
-            results = get_projects(self.headers, params={"page": self.page})
+            results = await get_projects(
+                session=session, headers=self.headers,
+                params={"page": self.page}
+                )
 
         return results
 
-    def next_issues(self):
+    async def next_issues(self, session, **kwargs):
         """ Next page with issues """
 
-        results = get_issues(self.headers, params={"page": self.page})
+        results = await get_issues(
+            session=session, headers=self.headers,
+            params={"page": self.page}
+            )
+
         return results
 
-    def previous_issues(self):
+    async def previous_issues(self, session, **kwargs):
         """ Previous page with issues """
 
         if self.page == 1:
-            results = get_issues(self.headers)
+            results = await get_issues(session, self.headers)
         else:
-            results = get_issues(self.headers, params={"page": self.page})
+            results = await get_issues(
+                session=session, headers=self.headers,
+                params={"page": self.page}
+                )
 
         return results
 
 
-def get_projects(headers, **kwargs):
-    """ Get first page of projects via GET request """
+async def get_projects(session, headers, **kwargs):
+    """ Get first (or N) page of projects via GET request """
 
-    r = requests.get(f"{API_BASE_URL}/projects/", headers=headers, **kwargs)
-    return r.json()
+    url = f"{API_BASE_URL}/projects/"
+    try:
+        # This block is executing when we
+        # want to get N page of projects.
+        async with session.get(
+            url, headers=headers,
+            params=kwargs["params"]
+        ) as r:
+            return await r.json()
+    except KeyError:
+        async with session.get(url, headers=headers) as r:
+            return await r.json()
 
 
-def get_project(id, headers, **kwargs):
+async def get_project(session, headers, id, **kwargs):
     """ Take info about single project via GET request """
 
-    if kwargs:
+    try:
         language, timezone = kwargs["language"], kwargs["timezone"]
 
-        r = requests.get(f"{API_BASE_URL}/projects/{id}/", headers=headers)
-        data = r.json()
-        data["created"] = beautiful_date(data["created"], language, timezone)
+        url = f"{API_BASE_URL}/projects/{id}/"
+        async with session.get(url, headers=headers) as r:
+            data = await r.json()
+            data["created"] = _beautiful_date(
+                data["created"],
+                language,
+                timezone
+                )
+            return data
+    except KeyError:
+        url = f"{API_BASE_URL}/projects/{id}/"
+        async with session.get(url, headers=headers) as r:
+            return await r.json()
 
-        return data
-    else:
-        r = requests.get(f"{API_BASE_URL}/projects/{id}/", headers=headers)
-        data = r.json()
 
-        return data
-
-
-def make_project(data, headers):
+async def make_project(session, headers, data, **kwargs):
     """ Create single project via POST request """
 
-    r = requests.post(f"{API_BASE_URL}/projects/", headers=headers, data=data)
-    return r.status_code
+    url = f"{API_BASE_URL}/projects/"
+    async with session.post(url, data=data, headers=headers) as r:
+        return r.status
 
 
-def update_project(id, data, headers):
+async def update_project(session, headers, id, data, **kwargs):
     """ Update single project via PUT request"""
 
-    r = requests.put(
-        f"{API_BASE_URL}/projects/{id}/",
-        headers=headers, data=data
-        )
-    return r.status_code
+    url = f"{API_BASE_URL}/projects/{id}/"
+    async with session.put(url, data=data, headers=headers) as r:
+        return r.status
 
 
-def delete_project(id, headers):
+async def delete_project(session, headers, id, **kwargs):
     """ Delete single project via DELETE request"""
 
-    requests.delete(f"{API_BASE_URL}/projects/{id}/", headers=headers)
-    return _("The project was successfully deleted!")
+    url = f"{API_BASE_URL}/projects/{id}/"
+    async with session.delete(url, headers=headers) as r:
+        if r.status == 204:
+            return _("The project was successfully deleted!")
+        # TODO: Add else scenario
 
 
-def _all_projects(headers):
+async def _all_projects(headers):
     """ Get all projects from all pages """
 
-    # Set headers and make first request to get first page of projects
-    results = get_projects(headers=headers)
+    # Set headers and make first request to get first page of projects.
 
-    page = 2
-    projects = []
+    # The creation of a new session is necessary, because
+    # I don't see a way to throw into the get_projects()
+    # created in the main() session.
 
-    # If there NO next page (1 page) ->
-    # add first results into projects and return it.
-    # Otherwise while there next page with projects ->
-    # add projects from current page to projects list.
-    # Then make request with next page and increase page number
-    if results["next"] is None:
-        projects += results["results"]
-    else:
-        while results["next"] is not None:
+    async with aiohttp.ClientSession() as session:
+        results = await get_projects(session=session, headers=headers)
+        page = 2
+        projects = []
+
+        # If there is NO next page (only 1 page) ->
+        # add first results into projects and return it.
+        # Otherwise while there next page with projects ->
+        # add projects from current page to projects list.
+        # Then make request with next page and increase page number.
+        if results["next"] is None:
             projects += results["results"]
-            results = get_projects(headers=headers, params={"page": page})
-            page += 1
+        else:
+            while results["next"] is not None:
+                projects += results["results"]
+                results = await get_projects(
+                    headers=headers,
+                    params={"page": page}
+                    )
+                page += 1
 
-    return projects
+        return projects
 
 
-def convert_project_to_url(headers, project_name):
+async def convert_project_to_url(headers, project_name):
     """Convert project name to project url (necessary for issue creation).
 
     Take project name -> get list of projects (list of dict's).
@@ -232,7 +276,7 @@ def convert_project_to_url(headers, project_name):
     If project is found -> get url of project and return it.
     """
 
-    projects = _all_projects(headers)
+    projects = await _all_projects(headers)
 
     for project in projects:
         if project["name"] == project_name:
@@ -244,13 +288,13 @@ def convert_project_to_url(headers, project_name):
         return "UnboundLocalError"
 
 
-def convert_url_to_project(headers, project_url):
+async def convert_url_to_project(headers, project_url):
     """Convert project name to project url (necessary for Issue info).
 
     Works like convert_project_to_url, but reverse
     """
 
-    projects = _all_projects(headers)
+    projects = await _all_projects(headers)
 
     for project in projects:
         if project["url"] == project_url:
@@ -262,52 +306,95 @@ def convert_url_to_project(headers, project_url):
         return "UnboundLocalError"
 
 
-def get_issues(headers, **kwargs):
-    """ Get first page of issues via GET request """
+async def get_issues(session, headers, **kwargs):
+    """ Get first (or N) page of issues via GET request """
 
-    r = requests.get(f"{API_BASE_URL}/issues/", headers=headers, **kwargs)
-    return r.json()
+    url = f"{API_BASE_URL}/issues/"
+    try:
+        # This block is executing when we
+        # want to get N page of issues.
+        async with session.get(
+            url, headers=headers,
+            params=kwargs["params"]
+        ) as r:
+            return await r.json()
+    except KeyError:
+        async with session.get(url, headers=headers) as r:
+            return await r.json()
 
 
-def get_issue(id, headers, **kwargs):
+async def get_issue(session, id, headers, **kwargs):
     """ Take info about single issue via GET request """
 
-    if kwargs:
+    try:
         language, timezone = kwargs["language"], kwargs["timezone"]
 
-        r = requests.get(f"{API_BASE_URL}/issues/{id}/", headers=headers)
-        data = r.json()
-        data["project"] = convert_url_to_project(headers, data["project"])
-        data["created"] = beautiful_date(data["created"], language, timezone)
-        data["updated"] = beautiful_date(data["updated"], language, timezone)
+        url = f"{API_BASE_URL}/issues/{id}/"
+        async with session.get(url, headers=headers) as r:
+            data = await r.json()
+            data["project"] = await convert_url_to_project(
+                headers,
+                data["project"]
+                )
+            data["created"] = _beautiful_date(
+                data["created"],
+                language,
+                timezone
+                )
+            data["updated"] = _beautiful_date(
+                data["updated"],
+                language,
+                timezone
+                )
 
-        return data
-    else:
-        r = requests.get(f"{API_BASE_URL}/issues/{id}/", headers=headers)
-        data = r.json()
+            return data
+    except KeyError:
+        url = f"{API_BASE_URL}/issues/{id}/"
+        async with session.get(url, headers=headers) as r:
+            return await r.json()
 
-        return data
 
-
-def make_issue(data, headers):
+async def make_issue(session, data, headers, **kwargs):
     """ Create single issue via POST request """
 
-    r = requests.post(f"{API_BASE_URL}/issues/", headers=headers, data=data)
-    return r.status_code
+    url = f"{API_BASE_URL}/issues/"
+    async with session.post(url, data=data, headers=headers) as r:
+        return r.status
 
 
-def update_issue(id, data, headers):
+async def update_issue(session, id, data, headers, **kwargs):
     """ Update single issue via PUT request"""
 
-    r = requests.put(
-        f"{API_BASE_URL}/issues/{id}/",
-        headers=headers, data=data
-        )
-    return r.status_code
+    url = f"{API_BASE_URL}/issues/{id}/"
+    async with session.put(url, data=data, headers=headers) as r:
+        return r.status
 
 
-def delete_issue(id, headers):
+async def delete_issue(session, id, headers, **kwargs):
     """ Delete single issue via DELETE request"""
 
-    requests.delete(f"{API_BASE_URL}/issues/{id}/", headers=headers)
-    return _("The issue was successfully deleted!")
+    url = f"{API_BASE_URL}/issues/{id}/"
+    async with session.delete(url, headers=headers) as r:
+        if r.status == 204:
+            return _("The issue was successfully deleted!")
+
+
+async def main(**kwargs):
+    async with aiohttp.ClientSession() as session:
+        if kwargs:
+            try:
+                # This block executes only when we work
+                # with pagination of projects and/or issues.
+                res = await getattr(
+                    Paginator(kwargs["headers"], kwargs["page"]),
+                    kwargs["method"]
+                    )(session)
+                return res
+            except KeyError:
+                # A block that usually works with API by running
+                # functions with a request to a specific endpoint.
+                res = await globals()[kwargs["endpoint"]](session, **kwargs)
+                return res
+
+
+asyncio.run(main())

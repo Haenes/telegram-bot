@@ -4,7 +4,7 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message
 from aiogram.utils.i18n import gettext as _
 
-from handlers.bugtracker_api import Translate, get_issue, update_issue
+from handlers.bugtracker_api import Translate, main
 from keyboards.for_issues import (
     issue_type_kb, issue_priority_kb,
     issue_status_kb
@@ -39,7 +39,11 @@ async def change_update(
     global issue_data
 
     issue_id = data.removeprefix("iss_change_")
-    issue_data = get_issue(issue_id, user_headers)
+    issue_data = await main(
+        endpoint="get_issue",
+        id=issue_id,
+        headers=user_headers
+    )
 
     text = _("""
 Now you will need to enter the data one by one to update issue.
@@ -171,7 +175,12 @@ async def status_selected(
     await state.update_data(status=status)
     user_data = await state.get_data()
 
-    result = update_issue(issue_data["id"], user_data, user_headers)
+    result = await main(
+        endpoint="update_issue",
+        id=issue_data["id"],
+        data=user_data,
+        headers=user_headers
+    )
 
     if result == 200:
         await callback.message.answer(

@@ -1,7 +1,7 @@
 from aiogram import Router, types, F
 from aiogram.utils.i18n import gettext as _
 
-from handlers.bugtracker_api import Paginator
+from handlers.bugtracker_api import main
 from keyboards.for_issues import issues_kb
 
 
@@ -17,8 +17,12 @@ async def next_issues(
         data: types.CallbackQuery,
         user_headers):
     page = data.removeprefix("next_issues_")
-    paginator = Paginator(user_headers, page)
-    results = paginator.next_issues()
+
+    results = await main(
+        method="next_issues",
+        headers=user_headers,
+        page=page
+    )
 
     await callback.message.answer(
         _("List of issues, page {page}:").format(page=page),
@@ -37,8 +41,11 @@ async def back_issues(
         user_headers):
     page = data.removeprefix("back_issues_")
 
-    paginator = Paginator(user_headers, page)
-    results = paginator.previous_issues()
+    results = await main(
+        method="previous_issues",
+        headers=user_headers,
+        page=page
+    )
 
     await callback.message.answer(
         _("List of issues, page {page}:").format(page=page),

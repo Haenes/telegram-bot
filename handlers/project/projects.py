@@ -1,10 +1,7 @@
 from aiogram import Router, types, F
 from aiogram.utils.i18n import gettext as _
 
-from handlers.bugtracker_api import (
-    Translate, get_projects,
-    get_project, delete_project
-    )
+from handlers.bugtracker_api import Translate, main
 from keyboards.for_projects import projects_kb, project_kb
 
 
@@ -16,7 +13,7 @@ router = Router()
         flags={"set_headers": "set_headers"})
 async def send_projects(callback: types.CallbackQuery, user_headers):
     if user_headers is not None:
-        results = get_projects(user_headers)
+        results = await main(endpoint="get_projects", headers=user_headers)
 
         await callback.message.answer(
             _("List of projects, <b>page 1</b>:"),
@@ -39,9 +36,12 @@ async def send_project(
         data: types.CallbackQuery,
         user_headers, language, timezone):
     project_id = data.removeprefix("project_")
-    results = get_project(
-        project_id, user_headers,
-        language=language, timezone=timezone
+    results = await main(
+        endpoint="get_project",
+        id=project_id,
+        headers=user_headers,
+        language=language,
+        timezone=timezone
         )
 
     starred = Translate(results).project()
@@ -72,7 +72,11 @@ async def send_project(
         flags={"set_headers": "set_headers"})
 async def del_project(callback: types.CallbackQuery, data, user_headers):
     project_id = data.removeprefix("prj_delete_")
-    results = delete_project(project_id, user_headers)
+    results = await main(
+        endpoint="delete_project",
+        id=project_id,
+        headers=user_headers
+        )
 
     await callback.message.answer(results)
     await callback.answer()

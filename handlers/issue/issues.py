@@ -1,10 +1,7 @@
 from aiogram import Router, types, F
 from aiogram.utils.i18n import gettext as _
 
-from handlers.bugtracker_api import (
-    Translate, get_issues,
-    get_issue, delete_issue
-    )
+from handlers.bugtracker_api import Translate, main
 from keyboards.for_issues import issues_kb, issue_kb
 
 
@@ -16,7 +13,7 @@ router = Router()
         flags={"set_headers": "set_headers"})
 async def send_issues(callback: types.CallbackQuery, user_headers):
     if user_headers is not None:
-        results = get_issues(user_headers)
+        results = await main(endpoint="get_issues", headers=user_headers)
 
         await callback.message.answer(
             _("List of issues, page 1:"),
@@ -38,10 +35,14 @@ async def send_issue(
         data, user_headers,
         language, timezone):
     issue_id = data.removeprefix("issue_")
-    results = get_issue(
-        issue_id, user_headers,
-        language=language, timezone=timezone
-        )
+
+    results = await main(
+        endpoint="get_issue",
+        id=issue_id,
+        headers=user_headers,
+        language=language,
+        timezone=timezone
+    )
 
     issue_type, priority, status = Translate(results).issue()
 
@@ -74,7 +75,12 @@ async def send_issue(
         flags={"set_headers": "set_headers"})
 async def del_issue(callback: types.CallbackQuery, data, user_headers):
     issue_id = data.removeprefix("iss_delete_")
-    results = delete_issue(issue_id, user_headers)
+
+    results = await main(
+        endpoint="delete_issue",
+        id=issue_id,
+        headers=user_headers
+    )
 
     await callback.message.answer(results)
     await callback.answer()

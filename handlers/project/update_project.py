@@ -4,7 +4,7 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message
 from aiogram.utils.i18n import gettext as _
 
-from handlers.bugtracker_api import Translate, get_project, update_project
+from handlers.bugtracker_api import Translate, main
 from keyboards.for_projects import make_row_keyboard, project_favorite_kb
 
 
@@ -40,7 +40,11 @@ async def change_project(
     global project_data
 
     project_id = data.removeprefix("prj_change_")
-    project_data = get_project(project_id, user_headers)
+    project_data = await main(
+        endpoint="get_project",
+        headers=user_headers,
+        id=project_id
+        )
 
     text = _("""
 Now you will need to enter the data one by one to update project.
@@ -140,7 +144,12 @@ async def favorite_selected(
     await state.update_data(starred=data.removeprefix("prj_favorite_"))
     user_data = await state.get_data()
 
-    results = update_project(project_data["id"], user_data, user_headers)
+    results = await main(
+        endpoint="update_project",
+        headers=user_headers,
+        id=project_data["id"],
+        data=user_data
+    )
 
     if results == 200:
         await callback.message.answer(

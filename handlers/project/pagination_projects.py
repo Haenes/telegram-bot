@@ -1,7 +1,7 @@
 from aiogram import Router, types, F
 from aiogram.utils.i18n import gettext as _
 
-from handlers.bugtracker_api import Paginator
+from handlers.bugtracker_api import main
 from keyboards.for_projects import projects_kb
 
 
@@ -18,8 +18,11 @@ async def next_projects(
         user_headers):
     page = data.removeprefix("next_projects_")
 
-    paginator = Paginator(user_headers, page)
-    results = paginator.next_projects()
+    results = await main(
+        method="next_projects",
+        headers=user_headers,
+        page=page
+    )
 
     await callback.message.answer(
         _("List of projects, page {page}:").format(page=page),
@@ -38,8 +41,11 @@ async def back_projects(
         user_headers):
     page = data.removeprefix("back_projects_")
 
-    paginator = Paginator(user_headers, page)
-    results = paginator.previous_projects()
+    results = await main(
+        method="previous_projects",
+        headers=user_headers,
+        page=page
+    )
 
     await callback.message.answer(
         _("List of projects, page {page}:").format(page=page),

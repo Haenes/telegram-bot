@@ -4,7 +4,7 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message
 from aiogram.utils.i18n import gettext as _
 
-from handlers.bugtracker_api import make_project
+from handlers.bugtracker_api import main
 from keyboards.for_projects import make_row_keyboard, project_favorite_kb
 
 
@@ -103,7 +103,11 @@ async def favorite_selected(
     await state.update_data(starred=favorite)
     user_data = await state.get_data()
 
-    results = make_project(user_data, user_headers)
+    results = await main(
+        endpoint="make_project",
+        headers=user_headers,
+        data=user_data
+        )
 
     if results == 201:
         await callback.message.answer(
