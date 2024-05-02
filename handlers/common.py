@@ -14,5 +14,5 @@ async def cmd_cancel(message: Message, state: FSMContext):
     await state.clear()
     await message.answer(
         text=_("Action canceled."),
-        reply_markup=ReplyKeyboardRemove
+        reply_markup=ReplyKeyboardRemove()
         )
