@@ -191,10 +191,10 @@ async def get_projects(session, headers, **kwargs):
 async def get_project(session, headers, id, **kwargs):
     """ Take info about single project via GET request """
 
+    url = f"{API_BASE_URL}/projects/{id}/"
     try:
         language, timezone = kwargs["language"], kwargs["timezone"]
 
-        url = f"{API_BASE_URL}/projects/{id}/"
         async with session.get(url, headers=headers) as r:
             data = await r.json()
             data["created"] = _beautiful_date(
@@ -204,7 +204,6 @@ async def get_project(session, headers, id, **kwargs):
                 )
             return data
     except KeyError:
-        url = f"{API_BASE_URL}/projects/{id}/"
         async with session.get(url, headers=headers) as r:
             return await r.json()
 
@@ -326,10 +325,10 @@ async def get_issues(session, headers, **kwargs):
 async def get_issue(session, id, headers, **kwargs):
     """ Take info about single issue via GET request """
 
+    url = f"{API_BASE_URL}/issues/{id}/"
     try:
         language, timezone = kwargs["language"], kwargs["timezone"]
 
-        url = f"{API_BASE_URL}/issues/{id}/"
         async with session.get(url, headers=headers) as r:
             data = await r.json()
             data["project"] = await convert_url_to_project(
@@ -349,7 +348,6 @@ async def get_issue(session, id, headers, **kwargs):
 
             return data
     except KeyError:
-        url = f"{API_BASE_URL}/issues/{id}/"
         async with session.get(url, headers=headers) as r:
             return await r.json()
 
