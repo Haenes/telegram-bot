@@ -55,7 +55,7 @@ def _beautiful_date(datetime_to_format: str, language: str, timezone: str):
     return dt
 
 
-async def get_token(session, username: str, password: str):
+async def get_token(session, username: str, password: str, **kwargs):
     """Gets the user token for all further requests,
 
     by making a POST request with the given username and password
@@ -378,7 +378,7 @@ async def delete_issue(session, id, headers, **kwargs):
 
 
 async def main(**kwargs):
-    async with aiohttp.ClientSession() as session:
+    async with aiohttp.ClientSession(trust_env=True) as session:
         if kwargs:
             try:
                 # This block executes only when we work

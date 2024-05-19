@@ -6,7 +6,7 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.utils.i18n import gettext as _, get_i18n
 
 from db.user import User, get_user
-from handlers.bugtracker_api import get_token
+from handlers.bugtracker_api import main
 from keyboards.for_menu import menu_kb
 from keyboards.for_settings import settings_kb, language_kb, timezone_kb
 
@@ -54,7 +54,11 @@ async def cmd_login(
         username, password = data[0], data[1]
 
         try:
-            token = get_token(username, password)
+            token = await main(
+                endpoint="get_token",
+                username=username,
+                password=password
+                )
         except KeyError:
             await message.reply(_("Invalid username/password!"))
         else:
