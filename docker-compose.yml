@@ -2,14 +2,16 @@ services:
     bot:
         container_name: bot
         build: .
+        volumes:
+          - .:/app
         command: 'python bot.py'
         env_file:
           - .env
         networks:
           - bugtracker
-        restart: always
+        restart: unless-stopped
 
 networks:
   bugtracker:
-    name: bugtracker_default
+    name: api_default
     external: true

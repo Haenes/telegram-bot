@@ -1,52 +1,52 @@
-from sqlalchemy import Column, Integer, VARCHAR
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy import VARCHAR
 from sqlalchemy import select
+from sqlalchemy.orm import Mapped, Session, mapped_column
 
-from .base import BaseModel
+from .base import Base
 
 
-class User(BaseModel):
-    __tablename__ = "users"
+class User(Base):
+    __tablename__ = "tg_user"
 
-    # Telegram user id
-    user_id = Column(Integer, unique=True, nullable=False, primary_key=True)
-
-    # Bugtracker API token
-    user_token = Column(VARCHAR(40), unique=True, nullable=True)
-
-    # Headers for further requests to API
-    user_headers = Column(JSONB, unique=True, nullable=True)
-
-    # User prefered language in bot
-    language = Column(VARCHAR(2), default="en")
-
-    # User prefered timezone in bot
-    timezone = Column(VARCHAR(16), default="UTC")
+    user_id: Mapped[int] = mapped_column(
+        primary_key=True,
+        unique=True,
+        nullable=False
+    )
+    user_token: Mapped[str] = mapped_column(
+        VARCHAR(255),
+        unique=True,
+        nullable=False
+    )
+    language: Mapped[str | None] = mapped_column(VARCHAR(7), default="en")
+    timezone: Mapped[str | None] = mapped_column(VARCHAR(30), default="UTC")
 
     def __str__(self) -> str:
         return f"User: ID={self.user_id}"
 
 
-async def get_user(user_id: int, session) -> User:
-    stmt = select(User).where(User.user_id == user_id)
-    return await session.execute(stmt)
+async def get_user(user_id: int, session: Session) -> int | None:
+    stmt = select(User.user_id).where(User.user_id == user_id)
+    return await session.scalar(stmt)
 
 
-async def get_token(user_id: int, session) -> User:
+async def get_token(user_id: int, session: Session) -> str | None:
     stmt = select(User.user_token).where(User.user_id == user_id)
-    return await session.execute(stmt)
+    return await session.scalar(stmt)
 
 
-async def get_headers(user_id: int, session) -> User.user_headers:
-    stmt = select(User.user_headers).where(User.user_id == user_id)
-    return await session.execute(stmt)
+async def get_headers(user_id: int, session: Session) -> dict[str, str] | None:
+    token = await get_token(user_id, session)
+    if token:
+        return {"Authorization": f"Bearer {token}"}
+    return None
 
 
-async def get_user_language(user_id: int, session) -> User.language:
+async def get_user_language(user_id: int, session: Session) -> str | None:
     stmt = select(User.language).where(User.user_id == user_id)
-    return await session.execute(stmt)
+    return await session.scalar(stmt)
 
 
-async def get_user_timezone(user_id: int, session) -> User.timezone:
+async def get_user_timezone(user_id: int, session: Session) -> str | None:
     stmt = select(User.timezone).where(User.user_id == user_id)
-    return await session.execute(stmt)
+    return await session.scalar(stmt)

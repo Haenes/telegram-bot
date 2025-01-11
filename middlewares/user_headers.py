@@ -1,9 +1,12 @@
 import ast
-from typing import Callable, Dict, Awaitable, Any
+from typing import Callable, Awaitable, Any
 
 from aiogram import BaseMiddleware
 from aiogram.dispatcher.flags import get_flag
 from aiogram.types import Message, CallbackQuery, BotCommand
+
+from redis.asyncio import Redis
+from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from db.user import get_headers, get_user_language, get_user_timezone
 
@@ -12,93 +15,89 @@ class Headers(BaseMiddleware):
 
     async def __call__(
         self,
-        handler: Callable[[Message, Dict[str, Any]], Awaitable[Any]],
+        handler: Callable[[Message, dict[str, Any]], Awaitable[Any]],
         event: Message | CallbackQuery | BotCommand,
-        data: Dict[str, Any]
+        data: dict[str, Any]
     ) -> Any:
-        set_headers = get_flag(data, "set_headers")
-        lang_tz = get_flag(data, "lang_tz")
+        set_headers_flag = get_flag(data, "set_headers")
+        lang_tz_flag = get_flag(data, "lang_tz")
+        user_id = event.from_user.id
 
-        if not set_headers and not lang_tz:
+        if not set_headers_flag and not lang_tz_flag:
             return await handler(event, data)
 
-        sessionmaker = data["sessionmaker"]
-        redis = data["redis"]
+        sessionmaker: async_sessionmaker = data["sessionmaker"]
+        redis: Redis = data["redis"]
 
-        if set_headers and lang_tz:
-
-            result = await redis.hmget(
+        if set_headers_flag and lang_tz_flag:
+            data_from_cache = await redis.hmget(
                 name=event.from_user.id,
-                keys=["headers", "lang", "tz"]
-                )
+                keys=["headers", "language", "timezone"]
+            )
 
-            if result and result.count(None) == 0:
+            if data_from_cache and data_from_cache.count(None) == 0:
                 data["user_headers"], data["language"], data["timezone"] = (
-                    ast.literal_eval(result[0]), result[1], result[2]
-                    )
-            else:
-                async with sessionmaker() as session:
-                    async with session.begin():
+                    ast.literal_eval(data_from_cache[0]),
+                    data_from_cache[1],
+                    data_from_cache[2]
+                )
+                return await handler(event, data)
 
-                        timezones = {
-                            "UTC": "UTC",
-                            "Europe/Moscow": "Europe/Moscow",
-                            "Asia/Vladivostok": "Asia/Vladivostok"
-                        }
+            await set_headers_lang_tz_from_db(sessionmaker, redis, user_id, data)
+            return await handler(event, data)
 
-                        results_headers = await get_headers(
-                            event.from_user.id,
-                            session
-                            )
-                        results_language = await get_user_language(
-                            user_id=event.from_user.id,
-                            session=session
-                            )
-                        results_timezone = await get_user_timezone(
-                            user_id=event.from_user.id,
-                            session=session
-                            )
+        headers_in_cache = await redis.hget(user_id, "headers")
 
-                        headers = results_headers.fetchone()[0]
-                        lang = results_language.fetchone()[0]
-                        tz = results_timezone.fetchone()[0]
+        if headers_in_cache:
+            data["user_headers"] = ast.literal_eval(headers_in_cache)
+            return await handler(event, data)
 
-                        data["user_headers"] = headers
-                        data["language"] = lang
-                        data["timezone"] = timezones[tz]
-                        await redis.hset(
-                            name=event.from_user.id,
-                            mapping={
-                                "headers": str(headers),
-                                "lang": lang,
-                                "tz": timezones[tz]
-                                }
-                            )
-
-        else:
-            result = await redis.hget(name=event.from_user.id, key="headers")
-
-            if result:
-                data["user_headers"] = ast.literal_eval(result)
-            else:
-                async with sessionmaker() as session:
-                    async with session.begin():
-                        results = await get_headers(
-                            event.from_user.id,
-                            session
-                            )
-
-                    # Try to set headers from cache
-                        try:
-                            headers = results.fetchone()[0]
-                        except TypeError:
-                            headers = None
-
-                        data["user_headers"] = headers
-                        await redis.hset(
-                            name=event.from_user.id,
-                            key="headers",
-                            value=str(headers)
-                            )
-
+        await set_headers_from_db(sessionmaker, redis, user_id, data)
         return await handler(event, data)
+
+
+async def set_headers_from_db(
+    sessionmaker: async_sessionmaker,
+    redis: Redis,
+    user_id: int,
+    data: dict[str, Any]
+):
+    async with sessionmaker() as session:
+        async with session.begin():
+            headers_from_db = await get_headers(user_id, session)
+            data["user_headers"] = headers_from_db
+
+            await redis.hset(user_id, "headers", str(headers_from_db))
+
+
+async def set_headers_lang_tz_from_db(
+    sessionmaker: async_sessionmaker,
+    redis: Redis,
+    user_id: int,
+    data: dict[str, Any]
+):
+    async with sessionmaker() as session:
+        async with session.begin():
+
+            timezones = {
+                "UTC": "UTC",
+                "Europe/Moscow": "Europe/Moscow",
+                "Asia/Vladivostok": "Asia/Vladivostok"
+            }
+
+            headers_from_db = await get_headers(user_id, session)
+            language_from_db = await get_user_language(user_id, session)
+            timezone_from_db = await get_user_timezone(user_id, session)
+
+            data["user_headers"] = headers_from_db
+            data["language"] = language_from_db
+            data["timezone"] = timezones[timezone_from_db]
+
+            await redis.hset(
+                name=user_id,
+                mapping={
+                    "headers": str(headers_from_db),
+                    "language": language_from_db,
+                    "timezone": timezones[timezone_from_db]
+                }
+            )

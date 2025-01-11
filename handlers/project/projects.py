@@ -1,82 +1,94 @@
-from aiogram import Router, types, F
+from aiogram import Router, F
+from aiogram.filters.command import Command
+from aiogram.types import CallbackQuery, Message
 from aiogram.utils.i18n import gettext as _
 
-from handlers.bugtracker_api import Translate, main
+from handlers.bugtracker_api import (
+    Translate,
+    get_projects,
+    get_project,
+    delete_project
+)
 from keyboards.for_projects import projects_kb, project_kb
 
 
 router = Router()
 
 
-@router.callback_query(
-        F.data == "projects",
-        flags={"set_headers": "set_headers"})
-async def send_projects(callback: types.CallbackQuery, user_headers):
+@router.message(
+    Command("projects"),
+    flags={"set_headers": "set_headers"}
+)
+async def cmd_projects(message: Message, user_headers: dict):
     if user_headers is not None:
-        results = await main(endpoint="get_projects", headers=user_headers)
+        results = await get_projects(headers=user_headers)
 
-        await callback.message.answer(
-            _("List of projects, <b>page 1</b>:"),
-            parse_mode="HTML",
-            reply_markup=projects_kb(results)
+        if "count" in results:
+            return await message.answer(
+                _("List of projects, page 1:"),
+                reply_markup=projects_kb(results)
             )
+
+        await message.answer((results), reply_markup=projects_kb(results))
     else:
-        await callback.message.answer(
+        await message.answer(
             _("You aren't logged in, use /login command.")
-            )
-    await callback.answer()
+        )
 
 
 @router.callback_query(
-        F.data.startswith("project_"),
-        F.data.as_("data"),
-        flags={"set_headers": "set_headers", "lang_tz": "lang_tz"})
+    F.data.startswith("project_"),
+    F.data.as_("data"),
+    flags={"set_headers": "set_headers", "lang_tz": "lang_tz"}
+)
 async def send_project(
-        callback: types.CallbackQuery,
-        data: types.CallbackQuery,
-        user_headers, language, timezone):
+    callback: CallbackQuery,
+    data: str,
+    user_headers: dict,
+    language: str,
+    timezone: str
+):
     project_id = data.removeprefix("project_")
-    results = await main(
-        endpoint="get_project",
+    results = await get_project(
         id=project_id,
         headers=user_headers,
         language=language,
         timezone=timezone
-        )
+    )
 
     starred = Translate(results).project()
+    text = _(
+        """
+            <b>Name</b>: {name} \
+            \n<b>Key</b>: {key} \
+            \n<b>Favorite</b>: {starred} \
+            \n<b>Created</b>: {created} \
+            \n<b>Updated</b>: {updated}
+        """
+    ).format(
+        name=results['name'],
+        key=results['key'],
+        starred=starred,
+        created=results['created'],
+        updated=results['updated']
+    )
 
-    text = _("""
-<b>Name</b>: {name}
-<b>Description</b>: {description}
-<b>Key</b>: {key}
-<b>Type</b>: {type}
-<b>Favorite</b>: {starred}
-<b>Created</b>: {created}
-            """).format(name=results['name'],
-                        description=results['description'],
-                        key=results['key'], type=results['type'],
-                        starred=starred, created=results['created']
-                        )
-
-    await callback.message.answer(
-        text, parse_mode="HTML",
-        reply_markup=project_kb(results)
-        )
+    await callback.message.answer(text, reply_markup=project_kb(results))
     await callback.answer()
 
 
 @router.callback_query(
-        F.data.startswith("prj_delete_"),
-        F.data.as_("data"),
-        flags={"set_headers": "set_headers"})
-async def del_project(callback: types.CallbackQuery, data, user_headers):
+    F.data.startswith("prj_delete_"),
+    F.data.as_("data"),
+    flags={"set_headers": "set_headers"}
+)
+async def del_project(
+    callback: CallbackQuery,
+    data: str,
+    user_headers: dict
+):
     project_id = data.removeprefix("prj_delete_")
-    results = await main(
-        endpoint="delete_project",
-        id=project_id,
-        headers=user_headers
-        )
+    results = await delete_project(id=project_id, headers=user_headers)
 
     await callback.message.answer(results)
     await callback.answer()

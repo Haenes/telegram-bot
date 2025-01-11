@@ -7,48 +7,37 @@ from handlers.bugtracker_api import Translate
 
 
 def settings_kb() -> InlineKeyboardMarkup:
-    """Creates an inline-keyboard with language and timezone settings buttons
-    in one row
-    """
-
+    """ Creates a keyboard with language and timezone settings buttons. """
     builder = InlineKeyboardBuilder()
+
     builder.add(types.InlineKeyboardButton(
         text=_("Language"),
         callback_data="language"
-        )
-    )
+    ))
     builder.add(types.InlineKeyboardButton(
         text=_("Timezone"),
         callback_data="timezone"
-        )
-    )
-
+    ))
     return builder.as_markup()
 
 
 def language_kb() -> InlineKeyboardMarkup:
-    """ Creates an inline-keyboard with two buttons in one row. """
-
+    """ Creates a keyboard with language buttons in one row. """
     builder = InlineKeyboardBuilder()
 
     builder.add(types.InlineKeyboardButton(
         text="English 🇺🇸",
         callback_data="lang_en"
-        )
-    )
-
+    ))
     builder.add(types.InlineKeyboardButton(
         text="Русский 🇷🇺",
         callback_data="lang_ru"
-        )
-    )
-
+    ))
     return builder.as_markup()
 
 
 def timezone_kb() -> InlineKeyboardMarkup:
-    """ Creates an inline-keyboard with three buttons in one row. """
-
+    """ Creates a keyboard with three timezone buttons in one row. """
     builder = InlineKeyboardBuilder()
     texts = ["UTC", "Moscow", "Vladivostok"]
 
@@ -56,7 +45,5 @@ def timezone_kb() -> InlineKeyboardMarkup:
         builder.add(types.InlineKeyboardButton(
             text=Translate(timezone).timezones(),
             callback_data=f"time_{timezone}"
-            ))
-
-    builder.adjust(2)
+        ))
     return builder.as_markup()

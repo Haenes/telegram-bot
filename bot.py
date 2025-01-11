@@ -4,28 +4,30 @@ import logging
 from dotenv import load_dotenv
 
 from aiogram import Bot, Dispatcher
+from aiogram.client.default import DefaultBotProperties
 from aiogram.fsm.storage.redis import RedisStorage
 from aiogram.utils.i18n import I18n, FSMI18nMiddleware
 
-from sqlalchemy.engine import URL
-
 from redis.asyncio import Redis
 
-from db.base import BaseModel
-from db.engine import make_async_engine, get_sessionmaker, proceed_schemas
+from db.engine import async_session_maker
 
 from middlewares.user_token import TokenSet
 from middlewares.user_headers import Headers
 
 from handlers import start, common
 from handlers.project import (
-    projects, pagination_projects,
-    create_project, update_project
-    )
+    projects,
+    pagination_projects,
+    create_project,
+    update_project
+)
 from handlers.issue import (
-    issues, pagination_issues,
-    create_issue, update_issue
-    )
+    issues,
+    pagination_issues,
+    create_issue,
+    update_issue
+)
 
 
 async def main():
@@ -35,7 +37,7 @@ async def main():
     logging.basicConfig(level=logging.INFO)
 
     i18n = I18n(path="locale", default_locale="en", domain="bot")
-    i18n_middleware = FSMI18nMiddleware(i18n, "lang")
+    i18n_middleware = FSMI18nMiddleware(i18n)
 
     # Redis setup
     redis = Redis(
@@ -43,9 +45,9 @@ async def main():
         password=os.environ.get("REDIS_PASSWORD"),
         username=os.environ.get("REDIS_USER"),
         decode_responses=True
-        )
+    )
 
-    bot = Bot(token=BOT_TOKEN)
+    bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode="HTML"))
     dp = Dispatcher(storage=RedisStorage(redis))
 
     # register all midllewares
@@ -55,30 +57,22 @@ async def main():
     dp.callback_query.middleware.register(Headers())
 
     dp.include_routers(
-        start.router, projects.router, pagination_projects.router,
-        issues.router, pagination_issues.router
-        )
+        start.router,
+        common.router,
+        pagination_projects.router,
+        pagination_issues.router
+    )
     dp.include_routers(
-        common.router, create_project.router, update_project.router,
-        create_issue.router, update_issue.router
-        )
+        projects.router,
+        create_project.router,
+        update_project.router,
+        issues.router,
+        create_issue.router,
+        update_issue.router
+    )
 
-    # SQLAlchemy setup
-    psql_url = URL.create(
-        "postgresql+asyncpg",
-        os.environ.get("POSTGRES_USER"),
-        os.environ.get("POSTGRES_PASSWORD"),
-        os.environ.get("POSTGRES_HOST"),
-        os.environ.get("POSTGRES_PORT"),
-        os.environ.get("POSTGRES_DB"))
-
-    async_engine = make_async_engine(psql_url)
-    sessionmaker = get_sessionmaker(async_engine)
-    await proceed_schemas(async_engine, BaseModel.metadata)
-
-    # Launch the bot and skip all the accumulated updates
     await bot.delete_webhook(drop_pending_updates=True)
-    await dp.start_polling(bot, sessionmaker=sessionmaker, redis=redis)
+    await dp.start_polling(bot, sessionmaker=async_session_maker, redis=redis)
 
 
 if __name__ == "__main__":
