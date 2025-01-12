@@ -3,47 +3,43 @@ from aiogram.types import InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.utils.i18n import gettext as _
 
-from handlers.bugtracker_api import Translate
+from handlers.bugtracker_api import get_translated_timezone
 
 
 def settings_kb() -> InlineKeyboardMarkup:
     """ Creates a keyboard with language and timezone settings buttons. """
     builder = InlineKeyboardBuilder()
+    settings = ["language", "timezone"]
 
-    builder.add(types.InlineKeyboardButton(
-        text=_("Language"),
-        callback_data="language"
-    ))
-    builder.add(types.InlineKeyboardButton(
-        text=_("Timezone"),
-        callback_data="timezone"
-    ))
+    for setting in settings:
+        builder.add(types.InlineKeyboardButton(
+            text=_(setting.capitalize()),
+            callback_data=setting
+        ))
     return builder.as_markup()
 
 
 def language_kb() -> InlineKeyboardMarkup:
     """ Creates a keyboard with language buttons in one row. """
     builder = InlineKeyboardBuilder()
+    languages = {"en": "English 🇺🇸", "ru": "Русский 🇷🇺"}
 
-    builder.add(types.InlineKeyboardButton(
-        text="English 🇺🇸",
-        callback_data="lang_en"
-    ))
-    builder.add(types.InlineKeyboardButton(
-        text="Русский 🇷🇺",
-        callback_data="lang_ru"
-    ))
+    for code, text in languages.items():
+        builder.add(types.InlineKeyboardButton(
+            text=text,
+            callback_data=f"lang_{code}"
+        ))
     return builder.as_markup()
 
 
 def timezone_kb() -> InlineKeyboardMarkup:
     """ Creates a keyboard with three timezone buttons in one row. """
     builder = InlineKeyboardBuilder()
-    texts = ["UTC", "Moscow", "Vladivostok"]
+    timezones = ["UTC", "Moscow", "Vladivostok"]
 
-    for timezone in texts:
+    for timezone in timezones:
         builder.add(types.InlineKeyboardButton(
-            text=Translate(timezone).timezones(),
+            text=get_translated_timezone(timezone),
             callback_data=f"time_{timezone}"
         ))
     return builder.as_markup()

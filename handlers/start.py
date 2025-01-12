@@ -5,6 +5,7 @@ from aiogram.filters.command import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.i18n import gettext as _, FSMI18nMiddleware, get_i18n
 
+from aiohttp import ClientSession
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
@@ -39,26 +40,26 @@ async def cmd_login(
     message: Message,
     command: CommandObject,
     sessionmaker: async_sessionmaker,
-    user_token: str | None
+    user_token: str | None,
+    session: ClientSession
 ):
     if command.args and user_token is None:
         data = command.args.split(" ")
         email, password = data[0], data[1]
-        token = await get_token(email, password)
+        token = await get_token(session, email, password)
 
         if isinstance(token, dict):
             return await message.reply(token["error"])
 
         language = get_i18n().current_locale
 
-        async with sessionmaker() as session:
-            async with session.begin():
-                user = User(
-                    user_id=message.from_user.id,
-                    user_token=token,
-                    language=language
-                )
-                await session.merge(user)
+        async with sessionmaker.begin() as session:
+            user = User(
+                user_id=message.from_user.id,
+                user_token=token,
+                language=language
+            )
+            await session.merge(user)
 
         await message.reply(
             _("Successful login! \nTo continue, enter /projects command.")
@@ -115,10 +116,9 @@ async def set_language(
         await i18n_middleware.set_locale(state, language)
         await redis.hset(callback.from_user.id, "language", language)
 
-        async with sessionmaker() as session:
-            async with session.begin():
-                user = User(user_id=callback.from_user.id, language=language)
-                await session.merge(user)
+        async with sessionmaker.begin() as session:
+            user = User(user_id=callback.from_user.id, language=language)
+            await session.merge(user)
 
         await callback.message.answer(_("You have changed the language!"))
         await callback.answer()
@@ -157,11 +157,10 @@ async def set_timezone(
         tz = "Asia/Vladivostok"
 
     await redis.hset(callback.from_user.id, "timezone", tz)
-    async with sessionmaker() as session:
-        async with session.begin():
-            user = await get_user(callback.from_user.id, session)
-            user = User(user_id=callback.from_user.id, timezone=tz)
-            await session.merge(user)
+    async with sessionmaker.begin() as session:
+        user = await get_user(callback.from_user.id, session)
+        user = User(user_id=callback.from_user.id, timezone=tz)
+        await session.merge(user)
 
     await state.update_data(timezone=tz)
     await callback.message.answer(_("You have changed the time zone!"))

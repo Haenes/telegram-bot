@@ -33,11 +33,10 @@ class TokenSet(BaseMiddleware):
             data["user_token"] = token_in_cache
             return await handler(event, data)
 
-        async with sessionmaker() as session:
-            async with session.begin():
-                token_from_db = await get_token(user_id, session)
-                data["user_token"] = token_from_db
+        async with sessionmaker.begin() as session:
+            token_from_db = await get_token(user_id, session)
+            data["user_token"] = token_from_db
 
-                if token_from_db:
-                    await redis.hset(user_id, "token", token_from_db)
-                return await handler(event, data)
+        if token_from_db:
+            await redis.hset(user_id, "token", token_from_db)
+        return await handler(event, data)

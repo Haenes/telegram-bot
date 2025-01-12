@@ -3,6 +3,8 @@ import asyncio
 import logging
 from dotenv import load_dotenv
 
+from aiohttp import ClientSession
+
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.fsm.storage.redis import RedisStorage
@@ -72,7 +74,12 @@ async def main():
     )
 
     await bot.delete_webhook(drop_pending_updates=True)
-    await dp.start_polling(bot, sessionmaker=async_session_maker, redis=redis)
+    await dp.start_polling(
+        bot,
+        sessionmaker=async_session_maker,
+        redis=redis,
+        session=ClientSession(trust_env=True)
+    )
 
 
 if __name__ == "__main__":

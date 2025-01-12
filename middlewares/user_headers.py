@@ -62,12 +62,11 @@ async def set_headers_from_db(
     user_id: int,
     data: dict[str, Any]
 ):
-    async with sessionmaker() as session:
-        async with session.begin():
-            headers_from_db = await get_headers(user_id, session)
-            data["user_headers"] = headers_from_db
+    async with sessionmaker.begin() as session:
+        headers_from_db = await get_headers(user_id, session)
+        data["user_headers"] = headers_from_db
 
-            await redis.hset(user_id, "headers", str(headers_from_db))
+    await redis.hset(user_id, "headers", str(headers_from_db))
 
 
 async def set_headers_lang_tz_from_db(
@@ -76,28 +75,27 @@ async def set_headers_lang_tz_from_db(
     user_id: int,
     data: dict[str, Any]
 ):
-    async with sessionmaker() as session:
-        async with session.begin():
+    timezones = {
+        "UTC": "UTC",
+        "Europe/Moscow": "Europe/Moscow",
+        "Asia/Vladivostok": "Asia/Vladivostok"
+    }
 
-            timezones = {
-                "UTC": "UTC",
-                "Europe/Moscow": "Europe/Moscow",
-                "Asia/Vladivostok": "Asia/Vladivostok"
-            }
+    async with sessionmaker.begin() as session:
 
-            headers_from_db = await get_headers(user_id, session)
-            language_from_db = await get_user_language(user_id, session)
-            timezone_from_db = await get_user_timezone(user_id, session)
+        headers_from_db = await get_headers(user_id, session)
+        language_from_db = await get_user_language(user_id, session)
+        timezone_from_db = await get_user_timezone(user_id, session)
 
-            data["user_headers"] = headers_from_db
-            data["language"] = language_from_db
-            data["timezone"] = timezones[timezone_from_db]
+        data["user_headers"] = headers_from_db
+        data["language"] = language_from_db
+        data["timezone"] = timezones[timezone_from_db]
 
-            await redis.hset(
-                name=user_id,
-                mapping={
-                    "headers": str(headers_from_db),
-                    "language": language_from_db,
-                    "timezone": timezones[timezone_from_db]
-                }
-            )
+    await redis.hset(
+        name=user_id,
+        mapping={
+            "headers": str(headers_from_db),
+            "language": language_from_db,
+            "timezone": timezones[timezone_from_db]
+        }
+    )

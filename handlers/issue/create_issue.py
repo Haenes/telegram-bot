@@ -4,7 +4,9 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, CallbackQuery
 from aiogram.utils.i18n import gettext as _
 
-from handlers.bugtracker_api import make_issue
+from aiohttp import ClientSession
+
+from handlers.bugtracker_api import Issue
 from handlers.common import clear_state_and_save_data
 from keyboards.for_issues import (
     issue_type_kb,
@@ -97,13 +99,20 @@ async def priority_selected(
     callback: CallbackQuery,
     data: str,
     state: FSMContext,
-    user_headers: dict
+    user_headers: dict,
+    session: ClientSession
 ):
     await state.update_data(priority=data.removeprefix("iss_priority_"))
 
     user_data = await state.get_data()
     project_id = user_data["project_id"]
-    results = await make_issue(user_data, project_id, user_headers)
+    # results = await make_issue(user_data, project_id, user_headers)
+    results = await Issue().create_item(
+        session,
+        user_data,
+        project_id,
+        user_headers
+    )
 
     await callback.message.answer(results)
     await callback.answer()

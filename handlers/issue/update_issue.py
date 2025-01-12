@@ -4,7 +4,9 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.utils.i18n import gettext as _
 
-from handlers.bugtracker_api import Translate, get_issue, update_issue
+from aiohttp import ClientSession
+
+from handlers.bugtracker_api import Issue
 from handlers.common import clear_state_and_save_data
 from keyboards.for_issues import (
     issue_type_kb,
@@ -36,14 +38,20 @@ async def change_update(
     callback: CallbackQuery,
     state: FSMContext,
     data: str,
-    user_headers: dict
+    user_headers: dict,
+    session: ClientSession
 ):
     # It is necessary to fill in issue data once and take them from it,
     # instead of calling a "get_issue" function in each handler to get data
     global issue_data
 
     project_id, issue_id = data.split("_")[2:]
-    issue_data = await get_issue(issue_id, project_id, user_headers)
+    issue_data = await Issue.get_item(
+        session,
+        issue_id,
+        project_id,
+        user_headers
+    )
 
     text = _(
         """
@@ -81,8 +89,7 @@ async def title_enter(message: Message, state: FSMContext):
 async def description_enter(message: Message, state: FSMContext):
     await state.update_data(description=message.text)
 
-    type = Translate(issue_data).issue()[0]
-
+    type = Issue.get_translated_fields(issue_data)[0]
     text = _(
         """
             Good, now select the issue type.
@@ -107,8 +114,7 @@ async def type_selected(
 ):
     await state.update_data(type=data.removeprefix("iss_type_"))
 
-    priority = Translate(issue_data).issue()[1]
-
+    priority = Issue.get_translated_fields(issue_data)[1]
     text = _(
         """
             Good, now select the issue priority
@@ -142,8 +148,7 @@ async def priority_selected(
 ):
     await state.update_data(priority=data.removeprefix("iss_priority_"))
 
-    status = Translate(issue_data).issue()[2]
-
+    status = Issue.get_translated_fields(issue_data)[2]
     text = _(
         """
             Good, now select the issue status.
@@ -175,7 +180,8 @@ async def status_selected(
     callback: CallbackQuery,
     data: str,
     state: FSMContext,
-    user_headers: dict
+    user_headers: dict,
+    session: ClientSession
 ):
     data = data.removeprefix("iss_status_")
 
@@ -186,7 +192,8 @@ async def status_selected(
 
     await state.update_data(status=status)
     user_data = await state.get_data()
-    results = await update_issue(
+    results = await Issue().edit_item(
+        session,
         issue_data["id"],
         issue_data["project_id"],
         user_data,

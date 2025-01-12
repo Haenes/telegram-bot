@@ -1,6 +1,7 @@
 from sqlalchemy import VARCHAR
 from sqlalchemy import select
-from sqlalchemy.orm import Mapped, Session, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from .base import Base
 
@@ -25,28 +26,31 @@ class User(Base):
         return f"User: ID={self.user_id}"
 
 
-async def get_user(user_id: int, session: Session) -> int | None:
+async def get_user(user_id: int, session: AsyncSession) -> int | None:
     stmt = select(User.user_id).where(User.user_id == user_id)
     return await session.scalar(stmt)
 
 
-async def get_token(user_id: int, session: Session) -> str | None:
+async def get_token(user_id: int, session: AsyncSession) -> str | None:
     stmt = select(User.user_token).where(User.user_id == user_id)
     return await session.scalar(stmt)
 
 
-async def get_headers(user_id: int, session: Session) -> dict[str, str] | None:
+async def get_headers(
+    user_id: int,
+    session: AsyncSession
+) -> dict[str, str] | None:
     token = await get_token(user_id, session)
     if token:
         return {"Authorization": f"Bearer {token}"}
     return None
 
 
-async def get_user_language(user_id: int, session: Session) -> str | None:
+async def get_user_language(user_id: int, session: AsyncSession) -> str | None:
     stmt = select(User.language).where(User.user_id == user_id)
     return await session.scalar(stmt)
 
 
-async def get_user_timezone(user_id: int, session: Session) -> str | None:
+async def get_user_timezone(user_id: int, session: AsyncSession) -> str | None:
     stmt = select(User.timezone).where(User.user_id == user_id)
     return await session.scalar(stmt)

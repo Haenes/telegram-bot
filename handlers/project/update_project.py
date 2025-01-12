@@ -4,7 +4,9 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, CallbackQuery
 from aiogram.utils.i18n import gettext as _
 
-from handlers.bugtracker_api import Translate, get_project, update_project
+from aiohttp import ClientSession
+
+from handlers.bugtracker_api import Project
 from handlers.common import clear_state_and_save_data
 from keyboards.for_projects import project_favorite_kb
 
@@ -28,14 +30,15 @@ async def change_project(
     callback: CallbackQuery,
     state: FSMContext,
     data: str,
-    user_headers: dict
+    user_headers: dict,
+    session: ClientSession
 ):
     # It is necessary to fill in project data once and take them from it,
     # instead of calling a "get_project" function in each handler to get data
     global project_data
 
     project_id = data.removeprefix("prj_change_")
-    project_data = await get_project(project_id, user_headers)
+    project_data = await Project.get_item(session, project_id, user_headers)
     project_data["id"] = project_id
 
     text = _(
@@ -76,7 +79,7 @@ async def key_enter(message: Message, state: FSMContext):
             \n<b>Earlier: {starred}</b>\
             \n<b>Now:</b>
         """
-    ).format(starred=Translate(project_data).project())
+    ).format(starred=Project.get_translated_starred(project_data["starred"]))
 
     await message.answer(text, reply_markup=project_favorite_kb())
     await state.set_state(UpdateProject.starred)
@@ -92,11 +95,17 @@ async def favorite_selected(
     callback: CallbackQuery,
     data: str,
     state: FSMContext,
-    user_headers
+    user_headers,
+    session: ClientSession
 ):
     await state.update_data(starred=data.removeprefix("prj_favorite_"))
     user_data = await state.get_data()
-    results = await update_project(project_data["id"], user_headers, user_data)
+    results = await Project().edit_item(
+        session,
+        project_data["id"],
+        user_headers,
+        user_data
+    )
 
     await callback.message.answer(results)
     await callback.answer()

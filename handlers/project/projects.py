@@ -3,12 +3,9 @@ from aiogram.filters.command import Command
 from aiogram.types import CallbackQuery, Message
 from aiogram.utils.i18n import gettext as _
 
-from handlers.bugtracker_api import (
-    Translate,
-    get_projects,
-    get_project,
-    delete_project
-)
+from aiohttp import ClientSession
+
+from handlers.bugtracker_api import Project
 from keyboards.for_projects import projects_kb, project_kb
 
 
@@ -19,9 +16,9 @@ router = Router()
     Command("projects"),
     flags={"set_headers": "set_headers"}
 )
-async def cmd_projects(message: Message, user_headers: dict):
+async def cmd_projects(message: Message, user_headers: dict, session):
     if user_headers is not None:
-        results = await get_projects(headers=user_headers)
+        results = await Project.get_items(session, user_headers)
 
         if "count" in results:
             return await message.answer(
@@ -46,17 +43,19 @@ async def send_project(
     data: str,
     user_headers: dict,
     language: str,
-    timezone: str
+    timezone: str,
+    session: ClientSession
 ):
     project_id = data.removeprefix("project_")
-    results = await get_project(
+    results = await Project.get_item(
+        session,
         id=project_id,
         headers=user_headers,
         language=language,
         timezone=timezone
     )
 
-    starred = Translate(results).project()
+    starred = Project.get_translated_starred(results["starred"])
     text = _(
         """
             <b>Name</b>: {name} \
@@ -85,10 +84,11 @@ async def send_project(
 async def del_project(
     callback: CallbackQuery,
     data: str,
-    user_headers: dict
+    user_headers: dict,
+    session: ClientSession
 ):
     project_id = data.removeprefix("prj_delete_")
-    results = await delete_project(id=project_id, headers=user_headers)
+    results = await Project.delete_item(session, project_id, user_headers)
 
     await callback.message.answer(results)
     await callback.answer()

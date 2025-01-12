@@ -4,7 +4,9 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, CallbackQuery
 from aiogram.utils.i18n import gettext as _
 
-from handlers.bugtracker_api import make_project
+from aiohttp import ClientSession
+
+from handlers.bugtracker_api import Project
 from handlers.common import clear_state_and_save_data
 from keyboards.for_projects import project_favorite_kb
 
@@ -63,13 +65,13 @@ async def favorite_selected(
     callback: CallbackQuery,
     data: str,
     state: FSMContext,
-    user_headers: dict
+    user_headers: dict,
+    session: ClientSession
 ):
     favorite = data.removeprefix("prj_favorite_")
     await state.update_data(starred=favorite)
     user_data = await state.get_data()
-
-    results = await make_project(user_headers, user_data)
+    results = await Project().create_item(session, user_headers, user_data)
 
     await callback.message.answer(results)
     await callback.answer()

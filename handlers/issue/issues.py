@@ -2,12 +2,9 @@ from aiogram import Router, F
 from aiogram.types import CallbackQuery
 from aiogram.utils.i18n import gettext as _
 
-from handlers.bugtracker_api import (
-    Translate,
-    get_issues,
-    get_issue,
-    delete_issue
-)
+from aiohttp import ClientSession
+
+from handlers.bugtracker_api import Issue
 from keyboards.for_issues import issues_kb, issue_kb
 
 
@@ -22,12 +19,13 @@ router = Router()
 async def send_issues(
     callback: CallbackQuery,
     user_headers: dict,
-    data: str
+    data: str,
+    session: ClientSession
 ):
     project_id = data.removeprefix("issues_")
 
     if user_headers is not None:
-        results = await get_issues(user_headers, project_id)
+        results = await Issue.get_items(session, user_headers, project_id)
 
         if "count" in results:
             await callback.message.answer(
@@ -56,19 +54,20 @@ async def send_issue(
     callback: CallbackQuery,
     data: str,
     user_headers: dict,
+    session,
     language: str,
     timezone: str
 ):
     project_id, issue_id = data.split("_")[1:]
-    results = await get_issue(
+    results = await Issue.get_item(
+        session,
         issue_id,
         project_id,
         user_headers,
         language=language,
         timezone=timezone
     )
-
-    issue_type, priority, status = Translate(results).issue()
+    issue_type, priority, status = Issue.get_translated_fields(results)
 
     text = _(
         """
@@ -102,10 +101,16 @@ async def send_issue(
 async def del_issue(
     callback: CallbackQuery,
     data: str,
-    user_headers: dict
+    user_headers: dict,
+    session: ClientSession
 ):
     project_id, issue_id = data.split("_")[2:]
-    results = await delete_issue(issue_id, project_id, user_headers)
+    results = await Issue.delete_item(
+        session,
+        issue_id,
+        project_id,
+        user_headers
+    )
 
     await callback.message.answer(results)
     await callback.answer()

@@ -2,7 +2,9 @@ from aiogram import Router, F
 from aiogram.types import CallbackQuery
 from aiogram.utils.i18n import gettext as _
 
-from handlers.bugtracker_api import Paginator
+from aiohttp import ClientSession
+
+from handlers.bugtracker_api import Project
 from keyboards.for_projects import projects_kb
 
 
@@ -17,10 +19,11 @@ router = Router()
 async def next_projects(
     callback: CallbackQuery,
     data: str,
-    user_headers: dict
+    user_headers: dict,
+    session: ClientSession
 ):
     page = data.removeprefix("next_projects_")
-    results = await Paginator(user_headers, page).next_projects()
+    results = await Project().pagination_next(session, user_headers, page)
 
     await callback.message.answer(
         _("List of projects, page {page}:").format(page=page),
@@ -37,10 +40,11 @@ async def next_projects(
 async def back_projects(
     callback: CallbackQuery,
     data: str,
-    user_headers: dict
+    user_headers: dict,
+    session: ClientSession
 ):
     page = data.removeprefix("back_projects_")
-    results = await Paginator(user_headers, page).previous_projects()
+    results = await Project().pagination_back(session, user_headers, page)
 
     await callback.message.answer(
         _("List of projects, page {page}:").format(page=page),
