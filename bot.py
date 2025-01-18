@@ -7,14 +7,15 @@ from aiohttp import ClientSession
 
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
-from aiogram.fsm.storage.redis import RedisStorage
+from aiogram.fsm.storage.redis import RedisStorage, DefaultKeyBuilder
 from aiogram.utils.i18n import I18n, FSMI18nMiddleware
 
-from redis.asyncio import Redis
+from aiogram_dialog import setup_dialogs
 
+from redis.asyncio import Redis
 from db.engine import async_session_maker
 
-from middlewares.user_token import TokenSet
+from dialog.dialogs import start as start_dialog, login, settings
 from middlewares.user_headers import Headers
 
 from handlers import start, common
@@ -50,11 +51,10 @@ async def main():
     )
 
     bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode="HTML"))
-    dp = Dispatcher(storage=RedisStorage(redis))
+    dp = Dispatcher(storage=RedisStorage(redis, DefaultKeyBuilder(with_destiny=True)))
 
     # register all midllewares
     dp.update.middleware.register(i18n_middleware)
-    dp.message.middleware.register(TokenSet())
     dp.message.middleware.register(Headers())
     dp.callback_query.middleware.register(Headers())
 
@@ -72,6 +72,9 @@ async def main():
         create_issue.router,
         update_issue.router
     )
+    dp.include_routers(start_dialog, login, settings)
+
+    setup_dialogs(dp)
 
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(
