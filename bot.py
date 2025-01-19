@@ -20,6 +20,7 @@ from dialog.dialogs import (
     login,
     settings,
     projects as projects_dialog,
+    create_project,
     project
 )
 
@@ -68,7 +69,14 @@ async def main():
         create_issue.router,
         update_issue.router
     )
-    dp.include_routers(start_dialog, login, settings, projects_dialog, project)
+    dp.include_routers(
+        start_dialog,
+        login,
+        settings,
+        projects_dialog,
+        create_project,
+        project
+    )
 
     setup_dialogs(dp)
 

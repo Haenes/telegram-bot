@@ -11,13 +11,8 @@ class LoginSG(StatesGroup):
     results = State()
 
 
-# TODO: Remove all create states and use separate CreateProjectSG.
 class ProjectsSG(StatesGroup):
     main = State()
-    create_name = State()
-    create_key = State()
-    create_starred = State()
-    create_results = State()
 
 
 class CreateProjectSG(StatesGroup):

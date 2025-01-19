@@ -18,6 +18,7 @@ from .states import (
     LoginSG,
     SettingsSG,
     ProjectsSG,
+    CreateProjectSG,
     ProjectSG,
     EditProjectSG,
     IssuesSG
@@ -86,10 +87,10 @@ login = Dialog(
 
 projects = Dialog(
     Window(
-        Format("{dialog_data[created]}", when="created"),
-        Format("{projects_text}", when="projects"),
-        Format("{projects_none_text}", when="zero_projects"),
-        Format("{error}", when="error"),
+        Format("{dialog_data[result]}", when="dialog_data"),  # when project created
+        Format("\n{projects_text}", when="projects"),
+        Format("{zero_projects}", when="no_projects"),
+        Format("{need_log_in}", when="need_log_in"),
         ScrollingGroup(
             ListGroup(
                 Button(
@@ -107,25 +108,30 @@ projects = Dialog(
             when="projects",
             hide_on_single_page=True
         ),
-        SwitchTo(
+        Start(
             text=Format("{create}"),
             id="create_new_project",
-            state=ProjectsSG.create_name
+            state=CreateProjectSG.name
         ),
         Cancel(Format("{back}")),
         state=ProjectsSG.main,
         getter=projects_getter
     ),
+    getter=projects_texts_getter,
+    on_process_result=process_result
+)
+
+create_project = Dialog(
     Window(
         Format("{name_text}"),
         TextInput(id="name", on_success=Next()),
-        Back(Format("{cancel}")),
-        state=ProjectsSG.create_name,
+        Cancel(Format("{cancel}")),
+        state=CreateProjectSG.name,
     ),
     Window(
         Format("{key_text}"),
         TextInput(id="key", on_success=Next()),
-        state=ProjectsSG.create_key,
+        state=CreateProjectSG.key,
     ),
     Window(
         Format("{starred_text}"),
@@ -133,17 +139,17 @@ projects = Dialog(
             Button(Format("{true}"), "True", Next(on_click=clicked_starred)),
             Button(Format("{false}"), "False", Next(on_click=clicked_starred))
         ),
-        state=ProjectsSG.create_starred,
+        state=CreateProjectSG.starred,
     ),
     Window(
         Format("{results}", when="results"),
         SwitchTo(
             text=Format("{try_again}"),
             id="try_to_create_project_again_after_error",
-            state=ProjectsSG.create_name,
+            state=CreateProjectSG.name,
             when="try_again",
         ),
-        state=ProjectsSG.create_results,
+        state=CreateProjectSG.results,
         getter=create_project
     ),
     getter=projects_texts_getter

@@ -11,7 +11,7 @@ from aiohttp import ClientSession
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
-from .states import ProjectsSG, ProjectSG
+from .states import ProjectSG
 from .utils import get_token, get_headers, get_lang_and_tz
 from db.user import User, get_user
 from handlers.bugtracker_api import Project, get_token as get_token_api
@@ -176,7 +176,7 @@ async def process_result(
 async def projects_texts_getter(*args, **kwargs):
     return {
         "projects_text": _("Your projects:"),
-        "projects__none_text": _("You don't have projects yet."),
+        "zero_projects": _("You don't have projects yet."),
         "back": _("Back"),
         "cancel": _("Cancel"),
         "create": _("Create new"),
@@ -208,9 +208,9 @@ async def projects_getter(
 
         if "count" in projects:
             return {"projects": projects["results"]}
-        return {"zero_projects": projects["detail"]}
+        return {"no_projects": projects["detail"]}
     else:
-        return {"error": _("You aren't logged in, use /login command.")}
+        return {"need_log_in": _("You aren't logged in, use /login command.")}
 
 
 async def clicked_starred(
@@ -243,7 +243,7 @@ async def create_project(
     )
     data = {
         "name": dialog_manager.find("name").get_value(),
-        "key": dialog_manager.find("key").get_value(),
+        "key": dialog_manager.find("key").get_value().upper(),
         "starred": dialog_manager.dialog_data["starred"],
     }
     results = await Project().create_item(session, user_headers, data)
@@ -254,8 +254,7 @@ async def create_project(
             "try_again": _("Try again")
         }
 
-    dialog_manager.dialog_data["created"] = results["success"]
-    return await dialog_manager.switch_to(ProjectsSG.main)
+    await dialog_manager.done(results["success"])
 
 
 async def project_texts_getter(*args, **kwargs):
@@ -289,11 +288,11 @@ async def project_getter(
     project = await Project.get_item(session, project_id, user_headers, lang, tz)
 
     formatted_project = _(
-        """\
-            <b>Name</b>: {name}
-            \n<b>Key</b>: {key}
-            \n<b>Favorite</b>: {starred}
-            \n<b>Created</b>: {created}
+        """
+            <b>Name</b>: {name}\
+            \n<b>Key</b>: {key}\
+            \n<b>Favorite</b>: {starred}\
+            \n<b>Created</b>: {created}\
             \n<b>Updated</b>: {updated}
         """
     ).format(
