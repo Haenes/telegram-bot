@@ -15,16 +15,16 @@ from aiogram_dialog import setup_dialogs
 from redis.asyncio import Redis
 from db.engine import async_session_maker
 
-from dialog.dialogs import start as start_dialog, login, settings
-from middlewares.user_headers import Headers
+from dialog.dialogs import (
+    start as start_dialog,
+    login,
+    settings,
+    projects as projects_dialog,
+    project
+)
 
 from handlers import start, common
-from handlers.project import (
-    projects,
-    pagination_projects,
-    create_project,
-    update_project
-)
+from handlers.project import projects, update_project
 from handlers.issue import (
     issues,
     pagination_issues,
@@ -55,24 +55,20 @@ async def main():
 
     # register all midllewares
     dp.update.middleware.register(i18n_middleware)
-    dp.message.middleware.register(Headers())
-    dp.callback_query.middleware.register(Headers())
 
     dp.include_routers(
         start.router,
         common.router,
-        pagination_projects.router,
         pagination_issues.router
     )
     dp.include_routers(
         projects.router,
-        create_project.router,
         update_project.router,
         issues.router,
         create_issue.router,
         update_issue.router
     )
-    dp.include_routers(start_dialog, login, settings)
+    dp.include_routers(start_dialog, login, settings, projects_dialog, project)
 
     setup_dialogs(dp)
 

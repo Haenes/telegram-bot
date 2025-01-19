@@ -193,24 +193,24 @@ class Project(API):
         async with session.get(url, headers=headers) as r:
             return await r.json()
 
-    async def create_item(self, session, headers: dict, data: dict) -> str:
+    async def create_item(self, session, headers: dict, data: dict) -> dict:
         """ Create project via POST request. """
         url = f"{API_BASE_URL}"
 
         async with session.post(url, json=data, headers=headers) as r:
 
             if r.status == 201:
-                return _("The project has been successfully created!")
+                return {"success": _("The project has been created!")}
 
             results = await r.json()
 
             if "detail" in results:
                 match results["detail"]:
                     case "Project with this name already exist!":
-                        return self.UNIQUE_ERRORS["project_name"]
+                        return {"error": self.UNIQUE_ERRORS["project_name"]}
                     case "Project with this key already exist!":
-                        return self.UNIQUE_ERRORS["project_key"]
-            return _("An error occurred, the project was NOT created!")
+                        return {"error": self.UNIQUE_ERRORS["project_key"]}
+            return {"error": _("Error, the project was NOT created!")}
 
     async def edit_item(
         self,
@@ -244,13 +244,15 @@ class Project(API):
         async with session.delete(url, headers=headers) as r:
             match r.status:
                 case 200:
-                    return _("The project was successfully deleted!")
+                    return {"success": _(
+                        "The project was successfully deleted!"
+                    )}
                 case 400:
-                    return _("The project was deleted earlier.")
+                    return {"error": _("The project was deleted earlier.")}
                 case _:
-                    return _(
+                    return {"error": _(
                         "An error occurred, the project was not deleted!"
-                    )
+                    )}
 
 
 class Issue(API):

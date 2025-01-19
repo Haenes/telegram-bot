@@ -11,29 +11,13 @@ from aiohttp import ClientSession
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
-from db.user import User, get_user, get_token as get_token_db
-from handlers.bugtracker_api import get_token as get_token_api
+from .states import ProjectsSG, ProjectSG
+from .utils import get_token, get_headers, get_lang_and_tz
+from db.user import User, get_user
+from handlers.bugtracker_api import Project, get_token as get_token_api
 
 
-async def get_token(
-    sessionmaker: async_sessionmaker,
-    redis: Redis,
-    user_id: int
-):
-    token_in_cache = await redis.hget(user_id, "token")
-
-    if token_in_cache:
-        return token_in_cache
-
-    async with sessionmaker.begin() as session:
-        token_from_db = await get_token_db(user_id, session)
-
-    if token_from_db:
-        await redis.hset(user_id, "token", token_from_db)
-        return token_from_db
-
-
-async def start_getter(**kwargs):
+async def start_texts_getter(**kwargs):
     text = _(
         """\
             Hello!
@@ -106,19 +90,18 @@ async def login_results_getter(
     await dialog_manager.done(_("Successful login!"))
 
 
-async def settings_getter(**kwargs):
+async def settings_texts_getter(**kwargs):
     return {
         "settings_text": _("Choose what you want to change:"),
         "language_btn": _("Language"),
-        "timezone_btn": _("Timezone")
-    }
-
-
-async def language_getter(**kwargs):
-    return {
+        "timezone_btn": _("Timezone"),
         "language_text": _("Select a language:"),
         "en_btn": "English 🇺🇸",
-        "ru_btn": "Русский 🇷🇺"
+        "ru_btn": "Русский 🇷🇺",
+        "timezone_text": _("Select the time zone:"),
+        "UTC": "UTC",
+        "Moscow": _("Moscow"),
+        "Vladivostok": _("Vladivostok")
     }
 
 
@@ -146,15 +129,6 @@ async def language_setter(
             await session.merge(user)
 
         await manager.done(_("You have changed the language!"))
-
-
-async def timezone_getter(**kwargs):
-    return {
-        "timezone_text": _("Select the time zone:"),
-        "UTC": "UTC",
-        "Moscow": _("Moscow"),
-        "Vladivostok": _("Vladivostok")
-    }
 
 
 async def timezone_setter(
@@ -197,3 +171,160 @@ async def process_result(
 ):
     if result:
         dialog_manager.dialog_data["result"] = result
+
+
+async def projects_texts_getter(*args, **kwargs):
+    return {
+        "projects_text": _("Your projects:"),
+        "projects__none_text": _("You don't have projects yet."),
+        "back": _("Back"),
+        "cancel": _("Cancel"),
+        "create": _("Create new"),
+        "name_text": _("Enter project name:"),
+        "key_text": _("Enter key of the project:"),
+        "starred_text": _("Is this project will be a favorite:"),
+        "true": _("True"),
+        "false": _("False"),
+    }
+
+
+async def projects_getter(
+    dialog_manager: DialogManager,
+    sessionmaker: async_sessionmaker,
+    redis: Redis,
+    session: ClientSession,
+    **kwargs
+):
+    user_headers = await get_headers(
+        user_id=dialog_manager.event.from_user.id,
+        sessionmaker=sessionmaker,
+        redis=redis
+    )
+
+    if user_headers is not None:
+        # Limit in 9999 projects (default is 10)
+        # is necessary to get pagination working.
+        projects = await Project.get_items(session, user_headers, {"limit": 9999})
+
+        if "count" in projects:
+            return {"projects": projects["results"]}
+        return {"zero_projects": projects["detail"]}
+    else:
+        return {"error": _("You aren't logged in, use /login command.")}
+
+
+async def clicked_starred(
+    callback: CallbackQuery,
+    button: Button,
+    dialog_manager: DialogManager
+):
+    dialog_manager.dialog_data["starred"] = callback.data
+
+
+async def clicked_project(
+    callback: CallbackQuery,
+    button: Button,
+    dialog_manager: DialogManager
+):
+    await dialog_manager.start(ProjectSG.details, dialog_manager.item_id)
+
+
+async def create_project(
+    dialog_manager: DialogManager,
+    sessionmaker: async_sessionmaker,
+    redis: Redis,
+    session: ClientSession,
+    **kwargs
+):
+    user_headers = await get_headers(
+        user_id=dialog_manager.event.from_user.id,
+        sessionmaker=sessionmaker,
+        redis=redis,
+    )
+    data = {
+        "name": dialog_manager.find("name").get_value(),
+        "key": dialog_manager.find("key").get_value(),
+        "starred": dialog_manager.dialog_data["starred"],
+    }
+    results = await Project().create_item(session, user_headers, data)
+
+    if "error" in results:
+        return {
+            "results": results["error"],
+            "try_again": _("Try again")
+        }
+
+    dialog_manager.dialog_data["created"] = results["success"]
+    return await dialog_manager.switch_to(ProjectsSG.main)
+
+
+async def project_texts_getter(*args, **kwargs):
+    return {
+        "issues": _("Issues"),
+        "edit": _("Edit"),
+        "delete": _("Delete"),
+        "back": _("Back")
+    }
+
+
+async def project_getter(
+    dialog_manager: DialogManager,
+    sessionmaker: async_sessionmaker,
+    redis: Redis,
+    session: ClientSession,
+    **kwargs
+):
+    project_id = dialog_manager.start_data
+    user_headers = await get_headers(
+        user_id=dialog_manager.event.from_user.id,
+        sessionmaker=sessionmaker,
+        redis=redis
+    )
+    lang, tz = await get_lang_and_tz(
+        user_id=dialog_manager.event.from_user.id,
+        sessionmaker=sessionmaker,
+        redis=redis
+    )
+
+    project = await Project.get_item(session, project_id, user_headers, lang, tz)
+
+    formatted_project = _(
+        """\
+            <b>Name</b>: {name}
+            \n<b>Key</b>: {key}
+            \n<b>Favorite</b>: {starred}
+            \n<b>Created</b>: {created}
+            \n<b>Updated</b>: {updated}
+        """
+    ).format(
+        name=project['name'],
+        key=project['key'],
+        starred=Project.get_translated_starred(project["starred"]),
+        created=project['created'],
+        updated=project['updated']
+    )
+
+    return {"project": formatted_project}
+
+
+async def delete_project(
+    callback: CallbackQuery,
+    button: Button,
+    manager: DialogManager,
+):
+    sessionmaker: async_sessionmaker = manager.middleware_data["sessionmaker"]
+    redis: Redis = manager.middleware_data["redis"]
+    session: ClientSession = manager.middleware_data["session"]
+
+    project_id = manager.start_data
+    user_headers = await get_headers(
+        user_id=manager.event.from_user.id,
+        sessionmaker=sessionmaker,
+        redis=redis
+    )
+    result = await Project.delete_item(session, project_id, user_headers)
+
+    if "success" in result:
+        return await manager.done(result["success"])
+    manager.dialog_data["error"] = result["error"]
+    return
