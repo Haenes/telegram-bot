@@ -5,13 +5,14 @@ from aiogram.fsm.context import FSMContext
 from aiogram.utils.i18n import gettext as _, FSMI18nMiddleware, get_i18n
 
 from aiogram_dialog import Data, DialogManager
+from aiogram_dialog.widgets.common import Whenable
 from aiogram_dialog.widgets.kbd import Button
 
 from aiohttp import ClientSession
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
-from .states import ProjectSG
+from .states import ProjectSG, EditProjectSG
 from .utils import get_token, get_headers, get_lang_and_tz
 from db.user import User, get_user
 from handlers.bugtracker_api import Project, get_token as get_token_api
@@ -288,8 +289,8 @@ async def project_getter(
     project = await Project.get_item(session, project_id, user_headers, lang, tz)
 
     formatted_project = _(
-        """
-            <b>Name</b>: {name}\
+        """\
+            \n<b>Name</b>: {name}\
             \n<b>Key</b>: {key}\
             \n<b>Favorite</b>: {starred}\
             \n<b>Created</b>: {created}\
@@ -304,6 +305,101 @@ async def project_getter(
     )
 
     return {"project": formatted_project}
+
+
+async def clicked_edit_project(
+    callback: CallbackQuery,
+    button: Button,
+    dialog_manager: DialogManager
+):
+    await dialog_manager.start(EditProjectSG.select, dialog_manager.start_data)
+
+
+async def project_edit_texts_getter(*args, **kwargs):
+    return {
+        "instructions": _("Select what you want to change:"),
+        "fields": [
+            (_("Name"), 1),
+            (_("Key"), 2),
+            (_("Favorite"), 3)
+        ],
+        "name_text": _("Enter new name:"),
+        "key_text": _("Enter new key:"),
+        "starred_text": _("Is this project will be a favorite:"),
+        "true": _("True"),
+        "false": _("False"),
+        "continue": _("Continue"),
+        "cancel": _("Cancel"),
+        "try_again": _("Try again"),
+    }
+
+
+def is_selected(data: dict, widget: Whenable, manager: DialogManager):
+    if manager.find("m_field").get_checked():
+        return True
+    return False
+
+
+async def edit_project_selected(
+    callback: CallbackQuery,
+    button: Button,
+    manager: DialogManager,
+    data: str = None,
+):
+    is_favorite_button = button.widget_id
+    if is_favorite_button == "True" or is_favorite_button == "False":
+        manager.dialog_data["starred"] = is_favorite_button
+
+    fields_states_map = {
+        "1": EditProjectSG.name,
+        "2": EditProjectSG.key,
+        "3": EditProjectSG.starred
+    }
+    mselect_widget = manager.find("m_field")
+    selected_fields = sorted(mselect_widget.get_checked())
+
+    if len(selected_fields):
+        await manager.switch_to(fields_states_map[selected_fields[0]])
+        await mselect_widget.set_checked(selected_fields[0], False)
+    else:
+        await edit_project(manager)
+
+
+async def edit_project(manager: DialogManager):
+    sessionmaker: async_sessionmaker = manager.middleware_data["sessionmaker"]
+    redis: Redis = manager.middleware_data["redis"]
+    session: ClientSession = manager.middleware_data["session"]
+
+    project_id = manager.start_data
+    user_headers = await get_headers(
+        user_id=manager.event.from_user.id,
+        sessionmaker=sessionmaker,
+        redis=redis,
+    )
+
+    key = manager.find("key").get_value()
+    values = [
+        ("name", manager.find("name").get_value()),
+        ("key", key.upper() if key else None),
+        ("starred", manager.dialog_data.get("starred"))
+    ]
+
+    results = await Project().edit_item(
+        session,
+        project_id,
+        user_headers,
+        {k: v for k, v in values if v is not None}
+    )
+
+    if "error_name" in results:
+        manager.dialog_data["error_name"] = results["error_name"]
+        return await manager.switch_to(EditProjectSG.name)
+    elif "error_key" in results:
+        manager.dialog_data["error_key"] = results["error_key"]
+        return await manager.switch_to(EditProjectSG.key)
+    elif "error" in results:
+        return await manager.switch_to(EditProjectSG.name)
+    await manager.done(results["success"])
 
 
 async def delete_project(

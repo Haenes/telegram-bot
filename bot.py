@@ -20,12 +20,13 @@ from dialog.dialogs import (
     login,
     settings,
     projects as projects_dialog,
-    create_project,
-    project
+    create_new_project,
+    project,
+    edit_project
 )
 
 from handlers import start, common
-from handlers.project import projects, update_project
+from handlers.project import projects
 from handlers.issue import (
     issues,
     pagination_issues,
@@ -64,7 +65,6 @@ async def main():
     )
     dp.include_routers(
         projects.router,
-        update_project.router,
         issues.router,
         create_issue.router,
         update_issue.router
@@ -74,8 +74,9 @@ async def main():
         login,
         settings,
         projects_dialog,
-        create_project,
-        project
+        create_new_project,
+        project,
+        edit_project
     )
 
     setup_dialogs(dp)

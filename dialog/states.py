@@ -27,10 +27,10 @@ class ProjectSG(StatesGroup):
 
 
 class EditProjectSG(StatesGroup):
+    select = State()
     name = State()
     key = State()
     starred = State()
-    results = State()
 
 
 class IssuesSG(StatesGroup):

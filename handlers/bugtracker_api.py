@@ -224,17 +224,17 @@ class Project(API):
 
         async with session.patch(url, json=data, headers=headers) as r:
             if r.status == 200:
-                return _("The project has been successfully updated!")
+                return {"success": _("The project has been updated!")}
 
             results = await r.json()
 
             if "detail" in results:
                 match results["detail"]:
                     case "Project with this name already exist!":
-                        return self.UNIQUE_ERRORS["project_name"]
+                        return {"error_name": self.UNIQUE_ERRORS["project_name"]}
                     case "Project with this key already exist!":
-                        return self.UNIQUE_ERRORS["project_key"]
-            return _("An error occurred, the project was NOT updated!")
+                        return {"error_key": self.UNIQUE_ERRORS["project_key"]}
+            return {"error": _("Error, the project was NOT updated!")}
 
     @staticmethod
     async def delete_item(session, id: str | int, headers: dict) -> str:

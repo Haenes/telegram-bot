@@ -1,3 +1,5 @@
+from operator import itemgetter
+
 from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.kbd import (
     Button,
@@ -8,6 +10,7 @@ from aiogram_dialog.widgets.kbd import (
     Group,
     ListGroup,
     ScrollingGroup,
+    Multiselect,
     Cancel
 )
 from aiogram_dialog.widgets.input import TextInput
@@ -39,6 +42,11 @@ from .getters_and_setters import (
     clicked_project,
     project_texts_getter,
     project_getter,
+    clicked_edit_project,
+    project_edit_texts_getter,
+    is_selected,
+    edit_project_selected,
+    # edit_project,
     delete_project
 )
 
@@ -121,7 +129,7 @@ projects = Dialog(
     on_process_result=process_result
 )
 
-create_project = Dialog(
+create_new_project = Dialog(
     Window(
         Format("{name_text}"),
         TextInput(id="name", on_success=Next()),
@@ -157,11 +165,12 @@ create_project = Dialog(
 
 project = Dialog(
     Window(
+        Format("{dialog_data[result]}", when="dialog_data"),  # when project edited
         Format("{project}"),
         Format("{error}", when="error"),
         Group(
             Start(Format("{issues}"), "project_issues", IssuesSG.main),
-            Start(Format("{edit}"), "edit_project", EditProjectSG.name),
+            Button(Format("{edit}"), "edit_project", clicked_edit_project),
             Button(Format("{delete}"), "delete_project", delete_project),
             Cancel(Format("{back}")),
             width=3
@@ -169,7 +178,52 @@ project = Dialog(
         getter=project_getter,
         state=ProjectSG.details
     ),
-    getter=project_texts_getter
+    getter=project_texts_getter,
+    on_process_result=process_result
+)
+
+
+edit_project = Dialog(
+    Window(
+        Format("{instructions}"),
+        Multiselect(
+            checked_text=Format("✓ {item[0]}"),
+            unchecked_text=Format("{item[0]}"),
+            id="m_field",
+            item_id_getter=itemgetter(1),
+            items="fields",
+        ),
+        Button(
+            text=Format("{continue}"),
+            id="confirm_select",
+            on_click=edit_project_selected,
+            when=is_selected
+        ),
+        Cancel(Format("{cancel}")),
+        state=EditProjectSG.select,
+    ),
+    Window(
+        Format("{dialog_data[error_name]}", when="dialog_data"),
+        Format("\n{name_text}"),
+        TextInput(id="name", on_success=edit_project_selected),
+        Cancel(Format("{cancel}")),
+        state=EditProjectSG.name,
+    ),
+    Window(
+        Format("{dialog_data[error_key]}", when="dialog_data"),
+        Format("\n{key_text}"),
+        TextInput(id="key", on_success=edit_project_selected),
+        state=EditProjectSG.key,
+    ),
+    Window(
+        Format("{starred_text}"),
+        Group(
+            Button(Format("{true}"), "True", edit_project_selected),
+            Button(Format("{false}"), "False", edit_project_selected)
+        ),
+        state=EditProjectSG.starred,
+    ),
+    getter=project_edit_texts_getter
 )
 
 settings = Dialog(
