@@ -45,7 +45,12 @@ class CreateIssueSG(StatesGroup):
     status = State()
 
 
+class IssueSG(StatesGroup):
+    details = State()
+
+
 class EditIssueSG(StatesGroup):
+    select = State()
     title = State()
     description = State()
     type = State()

@@ -22,17 +22,14 @@ from dialog.dialogs import (
     projects as projects_dialog,
     create_new_project,
     project,
-    edit_project
+    edit_project,
+    issues,
+    create_new_issue,
+    issue,
+    edit_issue
 )
 
-from handlers import start, common
-from handlers.project import projects
-from handlers.issue import (
-    issues,
-    pagination_issues,
-    create_issue,
-    update_issue
-)
+from handlers import start, projects, common
 
 
 async def main():
@@ -58,17 +55,7 @@ async def main():
     # register all midllewares
     dp.update.middleware.register(i18n_middleware)
 
-    dp.include_routers(
-        start.router,
-        common.router,
-        pagination_issues.router
-    )
-    dp.include_routers(
-        projects.router,
-        issues.router,
-        create_issue.router,
-        update_issue.router
-    )
+    dp.include_routers(start.router, common.router, projects.router)
     dp.include_routers(
         start_dialog,
         login,
@@ -76,7 +63,11 @@ async def main():
         projects_dialog,
         create_new_project,
         project,
-        edit_project
+        edit_project,
+        issues,
+        create_new_issue,
+        issue,
+        edit_issue
     )
 
     setup_dialogs(dp)

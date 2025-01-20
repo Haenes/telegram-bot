@@ -12,10 +12,17 @@ from aiohttp import ClientSession
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
-from .states import ProjectSG, EditProjectSG
+from .states import (
+    ProjectSG,
+    EditProjectSG,
+    IssuesSG,
+    IssueSG,
+    CreateIssueSG,
+    EditIssueSG
+)
 from .utils import get_token, get_headers, get_lang_and_tz
 from db.user import User, get_user
-from handlers.bugtracker_api import Project, get_token as get_token_api
+from handlers.bugtracker_api import Project, Issue, get_token as get_token_api
 
 
 async def start_texts_getter(**kwargs):
@@ -174,13 +181,24 @@ async def process_result(
         dialog_manager.dialog_data["result"] = result
 
 
-async def projects_texts_getter(*args, **kwargs):
+async def projects_texts(*args, **kwargs):
     return {
         "projects_text": _("Your projects:"),
         "zero_projects": _("You don't have projects yet."),
         "back": _("Back"),
         "cancel": _("Cancel"),
         "create": _("Create new"),
+        "name_text": _("Enter project name:"),
+        "key_text": _("Enter key of the project:"),
+        "starred_text": _("Is this project will be a favorite:"),
+        "true": _("True"),
+        "false": _("False"),
+    }
+
+
+async def create_project_texts(*args, **kwargs):
+    return {
+        "cancel": _("Cancel"),
         "name_text": _("Enter project name:"),
         "key_text": _("Enter key of the project:"),
         "starred_text": _("Is this project will be a favorite:"),
@@ -196,16 +214,16 @@ async def projects_getter(
     session: ClientSession,
     **kwargs
 ):
-    user_headers = await get_headers(
+    headers = await get_headers(
         user_id=dialog_manager.event.from_user.id,
         sessionmaker=sessionmaker,
         redis=redis
     )
 
-    if user_headers is not None:
+    if headers is not None:
         # Limit in 9999 projects (default is 10)
         # is necessary to get pagination working.
-        projects = await Project.get_items(session, user_headers, {"limit": 9999})
+        projects = await Project.get_items(session, headers, {"limit": 9999})
 
         if "count" in projects:
             return {"projects": projects["results"]}
@@ -230,6 +248,78 @@ async def clicked_project(
     await dialog_manager.start(ProjectSG.details, dialog_manager.item_id)
 
 
+async def clicked_issues(
+    callback: CallbackQuery,
+    button: Button,
+    dialog_manager: DialogManager
+):
+    await dialog_manager.start(IssuesSG.main, dialog_manager.start_data)
+
+
+async def clicked_issue(
+    callback: CallbackQuery,
+    button: Button,
+    dialog_manager: DialogManager,
+):
+    # Pass project_id and issue_id.
+    start_data = dialog_manager.start_data, dialog_manager.item_id
+    await dialog_manager.start(IssueSG.details, start_data)
+
+
+async def clicked_create_new_issue(
+    callback: CallbackQuery,
+    button: Button,
+    dialog_manager: DialogManager
+):
+    await dialog_manager.start(CreateIssueSG.title, dialog_manager.start_data)
+
+
+async def handle_issue_title(
+    callback: CallbackQuery,
+    button: Button,
+    manager: DialogManager,
+    data: str = None,
+):
+    manager.dialog_data["title"] = data
+
+    # If all issue data is already set except title (because of the error)
+    # don't receive the remaining data again and create the issue immediately.
+    if "error_title" in manager.dialog_data:
+        del manager.dialog_data["error_title"]
+        return await create_issue(callback, button, manager)
+    await manager.next()
+
+
+async def clicked_issue_type(
+    callback: CallbackQuery,
+    button: Button,
+    dialog_manager: DialogManager,
+    data: str,
+):
+    dialog_manager.dialog_data["type"] = data
+    await dialog_manager.next()
+
+
+async def clicked_issue_priority(
+    callback: CallbackQuery,
+    button: Button,
+    dialog_manager: DialogManager,
+    data: str,
+):
+    dialog_manager.dialog_data["priority"] = data
+    await dialog_manager.next()
+
+
+async def clicked_issue_status(
+    callback: CallbackQuery,
+    button: Button,
+    dialog_manager: DialogManager,
+    data: str,
+):
+    dialog_manager.dialog_data["status"] = data
+    await create_issue(callback, button, dialog_manager)
+
+
 async def create_project(
     dialog_manager: DialogManager,
     sessionmaker: async_sessionmaker,
@@ -237,7 +327,7 @@ async def create_project(
     session: ClientSession,
     **kwargs
 ):
-    user_headers = await get_headers(
+    headers = await get_headers(
         user_id=dialog_manager.event.from_user.id,
         sessionmaker=sessionmaker,
         redis=redis,
@@ -247,7 +337,7 @@ async def create_project(
         "key": dialog_manager.find("key").get_value().upper(),
         "starred": dialog_manager.dialog_data["starred"],
     }
-    results = await Project().create_item(session, user_headers, data)
+    results = await Project().create_item(session, headers, data)
 
     if "error" in results:
         return {
@@ -275,7 +365,7 @@ async def project_getter(
     **kwargs
 ):
     project_id = dialog_manager.start_data
-    user_headers = await get_headers(
+    headers = await get_headers(
         user_id=dialog_manager.event.from_user.id,
         sessionmaker=sessionmaker,
         redis=redis
@@ -286,7 +376,7 @@ async def project_getter(
         redis=redis
     )
 
-    project = await Project.get_item(session, project_id, user_headers, lang, tz)
+    project = await Project.get_item(session, project_id, headers, lang, tz)
 
     formatted_project = _(
         """\
@@ -371,7 +461,7 @@ async def edit_project(manager: DialogManager):
     session: ClientSession = manager.middleware_data["session"]
 
     project_id = manager.start_data
-    user_headers = await get_headers(
+    headers = await get_headers(
         user_id=manager.event.from_user.id,
         sessionmaker=sessionmaker,
         redis=redis,
@@ -385,10 +475,10 @@ async def edit_project(manager: DialogManager):
     ]
 
     results = await Project().edit_item(
-        session,
-        project_id,
-        user_headers,
-        {k: v for k, v in values if v is not None}
+        session=session,
+        id=project_id,
+        headers=headers,
+        data={k: v for k, v in values if v is not None}
     )
 
     if "error_name" in results:
@@ -412,14 +502,308 @@ async def delete_project(
     session: ClientSession = manager.middleware_data["session"]
 
     project_id = manager.start_data
-    user_headers = await get_headers(
+    headers = await get_headers(
         user_id=manager.event.from_user.id,
         sessionmaker=sessionmaker,
         redis=redis
     )
-    result = await Project.delete_item(session, project_id, user_headers)
+    result = await Project.delete_item(session, project_id, headers)
 
     if "success" in result:
         return await manager.done(result["success"])
     manager.dialog_data["error"] = result["error"]
-    return
+
+
+async def issues_texts(*args, **kwargs):
+    return {
+        "issues_text": _("Your issues:"),
+        "zero_issues": _("You don't have issues yet."),
+        "back": _("Back"),
+        "cancel": _("Cancel"),
+        "create": _("Create new"),
+        "title_text": _("Enter issue title:"),
+        "description_text": _("Enter description of issue:"),
+        "type_text": _("Is this project will be a favorite:"),
+        "priority_text": _("Is this project will be a favorite:"),
+    }
+
+
+async def create_issue_texts(*args, **kwargs):
+    return {
+        "cancel": _("Cancel"),
+        "skip": _("Skip"),
+        "title_text": _("Enter issue title:"),
+        "description_text": _("Enter description of issue:"),
+        "type_text": _("Select the issue type:"),
+        "types": [(_("Feature"), "Feature"), (_("Bug"), "Bug")],
+        "priority_text": _(
+            "Select the priority of the issue. "
+            "\nDefault is <b>Medium</b>:"
+        ),
+        "prioritys": [
+            (_("Lowest"), "Lowest"),
+            (_("Low"), "Low"),
+            (_("Medium"), "Medium"),
+            (_("High"), "High"),
+            (_("Highest"), "Highest"),
+        ],
+        "status_text": _("Select the issue status. \nDefault is <b>To do</b>:"),
+        "statuses": [
+            (_("To do"), "To do"),
+            (_("In progress"), "In progress"),
+            (_("Done"), "Done"),
+        ],
+    }
+
+
+async def issues_getter(
+    dialog_manager: DialogManager,
+    sessionmaker: async_sessionmaker,
+    redis: Redis,
+    session: ClientSession,
+    **kwargs
+):
+    headers = await get_headers(
+        user_id=dialog_manager.event.from_user.id,
+        sessionmaker=sessionmaker,
+        redis=redis
+    )
+    project_id = dialog_manager.start_data
+
+    if headers is not None:
+        # Limit in 9999 projects (default is 10)
+        # is necessary to get pagination working.
+        issues = await Issue.get_items(session, headers, project_id, {"limit": 9999})
+
+        if "count" in issues:
+            return {"issues": issues["results"]}
+        return {"no_issues": issues["detail"]}
+
+
+async def create_issue(
+    callback: CallbackQuery,
+    button: Button,
+    manager: DialogManager
+):
+    sessionmaker: async_sessionmaker = manager.middleware_data["sessionmaker"]
+    redis: Redis = manager.middleware_data["redis"]
+    session: ClientSession = manager.middleware_data["session"]
+
+    headers = await get_headers(
+        user_id=manager.event.from_user.id,
+        sessionmaker=sessionmaker,
+        redis=redis,
+    )
+    issue_data = {
+        "title": manager.find("title").get_value(),
+        "type": manager.dialog_data["type"],
+        "priority": manager.dialog_data.get("priority") or "Medium",
+        "status": manager.dialog_data.get("status") or "To do",
+    }
+
+    if description := manager.find("description").get_value():
+        issue_data["description"] = description
+
+    results = await Issue().create_item(
+        session=session,
+        headers=headers,
+        project_id=manager.start_data,
+        data=issue_data
+    )
+
+    if "error_title" in results:
+        manager.dialog_data["error_title"] = results["error_title"]
+        return await manager.switch_to(CreateIssueSG.title)
+    elif "error" in results:
+        manager.dialog_data["error"] = results["error"]
+        return await manager.switch_to(CreateIssueSG.title)
+
+    await manager.done(results["success"])
+
+
+async def issue_texts(*args, **kwargs):
+    return {
+        "issues": _("Issues"),
+        "edit": _("Edit"),
+        "delete": _("Delete"),
+        "back": _("Back")
+    }
+
+
+async def issue_getter(
+    dialog_manager: DialogManager,
+    sessionmaker: async_sessionmaker,
+    redis: Redis,
+    session: ClientSession,
+    **kwargs
+):
+    project_id, issue_id = dialog_manager.start_data
+    headers = await get_headers(
+        user_id=dialog_manager.event.from_user.id,
+        sessionmaker=sessionmaker,
+        redis=redis
+    )
+    lang, tz = await get_lang_and_tz(
+        user_id=dialog_manager.event.from_user.id,
+        sessionmaker=sessionmaker,
+        redis=redis
+    )
+
+    issue = await Issue.get_item(
+        session=session,
+        id=issue_id,
+        project_id=project_id,
+        headers=headers,
+        language=lang,
+        timezone=tz
+    )
+    issue_type, priority, status = Issue.get_translated_fields(issue)
+
+    formatted_issue = _(
+        """\
+            \n<b>Title</b>: {title}\
+            \n<b>Description</b>: {description}\
+            \n<b>Type</b>: {type}\
+            \n<b>Priority</b>: {priority}\
+            \n<b>Status</b>: {status}\
+            \n<b>Created</b>: {created}\
+            \n<b>Updated</b>: {updated}
+        """
+    ).format(
+        title=issue["title"],
+        description=issue["description"],
+        type=issue_type,
+        priority=priority,
+        status=status,
+        created=issue["created"],
+        updated=issue["updated"]
+    )
+
+    return {"issue": formatted_issue}
+
+
+async def clicked_edit_issue(
+    callback: CallbackQuery,
+    button: Button,
+    dialog_manager: DialogManager
+):
+    await dialog_manager.start(EditIssueSG.select, dialog_manager.start_data)
+
+
+async def issue_edit_texts(*args, **kwargs):
+    return {
+        "instructions": _("Select what you want to change:"),
+        "continue": _("Continue"),
+        "cancel": _("Cancel"),
+        "skip": _("Skip"),
+        "title_text": _("Enter issue title:"),
+        "description_text": _("Enter description of issue:"),
+        "fields": [
+            (_("Title"), "1"),
+            (_("Description"), "2"),
+            (_("Type"), "3"),
+            (_("Priority"), "4"),
+            (_("Status"), "5"),
+        ],
+        "type_text": _("Select the issue type:"),
+        "types": [(_("Feature"), "Feature"), (_("Bug"), "Bug")],
+        "priority_text": _("Select the priority of the issue."),
+        "prioritys": [
+            (_("Lowest"), "Lowest"),
+            (_("Low"), "Low"),
+            (_("Medium"), "Medium"),
+            (_("High"), "High"),
+            (_("Highest"), "Highest"),
+        ],
+        "status_text": _("Select the issue status."),
+        "statuses": [
+            (_("To do"), "To do"),
+            (_("In progress"), "In progress"),
+            (_("Done"), "Done"),
+        ],
+    }
+
+
+async def edit_issue_selected(
+    callback: CallbackQuery,
+    button: Button,
+    manager: DialogManager,
+    data: str = None,
+):
+    if button.widget_id != "confirm_select":
+        manager.dialog_data[button.widget_id] = data
+
+    fields_states_map = {
+        "1": EditIssueSG.title,
+        "2": EditIssueSG.description,
+        "3": EditIssueSG.type,
+        "4": EditIssueSG.priority,
+        "5": EditIssueSG.status,
+    }
+    mselect_widget = manager.find("m_field")
+    selected_fields = sorted(mselect_widget.get_checked())
+
+    if len(selected_fields):
+        await manager.switch_to(fields_states_map[selected_fields[0]])
+        await mselect_widget.set_checked(selected_fields[0], False)
+    else:
+        await edit_issue(manager)
+
+
+async def edit_issue(manager: DialogManager):
+    sessionmaker: async_sessionmaker = manager.middleware_data["sessionmaker"]
+    redis: Redis = manager.middleware_data["redis"]
+    session: ClientSession = manager.middleware_data["session"]
+
+    project_id, issue_id = manager.start_data
+    headers = await get_headers(
+        user_id=manager.event.from_user.id,
+        sessionmaker=sessionmaker,
+        redis=redis,
+    )
+
+    values = [
+        ("title", manager.dialog_data.get("title")),
+        ("description", manager.dialog_data.get("description")),
+        ("type", manager.dialog_data.get("type")),
+        ("priority", manager.dialog_data.get("priority")),
+        ("status", manager.dialog_data.get("status"))
+    ]
+
+    results = await Issue().edit_item(
+        session=session,
+        id=issue_id,
+        headers=headers,
+        project_id=project_id,
+        data={k: v for k, v in values if v is not None},
+    )
+
+    if "error_title" in results:
+        manager.dialog_data["error_title"] = results["error_title"]
+        return await manager.switch_to(EditIssueSG.title)
+    elif "error" in results:
+        manager.dialog_data["error"] = results["error"]
+        return await manager.switch_to(EditIssueSG.title)
+    await manager.done(results["success"])
+
+
+async def delete_issue(
+    callback: CallbackQuery,
+    button: Button,
+    manager: DialogManager,
+):
+    sessionmaker: async_sessionmaker = manager.middleware_data["sessionmaker"]
+    redis: Redis = manager.middleware_data["redis"]
+    session: ClientSession = manager.middleware_data["session"]
+
+    project_id, issue_id = manager.start_data
+    headers = await get_headers(
+        user_id=manager.event.from_user.id,
+        sessionmaker=sessionmaker,
+        redis=redis
+    )
+    result = await Issue.delete_item(session, issue_id, project_id, headers)
+
+    if "success" in result:
+        return await manager.done(result["success"])
+    manager.dialog_data["error"] = result["error"]

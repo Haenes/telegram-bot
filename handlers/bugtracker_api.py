@@ -100,7 +100,7 @@ class API:
         id: str | int,
         headers: dict,
         data: dict
-    ) -> str: ...
+    ) -> dict: ...
 
     async def edit_item(
         self,
@@ -108,14 +108,14 @@ class API:
         id: str | int,
         headers: dict,
         data: dict
-    ) -> str: ...
+    ) -> dict: ...
 
     @staticmethod
     async def delete_item(
         session: ClientSession,
         id: str | int,
         headers: dict
-    ) -> str: ...
+    ) -> dict: ...
 
 
 class Project(API):
@@ -218,7 +218,7 @@ class Project(API):
         id: str | int,
         headers: dict,
         data: dict
-    ) -> str:
+    ) -> dict:
         """ Update project via PATCH request. """
         url = f"{API_BASE_URL}/{id}"
 
@@ -237,7 +237,7 @@ class Project(API):
             return {"error": _("Error, the project was NOT updated!")}
 
     @staticmethod
-    async def delete_item(session, id: str | int, headers: dict) -> str:
+    async def delete_item(session, id: str | int, headers: dict) -> dict:
         """ Delete project via DELETE request. """
         url = f"{API_BASE_URL}/{id}"
 
@@ -251,7 +251,7 @@ class Project(API):
                     return {"error": _("The project was deleted earlier.")}
                 case _:
                     return {"error": _(
-                        "An error occurred, the project was not deleted!"
+                        "Error, the project was not deleted!"
                     )}
 
 
@@ -362,43 +362,43 @@ class Issue(API):
     async def create_item(
         self,
         session: ClientSession,
-        data: dict,
+        headers: dict,
         project_id: str | int,
-        headers: dict
-    ) -> str:
+        data: dict,
+    ) -> dict:
         """ Create issue via POST request. """
         url = f"{API_BASE_URL}/{project_id}/issues"
 
         async with session.post(url, json=data, headers=headers) as r:
             if r.status == 201:
-                return _("The issue has been successfully created!")
+                return {"success": _("The issue has been created!")}
 
             results = await r.json()
 
             if "detail" in results:
-                return self.UNIQUE_ERRORS["issue_title"]
-            return _("An error occurred, the project was NOT created!")
+                return {"error_title": self.UNIQUE_ERRORS["issue_title"]}
+            return {"error": _("Error, the issue was NOT created!")}
 
     async def edit_item(
         self,
         session: ClientSession,
         id: str | int,
+        headers: dict,
         project_id: str | int,
-        data: dict,
-        headers: dict
-    ) -> str:
+        data: dict
+    ) -> dict:
         """ Update issue via PATCH request. """
         url = f"{API_BASE_URL}/{project_id}/issues/{id}"
 
         async with session.patch(url, json=data, headers=headers) as r:
             if r.status == 200:
-                return _("The issue has been successfully updated!")
+                return {"success": _("The issue has been updated!")}
 
             results = await r.json()
 
             if "detail" in results:
-                return self.UNIQUE_ERRORS["issue_title"]
-            return _("An error occurred, the issue was NOT updated!")
+                return {"error_title": self.UNIQUE_ERRORS["issue_title"]}
+            return {"error": _("Error, the issue was NOT updated!")}
 
     @staticmethod
     async def delete_item(
@@ -406,15 +406,15 @@ class Issue(API):
         id: str | int,
         project_id: str | int,
         headers: dict
-    ) -> str:
+    ) -> dict:
         """ Delete issue via DELETE request. """
         url = f"{API_BASE_URL}/{project_id}/issues/{id}"
 
         async with session.delete(url, headers=headers) as r:
             match r.status:
                 case 200:
-                    return _("The issue was successfully deleted!")
+                    return {"success": _("The issue was successfully deleted!")}
                 case 400:
-                    return _("The issue was deleted earlier.")
+                    return {"error": _("The issue was deleted earlier.")}
                 case _:
-                    return _("An error occurred, the issue was not deleted!")
+                    return {"error": _("Error, the issue was not deleted!")}
