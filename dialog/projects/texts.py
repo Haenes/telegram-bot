@@ -20,7 +20,10 @@ async def create(*args, **kwargs):
     return {
         "cancel": _("Cancel"),
         "name_text": _("Enter project name:"),
-        "key_text": _("Enter key of the project:"),
+        "key_text": _(
+            "Enter key (unique identifier) of the the project. "
+            "The maximum length is 10 characters:"
+        ),
         "starred_text": _("Is this project will be a favorite:"),
         "favorites": [(_("True"), True), (_("False"), False)]
     }

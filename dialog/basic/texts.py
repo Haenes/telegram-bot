@@ -7,9 +7,9 @@ async def start(dialog_manager: DialogManager, **kwargs):
         """\
             Hello {user}!
             \nA quick introduction to working with me:
-            \n1) Login: first step is log in via /login command. Without it, I won't work!
-            \n2) Starting menu accessed via /menu command.
-            \n3) From menu, you can manage your projects and their issues, and change settings.
+            \n1) First step is log in via /login command. Without it, I won't work!
+            \n2) Main menu accessed via /menu command.
+            \n3) From this menu, you can manage your projects and their issues, and change my settings.
             \n<b>Please note that you must already be registered through the website or API. If you don't have an account yet, then you need to create one and only then use me. </b>
         """  # noqa: E501
     ).format(user=dialog_manager.event.from_user.first_name)}
