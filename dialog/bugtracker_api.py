@@ -69,7 +69,7 @@ class API:
         session: ClientSession,
         headers: dict,
         params: dict | None = None
-    ) -> dict: ...
+    ) -> dict | str: ...
 
     @staticmethod
     async def pagination_next(
@@ -136,7 +136,7 @@ class Project(API):
         session,
         headers: dict,
         params: dict | None = None
-    ) -> dict:
+    ) -> dict | str:
         """ Get first (or N) page of projects via GET request. """
         url = f"{API_BASE_URL}"
 
@@ -207,9 +207,9 @@ class Project(API):
             if "detail" in results:
                 match results["detail"]:
                     case "Project with this name already exist!":
-                        return {"error": self.UNIQUE_ERRORS["project_name"]}
+                        return {"error_name": self.UNIQUE_ERRORS["project_name"]}
                     case "Project with this key already exist!":
-                        return {"error": self.UNIQUE_ERRORS["project_key"]}
+                        return {"error_key": self.UNIQUE_ERRORS["project_key"]}
             return {"error": _("Error, the project was NOT created!")}
 
     async def edit_item(
@@ -290,7 +290,7 @@ class Issue(API):
         headers: dict,
         project_id: str | int,
         params: dict | None = None
-    ) -> dict:
+    ) -> dict | str:
         """ Get first (or N) page of issues via GET request. """
         url = f"{API_BASE_URL}/{project_id}/issues"
 

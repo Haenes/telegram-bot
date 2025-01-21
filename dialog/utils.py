@@ -1,4 +1,8 @@
+from typing import Any
 from ast import literal_eval
+
+from aiogram_dialog import Data, DialogManager
+from aiogram_dialog.widgets.common import Whenable
 
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import async_sessionmaker
@@ -95,3 +99,18 @@ async def set_lang_and_tz_from_db(
         }
     )
     return language_from_db, timezones[timezone_from_db]
+
+
+async def process_result(
+    start_data: Data,
+    result: Any,
+    dialog_manager: DialogManager
+):
+    if result:
+        dialog_manager.dialog_data["result"] = result
+
+
+def is_selected(data: dict, widget: Whenable, manager: DialogManager):
+    if manager.find("m_field").get_checked():
+        return True
+    return False
