@@ -8,7 +8,7 @@ class ProjectsSG(StatesGroup):
 class CreateProjectSG(StatesGroup):
     name = State()
     key = State()
-    starred = State()
+    favorite = State()
 
 
 class ProjectSG(StatesGroup):
@@ -19,4 +19,4 @@ class EditProjectSG(StatesGroup):
     select = State()
     name = State()
     key = State()
-    starred = State()
+    favorite = State()

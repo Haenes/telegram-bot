@@ -33,10 +33,7 @@ async def create_project_input(
     manager.dialog_data[input_id] = input
     await message.delete()
 
-    if input_id == "name" and "error_name" in manager.dialog_data:
-        del manager.dialog_data["error_name"]
-        return await create_project(message, text, manager)
-    elif input_id == "key" and "error_key" in manager.dialog_data:
+    if input_id == "key" and "error_key" in manager.dialog_data:
         del manager.dialog_data["error_key"]
         return await create_project(message, text, manager)
     await manager.next()
@@ -46,9 +43,9 @@ async def create_project_starred(
     callback: CallbackQuery,
     select: Select,
     manager: DialogManager,
-    starred: bool
+    favorite: bool
 ):
-    manager.dialog_data["starred"] = starred
+    manager.dialog_data["favorite"] = favorite
     await create_project(callback, select, manager)
 
 
@@ -69,14 +66,11 @@ async def create_project(
     data = {
         "name": dialog_manager.dialog_data["name"],
         "key": dialog_manager.dialog_data["key"].upper(),
-        "starred": dialog_manager.dialog_data["starred"],
+        "favorite": dialog_manager.dialog_data["favorite"],
     }
     results = await Project().create_item(session, headers, data)
 
-    if "error_name" in results:
-        dialog_manager.dialog_data["error_name"] = results["error_name"]
-        return await dialog_manager.switch_to(CreateProjectSG.name)
-    elif "error_key" in results:
+    if "error_key" in results:
         dialog_manager.dialog_data["error_key"] = results["error_key"]
         return await dialog_manager.switch_to(CreateProjectSG.key)
     elif "error" in results:
@@ -105,7 +99,7 @@ async def edit_project_selected(
     fields_states_map = {
         "1": EditProjectSG.name,
         "2": EditProjectSG.key,
-        "3": EditProjectSG.starred
+        "3": EditProjectSG.favorite
     }
     mselect_widget = manager.find("m_field")
     selected_fields = sorted(mselect_widget.get_checked())
@@ -137,7 +131,7 @@ async def edit_project(manager: DialogManager):
     values = [
         ("name", manager.dialog_data.get("name")),
         ("key", key.upper() if key else None),
-        ("starred", manager.dialog_data.get("starred"))
+        ("favorite", manager.dialog_data.get("favorite"))
     ]
 
     results = await Project().edit_item(

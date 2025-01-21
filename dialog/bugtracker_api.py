@@ -127,9 +127,9 @@ class Project(API):
         }
 
     @staticmethod
-    def get_translated_starred(starred: bool) -> str:
-        favorite = {True: _("True"), False: _("False")}
-        return favorite[starred]
+    def get_translated_favorite(favorite: bool) -> str:
+        is_favorite = {True: _("True"), False: _("False")}
+        return is_favorite[favorite]
 
     @staticmethod
     async def get_items(

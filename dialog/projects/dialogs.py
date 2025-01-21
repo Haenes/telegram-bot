@@ -69,7 +69,6 @@ projects = Dialog(
 create_new_project = Dialog(
     Window(
         Format("{dialog_data[error]}", F["dialog_data"]["error"]),
-        Format("{dialog_data[error_name]}", F["dialog_data"]["error_name"]),
         Format("\n{name_text}"),
         TextInput(id="name", on_success=create_project_input),
         Cancel(Format("{cancel}")),
@@ -85,13 +84,13 @@ create_new_project = Dialog(
         Format("{starred_text}"),
         Select(
                 text=Format("{item[0]}"),
-                id="starred",
+                id="favorite",
                 item_id_getter=itemgetter(1),
                 items="favorites",
                 type_factory=bool,
                 on_click=create_project_starred
             ),
-        state=CreateProjectSG.starred,
+        state=CreateProjectSG.favorite,
     ),
     getter=create
 )
@@ -135,7 +134,6 @@ edit_project = Dialog(
         state=EditProjectSG.select,
     ),
     Window(
-        Format("{dialog_data[error_name]}", when=F["dialog_data"]["error_name"]),
         Format("{dialog_data[error]}", when=F["dialog_data"]["error"]),
         Format("\n{name_text}"),
         TextInput(id="name", on_success=edit_project_selected),
@@ -152,12 +150,12 @@ edit_project = Dialog(
         Format("{starred_text}"),
         Select(
             text=Format("{item[0]}"),
-            id="starred",
+            id="favorite",
             item_id_getter=itemgetter(1),
             items="favorites",
             on_click=edit_project_selected
         ),
-        state=EditProjectSG.starred,
+        state=EditProjectSG.favorite,
     ),
     getter=edit
 )

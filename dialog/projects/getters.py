@@ -57,14 +57,14 @@ async def get_project(
         """\
             \n<b>Name</b>: {name}\
             \n<b>Key</b>: {key}\
-            \n<b>Favorite</b>: {starred}\
+            \n<b>Favorite</b>: {favorite}\
             \n<b>Created</b>: {created}\
             \n<b>Updated</b>: {updated}
         """
     ).format(
         name=project['name'],
         key=project['key'],
-        starred=Project.get_translated_starred(project["starred"]),
+        favorite=Project.get_translated_favorite(project["favorite"]),
         created=project['created'],
         updated=project['updated']
     )
