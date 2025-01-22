@@ -69,7 +69,7 @@ async def edit(*args, **kwargs):
         ],
         "type_text": _("Select the issue type:"),
         "types": [(_("Feature"), "Feature"), (_("Bug"), "Bug")],
-        "priority_text": _("Select the priority of the issue."),
+        "priority_text": _("Select the priority of the issue:"),
         "prioritys": [
             (_("Lowest"), "Lowest"),
             (_("Low"), "Low"),
@@ -77,7 +77,7 @@ async def edit(*args, **kwargs):
             (_("High"), "High"),
             (_("Highest"), "Highest"),
         ],
-        "status_text": _("Select the issue status."),
+        "status_text": _("Select the issue status:"),
         "statuses": [
             (_("To do"), "To do"),
             (_("In progress"), "In progress"),

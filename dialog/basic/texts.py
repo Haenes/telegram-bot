@@ -32,7 +32,7 @@ async def menu(**kwargs):
 
 async def settings(**kwargs):
     return {
-        "settings_text": _("Choose what you want to change:"),
+        "settings_text": _("Select what you want to change:"),
         "language_btn": _("Language"),
         "timezone_btn": _("Timezone"),
         "language_text": _("Select a language:"),

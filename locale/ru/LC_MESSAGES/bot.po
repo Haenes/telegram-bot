@@ -5,9 +5,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PROJECT VERSION\n"
+"Project-Id-Version: telegram_bot VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-01-11 15:37+1000\n"
+"POT-Creation-Date: 2025-01-22 09:32+1000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,68 +16,264 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.14.0\n"
 
-#: handlers/start.py:22
+#: commands.py:31
+msgid "You're already logged in."
+msgstr "Вы уже вошли."
+
+#: commands.py:43
+msgid "You're not logged in. Use /login command."
+msgstr "Вы не вошли. Используйте команду /login."
+
+#: dialog/bugtracker_api.py:43
+msgid "Invalid email/password!"
+msgstr "Неверные эл.почта/пароль"
+
+#: dialog/bugtracker_api.py:45
+msgid "Not verified! Check email."
+msgstr "Вы не верифицированы! Проверьте почту."
+
+#: dialog/basic/texts.py:43 dialog/bugtracker_api.py:56
+msgid "Moscow"
+msgstr "Москва"
+
+#: dialog/basic/texts.py:44 dialog/bugtracker_api.py:57
+msgid "Vladivostok"
+msgstr "Владивосток"
+
+#: dialog/bugtracker_api.py:125
+msgid "Project with this key already exist!"
+msgstr "Проект с этим ключом уже существует!"
+
+#: dialog/bugtracker_api.py:130 dialog/projects/texts.py:14
+#: dialog/projects/texts.py:28 dialog/projects/texts.py:52
+msgid "True"
+msgstr "Да"
+
+#: dialog/bugtracker_api.py:130 dialog/projects/texts.py:15
+#: dialog/projects/texts.py:28 dialog/projects/texts.py:52
+msgid "False"
+msgstr "Нет"
+
+#: dialog/bugtracker_api.py:146
+msgid "You don't have any project!"
+msgstr "У вас нет проектов!"
+
+#: dialog/bugtracker_api.py:202
+msgid "The project has been created!"
+msgstr "Проект создан!"
+
+#: dialog/bugtracker_api.py:209
+msgid "Error, the project was NOT created!"
+msgstr "Ошибка, проект НЕ был создан!"
+
+#: dialog/bugtracker_api.py:223
+msgid "The project has been updated!"
+msgstr "Проект обновлён!"
+
+#: dialog/bugtracker_api.py:230
+msgid "Error, the project was NOT updated!"
+msgstr "Ошибка, проект НЕ был обновлён!"
+
+#: dialog/bugtracker_api.py:240
+msgid "The project was deleted!"
+msgstr "Проект удалён!"
+
+#: dialog/bugtracker_api.py:242
+msgid "The project was deleted earlier."
+msgstr "Проект уже был удалён ранее."
+
+#: dialog/bugtracker_api.py:244
+msgid "Error, the project was NOT deleted!"
+msgstr "Ошибка, проект НЕ был удалён!"
+
+#: dialog/bugtracker_api.py:251
+msgid "Issue with this title already exist!"
+msgstr "Задача с этим заголовком уже существует!"
+
+#: dialog/bugtracker_api.py:256 dialog/issues/texts.py:25
+#: dialog/issues/texts.py:71
+msgid "Bug"
+msgstr "Баг"
+
+#: dialog/bugtracker_api.py:256 dialog/issues/texts.py:25
+#: dialog/issues/texts.py:71
+msgid "Feature"
+msgstr "Фича"
+
+#: dialog/bugtracker_api.py:258 dialog/issues/texts.py:31
+#: dialog/issues/texts.py:74
+msgid "Lowest"
+msgstr "Низший"
+
+#: dialog/bugtracker_api.py:259 dialog/issues/texts.py:32
+#: dialog/issues/texts.py:75
+msgid "Low"
+msgstr "Низкий"
+
+#: dialog/bugtracker_api.py:260 dialog/issues/texts.py:33
+#: dialog/issues/texts.py:76
+msgid "Medium"
+msgstr "Средний"
+
+#: dialog/bugtracker_api.py:261 dialog/issues/texts.py:34
+#: dialog/issues/texts.py:77
+msgid "High"
+msgstr "Высокий"
+
+#: dialog/bugtracker_api.py:262 dialog/issues/texts.py:35
+#: dialog/issues/texts.py:78
+msgid "Highest"
+msgstr "Высочайший"
+
+#: dialog/bugtracker_api.py:265 dialog/issues/texts.py:39
+#: dialog/issues/texts.py:82
+msgid "To do"
+msgstr "Сделать"
+
+#: dialog/bugtracker_api.py:266 dialog/issues/texts.py:40
+#: dialog/issues/texts.py:83
+msgid "In progress"
+msgstr "В процессе"
+
+#: dialog/bugtracker_api.py:267 dialog/issues/texts.py:41
+#: dialog/issues/texts.py:84
+msgid "Done"
+msgstr "Сделано"
+
+#: dialog/bugtracker_api.py:290
+msgid "You don't have any issues for this project!"
+msgstr "У вас нет задач для этого проекта!"
+
+#: dialog/bugtracker_api.py:363
+msgid "The issue has been created!"
+msgstr "Задача создана!"
+
+#: dialog/bugtracker_api.py:369
+msgid "Error, the issue was NOT created!"
+msgstr "Ошибка, задача НЕ была создана!"
+
+#: dialog/bugtracker_api.py:384
+msgid "The issue has been updated!"
+msgstr "Задача обновлена!"
+
+#: dialog/bugtracker_api.py:390
+msgid "Error, the issue was NOT updated!"
+msgstr "Ошибка, задача НЕ была обновлена!"
+
+#: dialog/bugtracker_api.py:405
+msgid "The issue was deleted!"
+msgstr "Задача была удалена"
+
+#: dialog/bugtracker_api.py:407
+msgid "The issue was deleted earlier."
+msgstr "Задача уже была удалёна ранее."
+
+#: dialog/bugtracker_api.py:409
+msgid "Error, the issue was NOT deleted!"
+msgstr "Ошибка, задача НЕ была удалена!"
+
+#: dialog/basic/click_handlers.py:26
+msgid "Try again"
+msgstr "Попробовать снова"
+
+#: dialog/basic/click_handlers.py:39
+msgid "Successful login!"
+msgstr "Успешный вход!"
+
+#: dialog/basic/handlers.py:39
+msgid "This language is already set."
+msgstr "Этот язык уже установлен."
+
+#: dialog/basic/handlers.py:48
+msgid "You have changed the language!"
+msgstr "Вы изменили язык!"
+
+#: dialog/basic/handlers.py:64
+msgid "This time zone is already set."
+msgstr "Этот часовой пояс уже установлен."
+
+#: dialog/basic/handlers.py:73
+msgid "You have changed the time zone!"
+msgstr "Вы изменили часовой пояс!"
+
+#: dialog/basic/texts.py:6
 msgid ""
-"\n"
+"            Hello {user}!\n"
 "            \n"
-"A quick guide to working with me:\n"
+"A quick introduction to working with me:\n"
 "            \n"
-"1) Login: first step is log in via /login command. Without it, I won't work!\n"
+"1) First step is log in via /login command. Without it, I won't work!\n"
 "            \n"
-"2) A real starting menu accessed via /projects command.\n"
+"2) Main menu accessed via /menu command.\n"
 "            \n"
-"3) From there, you can view all your projects and create new ones.\n"
+"3) From this menu, you can manage your projects and their issues, and "
+"change my settings.\n"
 "            \n"
-"4) Next, you can view the issues related to this project, edit the project, or delete it altogether.\n"
-"            \n"
-"5) Everything listed in the 3-4) is also relevant for issues.\n"
-"            \n"
-"6) You can also change my settings: language and time zone via /settings command.\n"
-"            \n"
-"<b>Please note that you must already be registered through the website or API. If you don't have an account yet, then you need to create one and only then use me. </b>\n"
+"<b>Please note that you must already be registered through the website or"
+" API. If you don't have an account yet, then you need to create one and "
+"only then use me. </b>\n"
 "        "
 msgstr ""
-"\n"
+"            Привет {user}!\n"
 "            \n"
-"Быстрое введение по работе со мной:\n"
+"Краткое введение по работе со мной:\n"
 "            \n"
-"1) Вход: первый шаг это вход через команду /login. Иначе я не стану работать!\n"
+"1) Первый шаг - вход через команду /login. Иначе, я не стану работать!\n"
 "            \n"
-"2) Настоящее стартовое меню доступно по команде /projects.\n"
+"2) Главное меню доступно по команде /menu.\n"
 "            \n"
-"3) Оттуда, вы сможете просмотреть все ваши проекты и создать новые.\n"
+"3) Из этого меню вы можете управлять вашими проектами и их задачами, "
+"изменять мои настройки.\n"
 "            \n"
-"4) Далее, вы сможете просмотреть список задач, связанных с конкретным проектом, изменить проект, или вовсе его удалить.\n"
-"            \n"
-"5) Всё перечисленное в пунктах 3-4) применимо и задачам.\n"
-"            \n"
-"6) Вы также можете изменить мои настройки: язык и часовой пояс по команде /settings.\n"
-"            \n"
-"<b>Пожалуйста, обратите внимание, что вы уже должны быть зарегистрированы через сайт или API. Если у вас ещё нет аккаунта, то создайте его и только тогда используйте меня. </b>\n"
+"<b>Пожалуйста, обратите внимание, что вы уже должны быть зарегистрированы через сайт или"
+" API. Если у вас ещё нет аккаунта, то создайте его и "
+"только тогда используйте меня. </b>\n"
 "        "
 
-#: handlers/project/projects.py:63
-msgid ""
-"\n"
-"            <b>Name</b>: {name}             \n"
-"<b>Key</b>: {key}             \n"
-"<b>Favorite</b>: {starred}             \n"
-"<b>Created</b>: {created}             \n"
-"<b>Updated</b>: {updated}\n"
-"        "
-msgstr ""
-"\n"
-"            <b>Название</b>: {name}             \n"
-"<b>Ключ</b>: {key}             \n"
-"<b>Избранный</b>: {starred}             \n"
-"<b>Создан</b>: {created}             \n"
-"<b>Обновлён</b>: {updated}\n"
-"        "
+#: dialog/basic/texts.py:20
+msgid "Enter email:"
+msgstr "Введите эл.почту:"
 
-#: handlers/issue/issues.py:73
+#: dialog/basic/texts.py:21
+msgid "Enter password:"
+msgstr "Введите пароль:"
+
+#: dialog/basic/texts.py:27
+msgid "Select what you want to get:"
+msgstr "Выберите, что хотите получить:"
+
+#: dialog/basic/texts.py:28
+msgid "Projects"
+msgstr "Проекты"
+
+#: dialog/basic/texts.py:29
+msgid "Settings"
+msgstr "Настройки"
+
+#: dialog/basic/texts.py:35
+msgid "Select what you want to change:"
+msgstr "Выберите, что хотите изменить:"
+
+#: dialog/basic/texts.py:36
+msgid "Language"
+msgstr "Язык"
+
+#: dialog/basic/texts.py:37
+msgid "Timezone"
+msgstr "Часовой пояс"
+
+#: dialog/basic/texts.py:38
+msgid "Select a language:"
+msgstr "Выберите язык:"
+
+#: dialog/basic/texts.py:40
+msgid "Select the time zone:"
+msgstr "Выберите часовой пояс:"
+
+#: dialog/issues/getters.py:66
 msgid ""
-"\n"
-"            <b>Title</b>: {title}            \n"
+"            \n"
+"<b>Title</b>: {title}            \n"
 "<b>Description</b>: {description}            \n"
 "<b>Type</b>: {type}            \n"
 "<b>Priority</b>: {priority}            \n"
@@ -86,8 +282,8 @@ msgid ""
 "<b>Updated</b>: {updated}\n"
 "        "
 msgstr ""
-"\n"
-"            <b>Заголовок</b>: {title}            \n"
+"            \n"
+"<b>Заголовок</b>: {title}            \n"
 "<b>Описание</b>: {description}            \n"
 "<b>Тип</b>: {type}            \n"
 "<b>Приоритет</b>: {priority}            \n"
@@ -96,440 +292,175 @@ msgstr ""
 "<b>Обновлена</b>: {updated}\n"
 "        "
 
-#: handlers/project/update_project.py:73
-msgid ""
-"\n"
-"            Good, now choose whether the project will be a favorite or not.\n"
-"            \n"
-"<b>Earlier: {starred}</b>            \n"
-"<b>Now:</b>\n"
-"        "
-msgstr ""
-"\n"
-"            Хорошо, теперь выберите, будет ли проект избранным или нет.\n"
-"            \n"
-"<b>Ранее: {starred}</b>            \n"
-"<b>Сейчас:</b>\n"
-"        "
+#: dialog/issues/texts.py:6
+msgid "Your issues:"
+msgstr "Ваши задачи:"
 
-#: handlers/project/update_project.py:58
-msgid ""
-"\n"
-"            Good, now enter key of the project.\n"
-"            \n"
-"<b>Previous key: {key}</b>            \n"
-"<b>New key:</b>\n"
-"        "
-msgstr ""
-"\n"
-"            Хорошо, теперь введите ключ проекта.\n"
-"            \n"
-"<b>Предыдущий ключ: {key}</b>            \n"
-"<b>Новый ключ:</b>\n"
-"        "
+#: dialog/issues/texts.py:7
+msgid "You don't have issues yet."
+msgstr "У вас ещё нет задач."
 
-#: handlers/issue/update_issue.py:68
-msgid ""
-"\n"
-"            Good, now enter the issue description.\n"
-"            \n"
-"<b>Previous description: {description}</b>            \n"
-"<b>New description:</b>\n"
-"        "
-msgstr ""
-"\n"
-"            Хорошо, теперь введите описание задачи.\n"
-"            \n"
-"<b>Предыдущее описание: {description}</b>            \n"
-"<b>Новое описание:</b>\n"
-"        "
+#: dialog/issues/texts.py:8 dialog/issues/texts.py:51
+#: dialog/projects/texts.py:8 dialog/projects/texts.py:37
+msgid "Back"
+msgstr "Назад"
 
-#: handlers/issue/update_issue.py:112
-msgid ""
-"\n"
-"            Good, now select the issue priority\n"
-"            \n"
-"<b>Previous priority: {priority}</b>            \n"
-"<b>New priority:</b>\n"
-"        "
-msgstr ""
-"\n"
-"            Хорошо, теперь выберите приоритет задачи\n"
-"            \n"
-"<b>Предыдущий приоритет: {priority}</b>            \n"
-"<b>Новый приоритет:</b>\n"
-"        "
+#: dialog/issues/texts.py:9 dialog/issues/texts.py:20 dialog/issues/texts.py:59
+#: dialog/projects/texts.py:9 dialog/projects/texts.py:21
+#: dialog/projects/texts.py:54
+msgid "Cancel"
+msgstr "Отменить"
 
-#: handlers/issue/update_issue.py:147
-msgid ""
-"\n"
-"            Good, now select the issue status.\n"
-"            \n"
-"<b>Previous status: {status}</b>            \n"
-"<b>New status:</b>\n"
-"        "
-msgstr ""
-"\n"
-"            Хорошо, теперь выберите статус задачи.\n"
-"            \n"
-"<b>Предыдущий статус: {status}</b>            \n"
-"<b>Новый статус:</b>\n"
-"        "
-
-#: handlers/issue/update_issue.py:86
-msgid ""
-"\n"
-"            Good, now select the issue type.\n"
-"            \n"
-"<b>Previous type: {type}</b>            \n"
-"<b>New type:</b>\n"
-"        "
-msgstr ""
-"\n"
-"            Хорошо, теперь выберите тип задачи.\n"
-"            \n"
-"<b>Предыдущий тип: {type}</b>            \n"
-"<b>Новый тип:</b>\n"
-"        "
-
-#: handlers/issue/create_issue.py:33
-msgid ""
-"\n"
-"            Now you will need to enter the data one by one to create a new issue.            \n"
-"<u>Note</u>: you can cancel the creation process by command:  /cancel.\n"
-"            \n"
-"<b>Enter the issue title:</b>\n"
-"        "
-msgstr ""
-"\n"
-"            Сейчас вам нужно будет вводить данные по порядку для создания новой задачи.            \n"
-"<u>Обратите внимание</u>: вы можете отменить процесс создания командой:  /cancel.\n"
-"            \n"
-"<b>Введите заголовок задачи:</b>\n"
-"        "
-
-#: handlers/project/create_project.py:23
-msgid ""
-"\n"
-"            Now you will need to enter the data one by one to create a new project.            \n"
-"<u>Note</u>: you can cancel the creation process by command:  /cancel.\n"
-"            \n"
-"<b>Enter project name:</b>\n"
-"        "
-msgstr ""
-"\n"
-"            Сейчас вам нужно будет вводить данные по порядку для создания нового проекта.            \n"
-"<u>Обратите внимание</u>: вы можете отменить процесс создания командой:  /cancel.\n"
-"            \n"
-"<b>Введите название проекта:</b>\n"
-"        "
-
-#: handlers/issue/update_issue.py:48
-msgid ""
-"\n"
-"            Now you will need to enter the data one by one to update issue.            \n"
-"<u>Note</u>: you can cancel the update process by command:  /cancel.\n"
-"            \n"
-"<b>Previous title: {title}</b>            \n"
-"<b>New title:</b>\n"
-"        "
-msgstr ""
-"\n"
-"            Сейчас вам нужно будет вводить данные по порядку, чтобы обновить задачу.            \n"
-"<u>Обратите внимание</u>: вы можете отменить процесс обновления командой:  /cancel.\n"
-"            \n"
-"<b>Предыдущий заголовок: {title}</b>            \n"
-"<b>Новый заголовок:</b>\n"
-"        "
-
-#: handlers/project/update_project.py:41
-msgid ""
-"\n"
-"            Now you will need to enter the data one by one to update project.            \n"
-"<u>Note</u>: you can cancel the update process by command:  /cancel.\n"
-"            \n"
-"<b>Previous name: {name}</b>            \n"
-"<b>New name:</b>\n"
-"        "
-msgstr ""
-"\n"
-"            ейчас вам нужно будет вводить данные по порядку, чтобы обновить проект.            \n"
-"<u>Обратите внимание</u>: вы можете отменить процесс обновления командой:  /cancel.\n"
-"            \n"
-"<b>Предыдущее название: {name}</b>            \n"
-"<b>Новое название:</b>\n"
-"        "
-
-#: keyboards/for_issues.py:97 keyboards/for_projects.py:82
-msgid "<< Back"
-msgstr "<< Назад"
-
-#: handlers/common.py:16
-msgid "Action canceled."
-msgstr "Действие отменено."
-
-#: handlers/bugtracker_api.py:324
-msgid "An error occurred, the issue was NOT updated!"
-msgstr "Возникла ошибка, задача НЕ была обновлена!"
-
-#: handlers/bugtracker_api.py:343
-msgid "An error occurred, the issue was not deleted!"
-msgstr "Возникла ошибка, задача НЕ была удалена!"
-
-#: handlers/bugtracker_api.py:203 handlers/bugtracker_api.py:303
-msgid "An error occurred, the project was NOT created!"
-msgstr "Возникла ошибка, проект НЕ был создан!"
-
-#: handlers/bugtracker_api.py:223
-msgid "An error occurred, the project was NOT updated!"
-msgstr "Возникла ошибка, проект НЕ был обновлён!"
-
-#: handlers/bugtracker_api.py:238
-msgid "An error occurred, the project was not deleted!"
-msgstr "Возникла ошибка, проект НЕ был создан!"
-
-#: handlers/bugtracker_api.py:79
-msgid "Bug"
-msgstr "Баг"
-
-#: keyboards/for_issues.py:42 keyboards/for_projects.py:49
-msgid "Change"
-msgstr "Изменить"
-
-#: handlers/start.py:85
-msgid "Choose what you want to change:"
-msgstr "Выберите, что вы хотите изменить:"
-
-#: keyboards/for_issues.py:15 keyboards/for_issues.py:29
-#: keyboards/for_projects.py:15 keyboards/for_projects.py:30
-msgid "Create"
+#: dialog/issues/texts.py:10 dialog/projects/texts.py:10
+msgid "Create new"
 msgstr "Создать"
 
-#: keyboards/for_issues.py:46 keyboards/for_projects.py:53
-msgid "Delete"
-msgstr "Удалить"
+#: dialog/issues/texts.py:11 dialog/issues/texts.py:22
+#: dialog/issues/texts.py:61
+msgid "Enter issue title:"
+msgstr "Введите заголовок задачи:"
 
-#: handlers/bugtracker_api.py:90
-msgid "Done"
-msgstr "Сделано"
+#: dialog/issues/texts.py:12 dialog/issues/texts.py:23
+#: dialog/issues/texts.py:62
+msgid "Enter description of issue:"
+msgstr "Введите описание задачи:"
 
-#: handlers/bugtracker_api.py:66
-msgid "False"
-msgstr "Нет"
+#: dialog/issues/texts.py:13 dialog/issues/texts.py:14
+#: dialog/projects/texts.py:13 dialog/projects/texts.py:27
+#: dialog/projects/texts.py:51
+msgid "Is this project will be a favorite:"
+msgstr "Будет ли этот проект избранным:"
 
-#: handlers/bugtracker_api.py:79
-msgid "Feature"
-msgstr "Фича"
+#: dialog/issues/texts.py:21 dialog/issues/texts.py:60
+msgid "Skip"
+msgstr "Пропустить"
 
-#: handlers/issue/create_issue.py:49
-msgid "Good, now <b>enter description:</b>"
-msgstr "Хорошо, <b>теперь введите описание:</b>"
+#: dialog/issues/texts.py:24 dialog/issues/texts.py:70
+msgid "Select the issue type:"
+msgstr "Выберите тип задачи:"
 
-#: handlers/project/create_project.py:39
-msgid "Good, now <b>enter key of the project:</b>"
-msgstr "Хорошо, теперь <b>введите ключ проекта:</b>"
+#: dialog/issues/texts.py:26
+msgid ""
+"Select the priority of the issue. \n"
+"Default is <b>Medium</b>:"
+msgstr ""
+"Выберите приоритет задачи. \n"
+"По умолчанию <b>Средний</b>:"
 
-#: handlers/issue/create_issue.py:75
-msgid "Good, now <b>select priority:</b>"
-msgstr "Хорошо, теперь <b>выберите приоритет:</b>"
+#: dialog/issues/texts.py:37
+msgid ""
+"Select the issue status. \n"
+"Default is <b>To do</b>:"
+msgstr ""
+"Выберите статус задачи. \n"
+"По умолчанию <b>Сделать</b>:"
 
-#: handlers/issue/create_issue.py:57
-msgid "Good, now <b>select type:</b>"
-msgstr "Хорошо, теперь <b>выберите тип:</b>"
-
-#: handlers/project/create_project.py:47
-msgid "Good, now <b>select whether the project will be a favorite or not:</b>"
-msgstr "Хорошо, теперь <b>выберите, будет проект избранным или нет:</b>"
-
-#: handlers/start.py:34
-msgid "Hello, {user}!{text}"
-msgstr "Привет, {user}!{text}"
-
-#: handlers/bugtracker_api.py:84
-msgid "High"
-msgstr "Высокий"
-
-#: handlers/bugtracker_api.py:85
-msgid "Highest"
-msgstr "Высочайший"
-
-#: handlers/bugtracker_api.py:89
-msgid "In progress"
-msgstr "В процессе"
-
-#: handlers/bugtracker_api.py:46
-msgid "Invalid email/password!"
-msgstr "Неверные эл.почта/пароль!"
-
-#: handlers/bugtracker_api.py:17
-msgid "Issue with this title already exist!"
-msgstr "Задача с этим заголовком уже существует!"
-
-#: keyboards/for_projects.py:45
+#: dialog/issues/texts.py:48 dialog/projects/texts.py:34
 msgid "Issues"
 msgstr "Задачи"
 
-#: keyboards/for_settings.py:14
-msgid "Language"
-msgstr "Язык"
+#: dialog/issues/texts.py:49 dialog/projects/texts.py:35
+msgid "Edit"
+msgstr "Изменить"
 
-#: handlers/issue/issues.py:34
-msgid "List of issues, page 1:"
-msgstr "Список задач, страница 1:"
+#: dialog/issues/texts.py:50 dialog/projects/texts.py:36
+msgid "Delete"
+msgstr "Удалить"
 
-#: handlers/issue/pagination_issues.py:26
-#: handlers/issue/pagination_issues.py:46
-msgid "List of issues, page {page}:"
-msgstr "Список задач, страница {page}:"
+#: dialog/issues/texts.py:57 dialog/projects/texts.py:43
+msgid "Select what you want to change:"
+msgstr "Выберите, что хотите изменить:"
 
-#: handlers/project/projects.py:28
-msgid "List of projects, page 1:"
-msgstr "Список проектов, страница 1:"
+#: dialog/issues/texts.py:58 dialog/projects/texts.py:53
+msgid "Continue"
+msgstr "Продолжить"
 
-#: handlers/project/pagination_projects.py:26
-#: handlers/project/pagination_projects.py:46
-msgid "List of projects, page {page}:"
-msgstr "Список проектов, страница {page}:"
+#: dialog/issues/texts.py:64
+msgid "Title"
+msgstr "Заголовок"
 
-#: handlers/bugtracker_api.py:149
-msgid "You don't have any project!"
-msgstr "У вас нет проектов!"
+#: dialog/issues/texts.py:65
+msgid "Description"
+msgstr "Описание"
 
-#: handlers/bugtracker_api.py:263
-msgid "You don't have any issues for this project!"
-msgstr "У вас нет задач к этому проекту!"
+#: dialog/issues/texts.py:66
+msgid "Type"
+msgstr "Тип"
 
-#: handlers/bugtracker_api.py:82
-msgid "Low"
-msgstr "Низкий"
+#: dialog/issues/texts.py:67
+msgid "Priority"
+msgstr "Приоритет"
 
-#: handlers/bugtracker_api.py:81
-msgid "Lowest"
-msgstr "Низший"
+#: dialog/issues/texts.py:68
+msgid "Status"
+msgstr "Статус"
 
-#: handlers/bugtracker_api.py:83
-msgid "Medium"
-msgstr "Средний"
+#: dialog/issues/texts.py:72
+msgid "Select the priority of the issue:"
+msgstr "Выберите приоритет задачи:"
 
-#: handlers/bugtracker_api.py:73
-msgid "Moscow"
-msgstr "Москва"
+#: dialog/issues/texts.py:80
+msgid "Select the issue status:"
+msgstr "Выберите статус задачи:"
 
-#: keyboards/for_issues.py:102 keyboards/for_projects.py:87
-msgid "Next >>"
-msgstr "Вперёд >>"
-
-#: handlers/bugtracker_api.py:48
-msgid "Not verified! Check email."
-msgstr "Не верифицирован! Проверьте почту."
-
-#: handlers/issue/create_issue.py:85 handlers/issue/create_issue.py:116
-#: handlers/issue/update_issue.py:128 handlers/issue/update_issue.py:163
-#: handlers/issue/update_issue.py:204 handlers/project/create_project.py:82
-#: handlers/project/update_project.py:109
-msgid "Please select one of the options on the keyboard."
-msgstr "Пожалуйста, выберите один из вариантов на клавиатуре."
-
-#: handlers/start.py:75
+#: dialog/projects/getters.py:56
 msgid ""
-"Please, enter your <u>email and password</u> after /login command! \n"
-"Example: /login EMAIL PASSWORD"
+"            \n"
+"<b>Name</b>: {name}            \n"
+"<b>Key</b>: {key}            \n"
+"<b>Favorite</b>: {favorite}            \n"
+"<b>Created</b>: {created}            \n"
+"<b>Updated</b>: {updated}\n"
+"        "
 msgstr ""
-"Пожалуйста, введите ваши <u>эл.почту и пароль</u> после команды /login! \n"
-"Например: /login ЭЛ.ПОЧТА ПАРОЛЬ"
+"            \n"
+"<b>Название</b>: {name}            \n"
+"<b>Ключ</b>: {key}            \n"
+"<b>Избранный</b>: {favorite}            \n"
+"<b>Создан</b>: {created}            \n"
+"<b>Обновлён</b>: {updated}\n"
+"        "
 
-#: handlers/bugtracker_api.py:16
-msgid "Project with this key already exist!"
-msgstr "Проект с этим ключом уже существует"
+#: dialog/projects/texts.py:6
+msgid "Your projects:"
+msgstr "Ваши проекты:"
 
-#: handlers/bugtracker_api.py:15
-msgid "Project with this name already exist!"
-msgstr "Проект с этим названием уже существует"
+#: dialog/projects/texts.py:7
+msgid "You don't have projects yet."
+msgstr "У вас ещё нет проектов."
 
-#: handlers/start.py:93
-msgid "Select a language:"
-msgstr "Выберите язык:"
+#: dialog/projects/texts.py:11 dialog/projects/texts.py:22
+msgid "Enter project name:"
+msgstr "Введите название проекта:"
 
-#: handlers/start.py:130
-msgid "Select the time zone:"
-msgstr "Выберите часовой пояс:"
+#: dialog/projects/texts.py:12
+msgid "Enter key of the project:"
+msgstr "Введите ключ проекта:"
 
-#: handlers/start.py:64
+#: dialog/projects/texts.py:23
 msgid ""
-"Successful login! \n"
-"To continue, enter /projects command."
+"Enter key (unique identifier) of the the project. The maximum length is "
+"10 characters:"
 msgstr ""
-"Успешный вход! \n"
-"Чтобы продолжить, используйте команду /projects."
+"Введите ключ (уникальный идентификатор) проекта. Максимальная длина - "
+"10 символов:"
 
-#: handlers/bugtracker_api.py:297
-msgid "The issue has been successfully created!"
-msgstr "Задача была успешно создана!"
+#: dialog/projects/texts.py:45
+msgid "Name"
+msgstr "Название"
 
-#: handlers/bugtracker_api.py:318
-msgid "The issue has been successfully updated!"
-msgstr "Задача была успешно обновлена!"
+#: dialog/projects/texts.py:46
+msgid "Key"
+msgstr "Ключ"
 
-#: handlers/bugtracker_api.py:341
-msgid "The issue was deleted earlier."
-msgstr "Задача уже была удалена ранее!"
+#: dialog/projects/texts.py:47
+msgid "Favorite"
+msgstr "Избранный"
 
-#: handlers/bugtracker_api.py:339
-msgid "The issue was successfully deleted!"
-msgstr "Задача была успешно удалена!"
+#: dialog/projects/texts.py:49
+msgid "Enter new name:"
+msgstr "Введите новое название:"
 
-#: handlers/bugtracker_api.py:193
-msgid "The project has been successfully created!"
-msgstr "Проект был успешно создан!"
-
-#: handlers/bugtracker_api.py:213
-msgid "The project has been successfully updated!"
-msgstr "Проект был успешно обновлён!"
-
-#: handlers/bugtracker_api.py:236
-msgid "The project was deleted earlier."
-msgstr "Проект уже был удалён ранее!"
-
-#: handlers/bugtracker_api.py:234
-msgid "The project was successfully deleted!"
-msgstr "Проект был успешно удалён!"
-
-#: handlers/start.py:112
-msgid "This language is already set."
-msgstr "Этот язык уже установлен."
-
-#: handlers/start.py:151
-msgid "This time zone is already set."
-msgstr "Этот часовой пояс уже установлен."
-
-#: keyboards/for_settings.py:18
-msgid "Timezone"
-msgstr "Часовой пояс"
-
-#: handlers/bugtracker_api.py:88
-msgid "To do"
-msgstr "Сделать"
-
-#: handlers/bugtracker_api.py:66
-msgid "True"
-msgstr "Да"
-
-#: handlers/bugtracker_api.py:74
-msgid "Vladivostok"
-msgstr "Владивосток"
-
-#: handlers/issue/issues.py:45 handlers/project/projects.py:38
-msgid "You aren't logged in, use /login command."
-msgstr "Вы не вошли, используйте команду /login."
-
-#: handlers/start.py:123
-msgid "You have changed the language!"
-msgstr "Вы изменили язык!"
-
-#: handlers/start.py:167
-msgid "You have changed the time zone!"
-msgstr "Вы изменили часовой пояс!"
-
-#: handlers/start.py:70
-msgid "You're already logged in, use the /projects command."
-msgstr "Вы уже вошли, используйте команду /projects."
+#: dialog/projects/texts.py:50
+msgid "Enter new key:"
+msgstr "Введите новый ключ:"

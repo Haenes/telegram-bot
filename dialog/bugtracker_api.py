@@ -122,7 +122,6 @@ class Project(API):
 
     def __init__(self):
         self.UNIQUE_ERRORS = {
-            "project_name": _("Project with this name already exist!"),
             "project_key": _("Project with this key already exist!")
         }
 
@@ -205,11 +204,8 @@ class Project(API):
             results = await r.json()
 
             if "detail" in results:
-                match results["detail"]:
-                    case "Project with this name already exist!":
-                        return {"error_name": self.UNIQUE_ERRORS["project_name"]}
-                    case "Project with this key already exist!":
-                        return {"error_key": self.UNIQUE_ERRORS["project_key"]}
+                if results["detail"] == "Project with this key already exist!":
+                    return {"error_key": self.UNIQUE_ERRORS["project_key"]}
             return {"error": _("Error, the project was NOT created!")}
 
     async def edit_item(
@@ -229,11 +225,8 @@ class Project(API):
             results = await r.json()
 
             if "detail" in results:
-                match results["detail"]:
-                    case "Project with this name already exist!":
-                        return {"error_name": self.UNIQUE_ERRORS["project_name"]}
-                    case "Project with this key already exist!":
-                        return {"error_key": self.UNIQUE_ERRORS["project_key"]}
+                if results["detail"] == "Project with this key already exist!":
+                    return {"error_key": self.UNIQUE_ERRORS["project_key"]}
             return {"error": _("Error, the project was NOT updated!")}
 
     @staticmethod
@@ -244,15 +237,11 @@ class Project(API):
         async with session.delete(url, headers=headers) as r:
             match r.status:
                 case 200:
-                    return {"success": _(
-                        "The project was successfully deleted!"
-                    )}
+                    return {"success": _("The project was deleted!")}
                 case 400:
                     return {"error": _("The project was deleted earlier.")}
                 case _:
-                    return {"error": _(
-                        "Error, the project was not deleted!"
-                    )}
+                    return {"error": _("Error, the project was NOT deleted!")}
 
 
 class Issue(API):
@@ -413,7 +402,7 @@ class Issue(API):
         async with session.delete(url, headers=headers) as r:
             match r.status:
                 case 200:
-                    return {"success": _("The issue was successfully deleted!")}
+                    return {"success": _("The issue was deleted!")}
                 case 400:
                     return {"error": _("The issue was deleted earlier.")}
                 case _:
