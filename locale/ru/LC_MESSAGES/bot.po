@@ -239,8 +239,8 @@ msgid "Enter password:"
 msgstr "Введите пароль:"
 
 #: dialog/basic/texts.py:27
-msgid "Select what you want to get:"
-msgstr "Выберите, что хотите получить:"
+msgid "Select what you need:"
+msgstr "Выберите, что вам нужно:"
 
 #: dialog/basic/texts.py:28
 msgid "Projects"

@@ -24,7 +24,7 @@ async def login(**kwargs):
 
 async def menu(**kwargs):
     return {
-        "menu_text": _("Select what you want to get:"),
+        "menu_text": _("Select what you need:"),
         "projects_btn": _("Projects"),
         "settings_btn": _("Settings")
     }
